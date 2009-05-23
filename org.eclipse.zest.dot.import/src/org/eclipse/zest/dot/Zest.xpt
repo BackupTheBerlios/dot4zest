@@ -1,0 +1,70 @@
+«REM» 
+/*******************************************************************************
+ * Copyright (c) 2009 Fabian Steeg. All rights reserved. This program and the
+ * accompanying materials are made available under the terms of the Eclipse
+ * Public License v1.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors: Fabian Steeg - initial API and implementation; see bug 277380
+ *******************************************************************************/ 
+«ENDREM»
+
+«IMPORT dot»
+
+«EXTENSION dotlib»
+«EXTENSION org::openarchitectureware::util::stdlib::io»
+«EXTENSION org::openarchitectureware::util::stdlib::elementprops»
+
+«DEFINE main FOR graphvizmodel-»
+	«EXPAND dotFile FOREACH graphs»
+«ENDDEFINE»
+
+«DEFINE dotFile FOR graph»
+	«FILE name.toFirstUpper() + "Graph" + ".java"-»
+	
+	import org.eclipse.swt.SWT;
+	import org.eclipse.swt.layout.FillLayout;
+	import org.eclipse.swt.widgets.Composite;
+	import org.eclipse.swt.widgets.Display;
+	import org.eclipse.swt.widgets.Shell;
+	import org.eclipse.zest.core.widgets.Graph;
+	import org.eclipse.zest.core.widgets.GraphConnection;
+	import org.eclipse.zest.core.widgets.GraphNode;
+	import org.eclipse.zest.core.widgets.ZestStyles;
+	import org.eclipse.zest.layouts.LayoutStyles;
+	import org.eclipse.zest.layouts.algorithms.TreeLayoutAlgorithm;
+
+	/** Zest graph generated from Graphviz DOT file '«filename()»'. */
+	public class «name.toFirstUpper() + "Graph"» extends Graph {
+	    public «name.toFirstUpper() + "Graph"» (Composite parent, int style) {
+	        super(parent, style);
+	        /* TODO: template support for edge decorators */
+	        setConnectionStyle(ZestStyles.CONNECTIONS_DIRECTED);
+	        /* TODO: template support for nodes */
+	        GraphNode n1 = new GraphNode(this, SWT.NONE, "1");
+	        GraphNode n2 = new GraphNode(this, SWT.NONE, "2");
+	        /* TODO: template support for edges */
+	        new GraphConnection(this, SWT.NONE, n1, n2);
+	        /* TODO: template support for layout */
+	        setLayoutAlgorithm(new TreeLayoutAlgorithm(
+	                LayoutStyles.NO_LAYOUT_NODE_RESIZING), true);
+	    }
+	    public String toString() { 
+	        return super.toString(); // TODO: new GraphTemplate().generate(this);
+	    }
+	    public static void main(String[] args) {
+	        Display d = new Display();
+	        Shell shell = new Shell(d);
+	        shell.setText(«name.toFirstUpper() + "Graph"».class.getSimpleName());
+	        shell.setLayout(new FillLayout());
+	        shell.setSize(100, 150);
+	        new «name.toFirstUpper() + "Graph"»(shell, SWT.NONE);
+	        shell.open();
+	        while (!shell.isDisposed()) {
+	            while (!d.readAndDispatch()) { d.sleep(); }
+	        }
+	    }
+	}
+	
+	«ENDFILE-»
+«ENDDEFINE»
