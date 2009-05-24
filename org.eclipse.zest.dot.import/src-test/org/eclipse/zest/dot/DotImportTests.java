@@ -18,16 +18,30 @@ import org.junit.Test;
  * @author Fabian Steeg (fsteeg)
  */
 public final class DotImportTests {
-    private static final File DOT = new File("resources/sample.dot");
-
-    /** Test execution of File-based DOT-to-Zest transformations. */
+    /**
+     * Test execution of File-based DOT-to-Zest transformations for a simple
+     * directed graph.
+     */
     @Test
-    public void testImport() {
-        Assert.assertTrue("DOT input file must exist", DOT.exists());
-        File zest = DotImport.of(DOT);
+    public void directedGraph() {
+        importFrom(new File("resources/simple_digraph.dot"));
+    }
+
+    /**
+     * Test execution of File-based DOT-to-Zest transformations for a simple
+     * undirected graph.
+     */
+    @Test
+    public void undirectedGraph() {
+        importFrom(new File("resources/simple_graph.dot"));
+    }
+
+    private void importFrom(final File file) {
+        Assert.assertTrue("DOT input file must exist", file.exists());
+        File zest = DotImport.of(file);
         Assert.assertNotNull("Resulting file must not be null", zest);
         Assert.assertTrue("Resulting file must exist", zest.exists());
         System.out.println(String.format(
-                "Transformed DOT in '%s' to Zest in '%s'", DOT, zest));
+                "Transformed DOT in '%s' to Zest in '%s'", file, zest));
     }
 }

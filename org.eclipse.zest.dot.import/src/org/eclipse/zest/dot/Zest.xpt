@@ -38,8 +38,7 @@
 	public class «name.toFirstUpper() + "Graph"» extends Graph {
 	    public «name.toFirstUpper() + "Graph"» (Composite parent, int style) {
 	        super(parent, style);
-	        /* TODO: template support for edge decorators */
-	        setConnectionStyle(ZestStyles.CONNECTIONS_DIRECTED);
+	        «IF type == graphtype::digraph» setConnectionStyle(ZestStyles.CONNECTIONS_DIRECTED); «ENDIF»
 	        /* TODO: template support for nodes */
 	        GraphNode n1 = new GraphNode(this, SWT.NONE, "1");
 	        GraphNode n2 = new GraphNode(this, SWT.NONE, "2");

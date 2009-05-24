@@ -13,7 +13,7 @@
      <modelFile value='${modelFile}'/>
      <outputSlot value='theModel'/>
   </component>
-  <component class='oaw.workflow.common.DirectoryCleaner' directories='${targetDir}' exclude='.cvsignore'/>
+  <!--component class='oaw.workflow.common.DirectoryCleaner' directories='${targetDir}' exclude='.cvsignore'/-->
   <component class='oaw.xpand2.Generator'>
   <beautifier
      class="org.openarchitectureware.xpand2.output.JavaBeautifier"/>
