@@ -1,1 +1,5 @@
-graph SampleUndirected{1--2}
+graph SimpleGraph{
+	1; 2; 3
+	1--2
+	1--3
+}

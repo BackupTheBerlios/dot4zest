@@ -8,20 +8,15 @@
  * Contributors: Fabian Steeg - initial API and implementation; see bug 277380
  *******************************************************************************/ 
 «ENDREM»
-
 «IMPORT dot»
-
 «EXTENSION dotlib»
 «EXTENSION org::openarchitectureware::util::stdlib::io»
 «EXTENSION org::openarchitectureware::util::stdlib::elementprops»
-
-«DEFINE main FOR graphvizmodel-»
-	«EXPAND dotFile FOREACH graphs»
-«ENDDEFINE»
-
+«REM» Entry point for transformation of a dot meta-model instance to a Zest source file «ENDREM»
+«DEFINE main FOR graphvizmodel-» «EXPAND dotFile FOREACH graphs» «ENDDEFINE»
+«REM» The main file putting it all together «ENDREM»
 «DEFINE dotFile FOR graph»
-	«FILE name.toFirstUpper() + "Graph" + ".java"-»
-	
+	«FILE name.toFirstUpper() + ".java"-»
 	import org.eclipse.swt.SWT;
 	import org.eclipse.swt.layout.FillLayout;
 	import org.eclipse.swt.widgets.Composite;
@@ -33,17 +28,12 @@
 	import org.eclipse.zest.core.widgets.ZestStyles;
 	import org.eclipse.zest.layouts.LayoutStyles;
 	import org.eclipse.zest.layouts.algorithms.TreeLayoutAlgorithm;
-
 	/** Zest graph generated from Graphviz DOT file '«filename()»'. */
-	public class «name.toFirstUpper() + "Graph"» extends Graph {
-	    public «name.toFirstUpper() + "Graph"» (Composite parent, int style) {
+	public class «name.toFirstUpper()» extends Graph {
+	    public «name.toFirstUpper()» (Composite parent, int style) {
 	        super(parent, style);
 	        «IF type == graphtype::digraph» setConnectionStyle(ZestStyles.CONNECTIONS_DIRECTED); «ENDIF»
-	        /* TODO: template support for nodes */
-	        GraphNode n1 = new GraphNode(this, SWT.NONE, "1");
-	        GraphNode n2 = new GraphNode(this, SWT.NONE, "2");
-	        /* TODO: template support for edges */
-	        new GraphConnection(this, SWT.NONE, n1, n2);
+	        «EXPAND stmt FOREACH stmts SEPARATOR ""»
 	        /* TODO: template support for layout */
 	        setLayoutAlgorithm(new TreeLayoutAlgorithm(
 	                LayoutStyles.NO_LAYOUT_NODE_RESIZING), true);
@@ -54,16 +44,27 @@
 	    public static void main(String[] args) {
 	        Display d = new Display();
 	        Shell shell = new Shell(d);
-	        shell.setText(«name.toFirstUpper() + "Graph"».class.getSimpleName());
+	        shell.setText(«name.toFirstUpper()».class.getSimpleName());
 	        shell.setLayout(new FillLayout());
 	        shell.setSize(100, 150);
-	        new «name.toFirstUpper() + "Graph"»(shell, SWT.NONE);
+	        new «name.toFirstUpper()»(shell, SWT.NONE);
 	        shell.open();
 	        while (!shell.isDisposed()) {
 	            while (!d.readAndDispatch()) { d.sleep(); }
 	        }
 	    }
 	}
-	
 	«ENDFILE-»
 «ENDDEFINE»
+«REM» Expansion of the different DOT statement types: «ENDREM»
+«DEFINE stmt FOR stmt»«ENDDEFINE»
+«REM» 1. Expansion of node declarations «ENDREM»
+«DEFINE stmt FOR node_stmt» GraphNode n«name» = new GraphNode(this, SWT.NONE, "«name»"); «ENDDEFINE»
+«REM» 2. Expansion of edge sources «ENDREM»
+«DEFINE stmt FOR edge_stmt_node» 
+new GraphConnection(this, SWT.NONE, n«node_id.name», «EXPAND edge_target FOREACH edgeRHS»);
+«ENDDEFINE»
+«REM» 3. Expansion of the edge target «ENDREM»
+«DEFINE edge_target FOR edgeRHS»«ENDDEFINE» 
+«DEFINE edge_target FOR edgeRHS_node» n«node.name»«ENDDEFINE»
+«REM» TODO: support for multiple target (1->2->3) and using undeclared nodes in edges «ENDREM»
