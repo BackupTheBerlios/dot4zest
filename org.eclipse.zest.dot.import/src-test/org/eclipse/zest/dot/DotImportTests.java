@@ -36,6 +36,15 @@ public final class DotImportTests {
         importFrom(new File("resources/simple_graph.dot"));
     }
 
+    /**
+     * Test execution of File-based DOT-to-Zest transformations for a labeled
+     * graph.
+     */
+    @Test
+    public void labeledGraph() {
+        importFrom(new File("resources/labeled_graph.dot"));
+    }
+
     private void importFrom(final File file) {
         Assert.assertTrue("DOT input file must exist", file.exists());
         File zest = DotImport.of(file);

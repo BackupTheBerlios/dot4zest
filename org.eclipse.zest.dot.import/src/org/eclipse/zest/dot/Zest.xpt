@@ -33,10 +33,12 @@
 	    public «name.toFirstUpper()» (Composite parent, int style) {
 	        super(parent, style);
 	        «IF type == graphtype::digraph» setConnectionStyle(ZestStyles.CONNECTIONS_DIRECTED); «ENDIF»
+	        
 	        «EXPAND stmt FOREACH stmts SEPARATOR ""»
-	        /* TODO: template support for layout */
 	        setLayoutAlgorithm(new TreeLayoutAlgorithm(
 	                LayoutStyles.NO_LAYOUT_NODE_RESIZING), true);
+	        /* TODO: template support for layout */
+	        /* TODO: template support for edge styles */
 	    }
 	    public String toString() { 
 	        return super.toString(); // TODO: new GraphTemplate().generate(this);
@@ -59,12 +61,20 @@
 «REM» Expansion of the different DOT statement types: «ENDREM»
 «DEFINE stmt FOR stmt»«ENDDEFINE»
 «REM» 1. Expansion of node declarations «ENDREM»
-«DEFINE stmt FOR node_stmt» GraphNode n«name» = new GraphNode(this, SWT.NONE, "«name»"); «ENDDEFINE»
-«REM» 2. Expansion of edge sources «ENDREM»
-«DEFINE stmt FOR edge_stmt_node» 
-new GraphConnection(this, SWT.NONE, n«node_id.name», «EXPAND edge_target FOREACH edgeRHS»);
+«DEFINE stmt FOR node_stmt» GraphNode n«name» = new GraphNode(this, SWT.NONE, 
+	«IF attributes.a_list.exists(e|e.name=="label")» «attributes.a_list.select(e|e.name=="label").value.get(0)» 
+	«ELSE»"«name»"«ENDIF»); 
 «ENDDEFINE»
-«REM» 3. Expansion of the edge target «ENDREM»
-«DEFINE edge_target FOR edgeRHS»«ENDDEFINE» 
-«DEFINE edge_target FOR edgeRHS_node» n«node.name»«ENDDEFINE»
+«REM» 2. Expansion of edges «ENDREM»
+«DEFINE stmt FOR edge_stmt_node» 
+	/* Connection from n«node_id.name» to «EXPAND edge_target FOREACH edgeRHS»: */
+	GraphConnection n«node_id.name»«EXPAND edge_target FOREACH edgeRHS» 
+		= new GraphConnection(this, SWT.NONE, n«node_id.name», 
+		«EXPAND edge_target FOREACH edgeRHS» );
+	«IF attributes.a_list.exists(e|e.name=="label")» n«node_id.name»«EXPAND edge_target FOREACH edgeRHS»
+		.setText(«attributes.a_list.select(e|e.name=="label").value.get(0)»);
+	«ENDIF»
+«ENDDEFINE»
+«DEFINE edge_target FOR edgeRHS»«ENDDEFINE»
+«DEFINE edge_target FOR edgeRHS_node»n«node.name»«ENDDEFINE»
 «REM» TODO: support for multiple target (1->2->3) and using undeclared nodes in edges «ENDREM»
