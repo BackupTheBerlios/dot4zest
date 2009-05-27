@@ -38,7 +38,6 @@
 	        setLayoutAlgorithm(new TreeLayoutAlgorithm(
 	                LayoutStyles.NO_LAYOUT_NODE_RESIZING), true);
 	        /* TODO: template support for layout */
-	        /* TODO: template support for edge styles */
 	    }
 	    public String toString() { 
 	        return super.toString(); // TODO: new GraphTemplate().generate(this);
@@ -48,7 +47,7 @@
 	        Shell shell = new Shell(d);
 	        shell.setText(«name.toFirstUpper()».class.getSimpleName());
 	        shell.setLayout(new FillLayout());
-	        shell.setSize(100, 150);
+	        shell.setSize(200, 250);
 	        new «name.toFirstUpper()»(shell, SWT.NONE);
 	        shell.open();
 	        while (!shell.isDisposed()) {
@@ -73,6 +72,12 @@
 		«EXPAND edge_target FOREACH edgeRHS» );
 	«IF attributes.a_list.exists(e|e.name=="label")» n«node_id.name»«EXPAND edge_target FOREACH edgeRHS»
 		.setText(«attributes.a_list.select(e|e.name=="label").value.get(0)»);
+	«ENDIF» «IF attributes.a_list.exists(e|e.name=="style"&&e.value.contains("dotted")&&e.value.contains("dashed"))» n«node_id.name»«EXPAND edge_target FOREACH edgeRHS»
+		«REM» Both DASHED and DOTTED «ENDREM».setLineStyle(4); //TODO: ZestStyles.CONNECTIONS_DASH_DOT doesn't work for me, investigate, is this a bug?
+	«ELSEIF attributes.a_list.exists(e|e.name=="style"&&e.value.contains("dashed"))» n«node_id.name»«EXPAND edge_target FOREACH edgeRHS»
+		«REM» DASHED «ENDREM».setLineStyle(2); //TODO: ZestStyles.CONNECTIONS_DASH doesn't work for me, investigate, is this a bug?
+	«ELSEIF attributes.a_list.exists(e|e.name=="style"&&e.value.contains("dotted"))» n«node_id.name»«EXPAND edge_target FOREACH edgeRHS»
+		«REM» DOTTED «ENDREM».setLineStyle(3); //TODO: ZestStyles.CONNECTIONS_DOT doesn't work for me, investigate, is this a bug?
 	«ENDIF»
 «ENDDEFINE»
 «DEFINE edge_target FOR edgeRHS»«ENDDEFINE»

@@ -44,6 +44,15 @@ public final class DotImportTests {
     public void labeledGraph() {
         importFrom(new File("resources/labeled_graph.dot"));
     }
+    
+    /**
+     * Test execution of File-based DOT-to-Zest transformations for a 
+     * graph using style attributes for edges.
+     */
+    @Test
+    public void styledGraph() {
+        importFrom(new File("resources/styled_graph.dot"));
+    }
 
     private void importFrom(final File file) {
         Assert.assertTrue("DOT input file must exist", file.exists());
