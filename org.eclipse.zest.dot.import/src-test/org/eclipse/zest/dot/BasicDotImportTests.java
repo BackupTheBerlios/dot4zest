@@ -18,6 +18,16 @@ import org.junit.Test;
  * @author Fabian Steeg (fsteeg)
  */
 public final class BasicDotImportTests {
+
+    /**
+     * Sample graph summarizing all that is currently supported in the DOT
+     * input.
+     */
+    @Test
+    public void sampleGraph() {
+        importFrom(new File("src-test/sample_input.dot"));
+    }
+
     /**
      * Test execution of File-based DOT-to-Zest transformations for a simple
      * directed graph.
@@ -44,16 +54,16 @@ public final class BasicDotImportTests {
     public void labeledGraph() {
         importFrom(new File("resources/labeled_graph.dot"));
     }
-    
+
     /**
-     * Test execution of File-based DOT-to-Zest transformations for a 
-     * graph using style attributes for edges.
+     * Test execution of File-based DOT-to-Zest transformations for a graph
+     * using style attributes for edges.
      */
     @Test
     public void styledGraph() {
         importFrom(new File("resources/styled_graph.dot"));
     }
-    
+
     static void importFrom(final File file) {
         Assert.assertTrue("DOT input file must exist", file.exists());
         File zest = DotImport.of(file);

@@ -1,16 +1,11 @@
 digraph StyledGraph{
-	/* Nodes can have custom labels: */
-	1[label="one"]
-	2[label="two"]
-	/* If they don't, the ID is the label: */
-	3; 4; 5
-	/* Edges can have labels and styles: */
-	1->2[label="+1" style=dashed]
-	2->3[label="+2" style=dotted]
-	/* This is not supported by Graphviz,
-	   (and causes the line to be solid),
-	   but Zest supports dash-dot style,
-	   so we map to that using both: */
+	1; 2; 3; 4; 5
+	/* Edges can have drawing styles: */
+	1->2[style=dashed]
+	2->3[style=dotted]
+	/* Zest supports dash-dot style, so we map to 
+	   that using both (this is not supported by 
+	   Graphviz, which renders the line solid). */
 	3->4[style="dotted dashed"]
 	3->5
 }
