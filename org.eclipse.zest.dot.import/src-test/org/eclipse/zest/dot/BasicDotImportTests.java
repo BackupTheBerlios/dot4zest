@@ -17,7 +17,7 @@ import org.junit.Test;
  * Tests for the {@link DotImport} class.
  * @author Fabian Steeg (fsteeg)
  */
-public final class DotImportTests {
+public final class BasicDotImportTests {
     /**
      * Test execution of File-based DOT-to-Zest transformations for a simple
      * directed graph.
@@ -53,8 +53,8 @@ public final class DotImportTests {
     public void styledGraph() {
         importFrom(new File("resources/styled_graph.dot"));
     }
-
-    private void importFrom(final File file) {
+    
+    static void importFrom(final File file) {
         Assert.assertTrue("DOT input file must exist", file.exists());
         File zest = DotImport.of(file);
         Assert.assertNotNull("Resulting file must not be null", zest);

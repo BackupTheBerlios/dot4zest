@@ -17,6 +17,7 @@
 «REM» The main file putting it all together «ENDREM»
 «DEFINE dotFile FOR graph»
 	«FILE name.toFirstUpper() + ".java"-»
+	package org.eclipse.zest.dot;
 	import org.eclipse.swt.SWT;
 	import org.eclipse.swt.layout.FillLayout;
 	import org.eclipse.swt.widgets.Composite;
@@ -27,17 +28,17 @@
 	import org.eclipse.zest.core.widgets.GraphNode;
 	import org.eclipse.zest.core.widgets.ZestStyles;
 	import org.eclipse.zest.layouts.LayoutStyles;
-	import org.eclipse.zest.layouts.algorithms.TreeLayoutAlgorithm;
+	import org.eclipse.zest.layouts.algorithms.*;
 	/** Zest graph generated from Graphviz DOT file '«filename()»'. */
 	public class «name.toFirstUpper()» extends Graph {
 	    public «name.toFirstUpper()» (Composite parent, int style) {
 	        super(parent, style);
 	        «IF type == graphtype::digraph» setConnectionStyle(ZestStyles.CONNECTIONS_DIRECTED); «ENDIF»
-	        
-	        «EXPAND stmt FOREACH stmts SEPARATOR ""»
+	        «IF !stmts.exists(e|e.metaType.name.contains("attribute")&&e.toString().contains("layout"))»
 	        setLayoutAlgorithm(new TreeLayoutAlgorithm(
-	                LayoutStyles.NO_LAYOUT_NODE_RESIZING), true);
-	        /* TODO: template support for layout */
+            	LayoutStyles.NO_LAYOUT_NODE_RESIZING), true);
+	        «ENDIF»
+	        «EXPAND stmt FOREACH stmts SEPARATOR ""»
 	    }
 	    public String toString() { 
 	        return super.toString(); // TODO: new GraphTemplate().generate(this);
@@ -59,6 +60,12 @@
 «ENDDEFINE»
 «REM» Expansion of the different DOT statement types: «ENDREM»
 «DEFINE stmt FOR stmt»«ENDDEFINE»
+«DEFINE stmt FOR attribute»
+	 «IF name=="layout"»
+		setLayoutAlgorithm(new 
+		«value.toFirstUpper()»LayoutAlgorithm(LayoutStyles.NO_LAYOUT_NODE_RESIZING), true);
+    «ENDIF»
+«ENDDEFINE»
 «REM» 1. Expansion of node declarations «ENDREM»
 «DEFINE stmt FOR node_stmt» GraphNode n«name» = new GraphNode(this, SWT.NONE, 
 	«IF attributes.a_list.exists(e|e.name=="label")» «attributes.a_list.select(e|e.name=="label").value.get(0)» 

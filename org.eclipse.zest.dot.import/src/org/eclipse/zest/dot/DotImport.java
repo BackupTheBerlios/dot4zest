@@ -24,7 +24,7 @@ import org.openarchitectureware.workflow.monitor.ProgressMonitor;
  * @author Fabian Steeg (fsteeg)
  */
 public final class DotImport {
-    private static final File OUTPUT_FOLDER = new File("src-gen");
+    private static final File OUTPUT_FOLDER = new File("src-gen/org/eclipse/zest/dot");
     private static final URL WORKFLOW = DotImport.class
             .getResource("Generator.oaw");
 

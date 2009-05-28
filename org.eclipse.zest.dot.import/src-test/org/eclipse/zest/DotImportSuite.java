@@ -8,7 +8,8 @@
  *******************************************************************************/
 package org.eclipse.zest;
 
-import org.eclipse.zest.dot.DotImportTests;
+import org.eclipse.zest.dot.BasicDotImportTests;
+import org.eclipse.zest.dot.LayoutDotImportTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -17,5 +18,5 @@ import org.junit.runners.Suite;
  * @author Fabian Steeg (fsteeg)
  */
 @RunWith( Suite.class )
-@Suite.SuiteClasses( { DotImportTests.class } )
+@Suite.SuiteClasses( { BasicDotImportTests.class, LayoutDotImportTests.class } )
 public class DotImportSuite {}
