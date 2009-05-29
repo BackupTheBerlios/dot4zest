@@ -71,7 +71,7 @@ public final class BasicDotImportTests {
     static void importFrom(final File dotFile) {
         Assert.assertTrue("DOT input file must exist", dotFile.exists());
         DotImport.importDotFile(dotFile);
-        File zest = findResultFile(dotFile, DotImport.OUTPUT_FOLDER);
+        File zest = findResultFile(dotFile, DotImport.DEFAULT_OUTPUT_FOLDER);
         Assert.assertNotNull("Resulting file must not be null", zest);
         Assert.assertTrue("Resulting file must exist", zest.exists());
         /*
@@ -126,5 +126,31 @@ public final class BasicDotImportTests {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static void wipeDefaultOutput() {
+        File defaultOutputFolder = DotImport.DEFAULT_OUTPUT_FOLDER;
+        String[] files = defaultOutputFolder.list();
+        int deleted = 0;
+        for (String file : files) {
+            File deletionCandidate = new File(defaultOutputFolder, file);
+            /*
+             * Relying on hidden is not safe on all platforms, so we double
+             * check so that no .cvsignore files etc. are deleted:
+             */
+            if (!deletionCandidate.isHidden()
+                    && !deletionCandidate.getName().startsWith(".")) {
+                boolean delete = deletionCandidate.delete();
+                if (delete) {
+                    deleted++;
+                }
+            }
+        }
+        Assert.assertTrue(
+                "Default output directory should be empty before tests run",
+                /* Besides the .cvsignore file, the folder should be empty: */
+                DotImport.DEFAULT_OUTPUT_FOLDER.list().length == 1);
+        System.out.println(String.format("Deleted %s files in %s", deleted,
+                defaultOutputFolder));
     }
 }

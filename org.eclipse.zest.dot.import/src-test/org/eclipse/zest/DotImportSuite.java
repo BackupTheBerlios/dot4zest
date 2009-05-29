@@ -10,6 +10,7 @@ package org.eclipse.zest;
 
 import org.eclipse.zest.dot.BasicDotImportTests;
 import org.eclipse.zest.dot.LayoutDotImportTests;
+import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -19,4 +20,10 @@ import org.junit.runners.Suite;
  */
 @RunWith( Suite.class )
 @Suite.SuiteClasses( { BasicDotImportTests.class, LayoutDotImportTests.class } )
-public class DotImportSuite {}
+public class DotImportSuite {
+    
+    @BeforeClass
+    public static void wipe(){
+        BasicDotImportTests.wipeDefaultOutput();
+    }
+}

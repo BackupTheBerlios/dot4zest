@@ -10,11 +10,15 @@
 package org.eclipse.zest.dot;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.openarchitectureware.workflow.WorkflowRunner;
 import org.openarchitectureware.workflow.monitor.NullProgressMonitor;
 import org.openarchitectureware.workflow.monitor.ProgressMonitor;
@@ -24,7 +28,7 @@ import org.openarchitectureware.workflow.monitor.ProgressMonitor;
  * @author Fabian Steeg (fsteeg)
  */
 public final class DotImport {
-    static final File OUTPUT_FOLDER = new File("src-gen/org/eclipse/zest/dot");
+    static final File DEFAULT_OUTPUT_FOLDER = new File("src-gen/org/eclipse/zest/dot");
     private static final URL WORKFLOW = DotImport.class
             .getResource("Generator.oaw");
 
@@ -35,7 +39,7 @@ public final class DotImport {
      * @return The generated file, placed in the default output folder
      */
     public static void importDotFile(final File file) {
-        importDotFile(file, OUTPUT_FOLDER);
+        importDotFile(file, DEFAULT_OUTPUT_FOLDER);
     }
 
     /**
@@ -46,11 +50,12 @@ public final class DotImport {
      */
     public static void importDotFile(final File dotFile,
             final File targetDirectory) {
+
         String dotLocation = dotFile.getAbsolutePath();
         File oawFile = loadWorkflow();
         String oawLocation = oawFile.getAbsolutePath();
-        Map<String, String> properties = setupProps(dotLocation,
-                targetDirectory);
+        Map<String, String> properties = setupProps(dotLocation, new Path(
+                targetDirectory.getAbsolutePath()));
         WorkflowRunner workflowRunner = new WorkflowRunner();
         ProgressMonitor monitor = new NullProgressMonitor();
         workflowRunner.run(oawLocation, monitor, properties,
@@ -77,18 +82,29 @@ public final class DotImport {
     }
 
     private static Map<String, String> setupProps(final String dotLocation,
-            final File targetDirectory) {
+            final IPath targetDirectory) {
         Map<String, String> properties = new HashMap<String, String>();
         properties.put(Slot.MODEL_FILE.v, dotLocation);
-        properties.put(Slot.TARGET_DIR.v, targetDirectory.getAbsolutePath());
+        properties.put(Slot.TARGET_DIR.v, targetDirectory.toFile()
+                .getAbsolutePath());
         return properties;
     }
 
     private static File loadWorkflow() {
         File oawFile = null;
         try {
-            oawFile = new File(WORKFLOW.toURI());
+            URL resolved = WORKFLOW;
+            /*
+             * If we don't check the protocol here, the FileLocator throws a
+             * NullPointerException if the WORKFLOW URL is a normal file URL.
+             */
+            if (!resolved.getProtocol().equals("file")) {
+                resolved = FileLocator.resolve(resolved);
+            }
+            oawFile = new File(resolved.toURI());
         } catch (URISyntaxException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return oawFile;
