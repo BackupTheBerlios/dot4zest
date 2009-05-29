@@ -24,33 +24,47 @@ import org.openarchitectureware.workflow.monitor.ProgressMonitor;
  * @author Fabian Steeg (fsteeg)
  */
 public final class DotImport {
-    private static final File OUTPUT_FOLDER = new File("src-gen/org/eclipse/zest/dot");
+    static final File OUTPUT_FOLDER = new File("src-gen/org/eclipse/zest/dot");
     private static final URL WORKFLOW = DotImport.class
             .getResource("Generator.oaw");
 
     private DotImport() { /* Enforce non-instantiability */}
 
     /**
+     * @param file The DOT file to import
+     * @return The generated file, placed in the default output folder
+     */
+    public static void importDotFile(final File file) {
+        importDotFile(file, OUTPUT_FOLDER);
+    }
+
+    /**
      * @param dotFile The DOT file to transform to a Zest representation
+     * @param targetDirectory The directory to create the generated file in
      * @return The Java file containing the definition of a Zest graph subclass
      *         generated from the given DOT file
      */
-    public static File of(final File dotFile) {
+    public static void importDotFile(final File dotFile,
+            final File targetDirectory) {
         String dotLocation = dotFile.getAbsolutePath();
         File oawFile = loadWorkflow();
         String oawLocation = oawFile.getAbsolutePath();
-        Map<String, String> properties = setupProps(dotLocation);
+        Map<String, String> properties = setupProps(dotLocation,
+                targetDirectory);
         WorkflowRunner workflowRunner = new WorkflowRunner();
         ProgressMonitor monitor = new NullProgressMonitor();
         workflowRunner.run(oawLocation, monitor, properties,
                 new HashMap<String, String>());
-        String[] list = OUTPUT_FOLDER.list();
-        if (list.length == 0) {
-            throw new IllegalStateException("No output written to "
-                    + OUTPUT_FOLDER);
-        }
-        // TODO find a clean way to get the result file location
-        return new File(OUTPUT_FOLDER, list[1]);
+        /*
+         * Returning the generated File here turns out to be trickier than
+         * expected. Ideally, I'd like to be able to say: give the generated
+         * file the same name as the input file, but with the .java ending
+         * instead. This would make testing very easy. I currently don't see an
+         * easy way to do that, as the name of the target file is defined in the
+         * template, not as part of the workflow. Also, it is not required to
+         * provide basic functionality (as the generated files are in the
+         * specified target directory), so for now we return nothing here.
+         */
     }
 
     private enum Slot {
@@ -62,10 +76,11 @@ public final class DotImport {
         }
     }
 
-    private static Map<String, String> setupProps(final String dotLocation) {
+    private static Map<String, String> setupProps(final String dotLocation,
+            final File targetDirectory) {
         Map<String, String> properties = new HashMap<String, String>();
         properties.put(Slot.MODEL_FILE.v, dotLocation);
-        properties.put(Slot.TARGET_DIR.v, OUTPUT_FOLDER.getAbsolutePath());
+        properties.put(Slot.TARGET_DIR.v, targetDirectory.getAbsolutePath());
         return properties;
     }
 
