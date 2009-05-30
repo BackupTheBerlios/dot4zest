@@ -35,12 +35,11 @@
 	        super(parent, style);
 	        String nodeLabel = null;
 	    	String edgeLabel = null;
-	    	int edgeStyle = 1; // ZestStyles.CONNECTIONS_SOLID doesn't work for me, investigate, is this a bug?
+	    	int edgeStyle = 1; /* ZestStyles.CONNECTIONS_SOLID doesn't work for me, investigate, is this a bug? */
 	        «IF type == graphtype::digraph» setConnectionStyle(ZestStyles.CONNECTIONS_DIRECTED); «ENDIF»
 	        «IF !stmts.exists(e|e.metaType.name.contains("attribute")&&e.toString().contains("layout"))»
 	        setLayoutAlgorithm(new TreeLayoutAlgorithm(
-            	LayoutStyles.NO_LAYOUT_NODE_RESIZING), true);
-	        «ENDIF»
+            	LayoutStyles.NO_LAYOUT_NODE_RESIZING), true); «ENDIF»
 	        «EXPAND stmt FOREACH stmts SEPARATOR ""»
 	    }
 	    private String tryGlobal(final String global, final String name) {
@@ -69,29 +68,24 @@
 «DEFINE stmt FOR attribute»
 	 «IF name=="layout"»
 		setLayoutAlgorithm(new 
-		«value.toFirstUpper()»LayoutAlgorithm(LayoutStyles.NO_LAYOUT_NODE_RESIZING), true);
-    «ENDIF»
+		«value.toFirstUpper()»LayoutAlgorithm(LayoutStyles.NO_LAYOUT_NODE_RESIZING), true); «ENDIF»
 «ENDDEFINE»
 «DEFINE stmt FOR attr_stmt»
-	 «IF type==dot::attributetype::node»
-		nodeLabel = «attributes.a_list.select(e|e.name=="label").get(0).value»;
+	 «IF type==dot::attributetype::node && attributes.a_list.exists(e|e.name=="label")»
+			nodeLabel = «attributes.a_list.select(e|e.name=="label").get(0).value»;
 	«ELSEIF type==dot::attributetype::edge»
-		edgeLabel = «attributes.a_list.select(e|e.name=="label").get(0).value»;
-		«IF attributes.a_list.exists(e|e.name=="style")» edgeStyle = 
-			«IF attributes.a_list.exists(e|e.name=="style"&&e.value.contains("dotted")&&e.value.contains("dashed"))» 4; //TODO: ZestStyles.CONNECTIONS_DASH_DOT doesn't work for me, investigate, is this a bug?
-			«ELSEIF attributes.a_list.exists(e|e.name=="style"&&e.value.contains("dashed"))» 2; //TODO: ZestStyles.CONNECTIONS_DASH doesn't work for me, investigate, is this a bug?
-			«ELSEIF attributes.a_list.exists(e|e.name=="style"&&e.value.contains("dotted"))» 3; //TODO: ZestStyles.CONNECTIONS_DOT doesn't work for me, investigate, is this a bug?
-			«ENDIF»
-		«ENDIF»
-    «ENDIF»
-    
+		«IF attributes.a_list.exists(e|e.name=="label")»
+			edgeLabel = «attributes.a_list.select(e|e.name=="label").get(0).value»; «ENDIF»
+		«IF attributes.a_list.exists(e|e.name=="style")»
+			edgeStyle = «EXPAND global_edge_attribute FOR attributes.a_list.select(e|e.name=="style").get(0)»; «ENDIF»
+	«ENDIF»
 «ENDDEFINE»
-«REM» 1. Expansion of node declarations «ENDREM»
+«REM» Expansion of node declarations «ENDREM»
 «DEFINE stmt FOR node_stmt» GraphNode n«name» = new GraphNode(this, SWT.NONE, 
 	«IF attributes.a_list.exists(e|e.name=="label")» «attributes.a_list.select(e|e.name=="label").value.get(0)» 
 	«ELSE»tryGlobal(nodeLabel, "«name»")«ENDIF»); 
 «ENDDEFINE»
-«REM» 2. Expansion of edges «ENDREM»
+«REM» Expansion of edges «ENDREM»
 «DEFINE stmt FOR edge_stmt_node» 
 	/* Connection from n«node_id.name» to «EXPAND edge_target FOREACH edgeRHS»: */
 	GraphConnection n«node_id.name»«EXPAND edge_target FOREACH edgeRHS» 
@@ -99,16 +93,18 @@
 		«EXPAND edge_target FOREACH edgeRHS» );
 	«IF attributes.a_list.exists(e|e.name=="label")» n«node_id.name»«EXPAND edge_target FOREACH edgeRHS»
 		.setText(«attributes.a_list.select(e|e.name=="label").value.get(0)»);
-		«ELSE» n«node_id.name»«EXPAND edge_target FOREACH edgeRHS».setText(tryGlobal(edgeLabel, ""));
-	«ENDIF» «REM» Global style: «ENDREM»n«node_id.name»«EXPAND edge_target FOREACH edgeRHS».setLineStyle(edgeStyle);
-	«IF attributes.a_list.exists(e|e.name=="style"&&e.value.contains("dotted")&&e.value.contains("dashed"))» n«node_id.name»«EXPAND edge_target FOREACH edgeRHS»
-		«REM» Both DASHED and DOTTED «ENDREM».setLineStyle(4); //TODO: ZestStyles.CONNECTIONS_DASH_DOT doesn't work for me, investigate, is this a bug?
-	«ELSEIF attributes.a_list.exists(e|e.name=="style"&&e.value.contains("dashed"))» n«node_id.name»«EXPAND edge_target FOREACH edgeRHS»
-		«REM» DASHED «ENDREM».setLineStyle(2); //TODO: ZestStyles.CONNECTIONS_DASH doesn't work for me, investigate, is this a bug?
-	«ELSEIF attributes.a_list.exists(e|e.name=="style"&&e.value.contains("dotted"))» n«node_id.name»«EXPAND edge_target FOREACH edgeRHS»
-		«REM» DOTTED «ENDREM».setLineStyle(3); //TODO: ZestStyles.CONNECTIONS_DOT doesn't work for me, investigate, is this a bug?
-	«ENDIF»
+		«ELSE» n«node_id.name»«EXPAND edge_target FOREACH edgeRHS».setText(tryGlobal(edgeLabel, "")); «ENDIF» 
+	n«node_id.name»«EXPAND edge_target FOREACH edgeRHS».setLineStyle(edgeStyle);
+	«IF attributes.a_list.exists(e|e.name=="style")»
+		n«node_id.name»«EXPAND edge_target FOREACH edgeRHS».setLineStyle(
+			«EXPAND global_edge_attribute FOR attributes.a_list.select(e|e.name=="style").get(0)»); «ENDIF»
 «ENDDEFINE»
 «DEFINE edge_target FOR edgeRHS»«ENDDEFINE»
 «DEFINE edge_target FOR edgeRHS_node»n«node.name»«ENDDEFINE»
+«REM» Expansion of a style-attribute to a Zest line style «ENDREM»
+«DEFINE global_edge_attribute FOR a_list»
+	«IF value.contains("dotted")&&value.contains("dashed")» 4 /* TODO: ZestStyles.CONNECTIONS_DASH_DOT doesn't work for me, investigate, is this a bug? */
+	«ELSEIF value.contains("dashed")» 2 /* TODO: ZestStyles.CONNECTIONS_DASH doesn't work for me, investigate, is this a bug? */
+	«ELSEIF value.contains("dotted")» 3 /* TODO: ZestStyles.CONNECTIONS_DOT doesn't work for me, investigate, is this a bug? */ «ENDIF»
+«ENDDEFINE»
 «REM» TODO: support for multiple target (1->2->3) and using undeclared nodes in edges «ENDREM»
