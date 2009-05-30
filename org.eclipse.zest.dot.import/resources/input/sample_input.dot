@@ -12,6 +12,12 @@ digraph SampleGraph {
 	   When defining the graph itself, specify 'digraph' (for directed connections)
 	   or 'graph' (for undirected connections) and a name, which will be the name 
    	   of the generated Zest graph. */
+   	/*-------------------------------------------------------------------------*/
+	/* Specify global attributes for nodes (label supported) and edges (label
+	   and style supported), override these in individual nodes or edges (see
+	   below): */
+   	node[label="node"]
+   	edge[label="edge", style=dashed]
   	/*-------------------------------------------------------------------------*/
 	/* Specify the Zest layout algorithm to use, e.g. tree, spring, radial, 
 	   grid, or any x to use the xLayoutAlgorithm class (this is ignored by 
@@ -21,7 +27,7 @@ digraph SampleGraph {
 	/* Nodes can have specified labels: */
 	1[label="one"]
 	2[label="two"]
-	/* If they don't, the ID is the label: */
+	/* If they don't, the ID is the label (unless a global label is defined): */
 	3; 4; 5
 	/*-------------------------------------------------------------------------*/
 	/* Edges can have labels and styles: */

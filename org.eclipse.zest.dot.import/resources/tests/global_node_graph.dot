@@ -1,0 +1,12 @@
+digraph GlobalNodeGraph{
+	/* Global attributes can be defined for nodes, 
+	   which affect all nodes used (currently only 
+	   labels are supported): */
+	node[label="Node"]
+	1; 2
+	/* The global label can be overridden in a 
+	   particular node: */
+	3[label="Leaf"]
+	1->2
+	2->3
+}

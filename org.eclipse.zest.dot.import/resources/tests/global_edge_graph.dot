@@ -1,0 +1,12 @@
+digraph GlobalEdgeGraph{
+	/* Global attributes can be defined for edges, 
+	   which affect all edges used (currently labels 
+	   and styles are supported): */
+	edge[label="Edge" style=dashed]
+	1; 2; 3; 4
+	1->2
+	2->3
+	/* As for nodes, the global attributes can be 
+	   overridden in a particular edge: */
+	2->4[label="Dotted" style=dotted]
+}

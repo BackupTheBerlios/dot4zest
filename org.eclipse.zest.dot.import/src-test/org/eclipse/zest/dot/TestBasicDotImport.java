@@ -63,6 +63,24 @@ public final class TestBasicDotImport {
     public void styledGraph() {
         importFrom(new File(RESOURCES_TESTS + "styled_graph.dot"));
     }
+    
+    /**
+     * Test execution of File-based DOT-to-Zest transformations for a graph
+     * using global node attributes.
+     */
+    @Test
+    public void globalNodeGraph() {
+        importFrom(new File(RESOURCES_TESTS + "global_node_graph.dot"));
+    }
 
-   
+    /**
+     * Test execution of File-based DOT-to-Zest transformations for a graph
+     * using global edge attributes.
+     */
+    @Test
+    public void globalEdgeGraph() {
+        importFrom(new File(RESOURCES_TESTS + "global_edge_graph.dot"));
+    }
+    
+    
 }
