@@ -8,8 +8,10 @@
  *******************************************************************************/
 package org.eclipse.zest;
 
-import org.eclipse.zest.dot.BasicDotImportTests;
-import org.eclipse.zest.dot.LayoutDotImportTests;
+import org.eclipse.zest.dot.DotImportTestUtils;
+import org.eclipse.zest.dot.TestBasicDotImport;
+import org.eclipse.zest.dot.TestBatchDotImport;
+import org.eclipse.zest.dot.TestLayoutDotImport;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -19,11 +21,12 @@ import org.junit.runners.Suite;
  * @author Fabian Steeg (fsteeg)
  */
 @RunWith( Suite.class )
-@Suite.SuiteClasses( { BasicDotImportTests.class, LayoutDotImportTests.class } )
-public class DotImportSuite {
-    
+@Suite.SuiteClasses( { TestBasicDotImport.class, TestLayoutDotImport.class,
+        TestBatchDotImport.class } )
+public final class DotImportSuite {
+    private DotImportSuite() { /* Enforce non-instantiability */}
     @BeforeClass
-    public static void wipe(){
-        BasicDotImportTests.wipeDefaultOutput();
+    public static void wipe() {
+        DotImportTestUtils.wipeDefaultOutput();
     }
 }

@@ -15,61 +15,19 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.junit.Assert;
-import org.junit.Test;
 
 /**
- * Tests for the {@link DotImport} class.
+ * Util class for the tests of the {@link DotImport} class.
  * @author Fabian Steeg (fsteeg)
  */
-public final class BasicDotImportTests {
-
-    /**
-     * Sample graph summarizing all that is currently supported in the DOT
-     * input.
-     */
-    @Test
-    public void sampleGraph() {
-        importFrom(new File("src-test/sample_input.dot"));
-    }
-
-    /**
-     * Test execution of File-based DOT-to-Zest transformations for a simple
-     * directed graph.
-     */
-    @Test
-    public void directedGraph() {
-        importFrom(new File("resources/simple_digraph.dot"));
-    }
-
-    /**
-     * Test execution of File-based DOT-to-Zest transformations for a simple
-     * undirected graph.
-     */
-    @Test
-    public void undirectedGraph() {
-        importFrom(new File("resources/simple_graph.dot"));
-    }
-
-    /**
-     * Test execution of File-based DOT-to-Zest transformations for a labeled
-     * graph.
-     */
-    @Test
-    public void labeledGraph() {
-        importFrom(new File("resources/labeled_graph.dot"));
-    }
-
-    /**
-     * Test execution of File-based DOT-to-Zest transformations for a graph
-     * using style attributes for edges.
-     */
-    @Test
-    public void styledGraph() {
-        importFrom(new File("resources/styled_graph.dot"));
-    }
+public final class DotImportTestUtils {
+    private DotImportTestUtils() { /* Enforce non-instantiability */}
+    static final String RESOURCES_INPUT = "resources/input/";
+    static final String RESOURCES_TESTS = "resources/tests/";
 
     static void importFrom(final File dotFile) {
-        Assert.assertTrue("DOT input file must exist", dotFile.exists());
+        Assert.assertTrue("DOT input file must exist: " + dotFile, dotFile
+                .exists());
         DotImport.importDotFile(dotFile);
         File zest = findResultFile(dotFile, DotImport.DEFAULT_OUTPUT_FOLDER);
         Assert.assertNotNull("Resulting file must not be null", zest);
@@ -146,11 +104,23 @@ public final class BasicDotImportTests {
                 }
             }
         }
-        Assert.assertTrue(
-                "Default output directory should be empty before tests run",
-                /* Besides the .cvsignore file, the folder should be empty: */
-                DotImport.DEFAULT_OUTPUT_FOLDER.list().length == 1);
+        int javaFiles = countJavaFiles(defaultOutputFolder);
+        Assert
+                .assertEquals(
+                        "Default output directory should contain no Java files before tests run;",
+                        0, javaFiles);
         System.out.println(String.format("Deleted %s files in %s", deleted,
                 defaultOutputFolder));
+    }
+
+    private static int countJavaFiles(final File folder) {
+        String[] list = folder.list();
+        int javaFiles = 0;
+        for (String name : list) {
+            if (name.endsWith(".java")) {
+                javaFiles++;
+            }
+        }
+        return javaFiles;
     }
 }

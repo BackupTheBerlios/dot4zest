@@ -8,8 +8,10 @@
  *******************************************************************************/
 package org.eclipse.zest.dot;
 
-import java.io.File;
+import static org.eclipse.zest.dot.DotImportTestUtils.RESOURCES_TESTS;
+import static org.eclipse.zest.dot.DotImportTestUtils.importFrom;
 
+import java.io.File;
 import org.junit.Test;
 
 /**
@@ -17,15 +19,14 @@ import org.junit.Test;
  * algorithms.
  * @author Fabian Steeg (fsteeg)
  */
-public final class LayoutDotImportTests {
+public final class TestLayoutDotImport {
     /**
      * Test execution of File-based DOT-to-Zest transformations for a graph
      * using the Zest {@link TreeLayoutAlgorithm}.
      */
     @Test
     public void treeLayout() {
-        BasicDotImportTests.importFrom(new File(
-                "resources/layout_tree_graph.dot"));
+        importFrom(new File(RESOURCES_TESTS + "layout_tree_graph.dot"));
     }
 
     /**
@@ -34,8 +35,7 @@ public final class LayoutDotImportTests {
      */
     @Test
     public void springLayout() {
-        BasicDotImportTests.importFrom(new File(
-                "resources/layout_spring_graph.dot"));
+        importFrom(new File(RESOURCES_TESTS + "layout_spring_graph.dot"));
     }
 
     /**
@@ -44,8 +44,7 @@ public final class LayoutDotImportTests {
      */
     @Test
     public void radialLayout() {
-        BasicDotImportTests.importFrom(new File(
-                "resources/layout_radial_graph.dot"));
+        importFrom(new File(RESOURCES_TESTS + "layout_radial_graph.dot"));
     }
 
     /**
@@ -54,8 +53,7 @@ public final class LayoutDotImportTests {
      */
     @Test
     public void gridLayout() {
-        BasicDotImportTests.importFrom(new File(
-                "resources/layout_grid_graph.dot"));
+        importFrom(new File(RESOURCES_TESTS + "layout_grid_graph.dot"));
     }
 
     /**
@@ -64,8 +62,7 @@ public final class LayoutDotImportTests {
      */
     @Test
     public void customLayout() {
-        BasicDotImportTests.importFrom(new File(
-                "resources/layout_custom_graph.dot"));
+        importFrom(new File(RESOURCES_TESTS + "layout_custom_graph.dot"));
     }
 
 }
