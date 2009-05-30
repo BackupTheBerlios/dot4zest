@@ -4,15 +4,9 @@ Bundle-Name: org.eclipse.zest.dot.import
 Bundle-SymbolicName: org.eclipse.zest.dot.import;singleton:=true
 Bundle-Version: 0.0.0
 Require-Bundle: org.openarchitectureware.graphviz;bundle-version="4.3.1",
- org.openarchitectureware.xtext.core,
- org.antlr,
- org.openarchitectureware.xtext.core.base,
- org.openarchitectureware.xtext.editor.base,
- org.openarchitectureware.xtext.generator,
- org.openarchitectureware.dependencies,
  org.junit4,
  org.eclipse.zest.core;bundle-version="1.0.0",
  org.eclipse.zest.layouts;bundle-version="1.0.0",
- org.eclipse.zest.source;bundle-version="1.0.0"
+ org.eclipse.zest.source;bundle-version="1.0.0";resolution:=optional
 Export-Package: org.eclipse.zest.dot
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
