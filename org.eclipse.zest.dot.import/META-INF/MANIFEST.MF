@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: org.eclipse.zest.dot.import
 Bundle-SymbolicName: org.eclipse.zest.dot.import;singleton:=true
-Bundle-Version: 0.0.0
+Bundle-Version: 0.1.0
 Require-Bundle: org.openarchitectureware.graphviz;bundle-version="4.3.1",
  org.junit4,
  org.eclipse.zest.core;bundle-version="1.0.0",
