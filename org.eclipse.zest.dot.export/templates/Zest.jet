@@ -8,14 +8,16 @@
  * Contributors: Fabian Steeg - initial API and implementation; see bug 277380
  *******************************************************************************/%>
 <% Graph graph = (Graph) argument; %>
-
-digraph <%=graph.getClass().getSimpleName()%>{
+<% boolean digraph = graph.getConnectionStyle()==ZestStyles.CONNECTIONS_DIRECTED;%>
+<%= digraph ? "digraph" : "graph" %> <%=graph.getClass().getSimpleName()%>{
 	/* Global settings */
 	label="<%=graph%>"
 	/* Nodes */
-	<% for(Object nodeObject : graph.getNodes()){ GraphNode node = (GraphNode) nodeObject; %> <%=node.getText()%>;
+	<% for(Object nodeObject : graph.getNodes()){ GraphNode node = (GraphNode) nodeObject; %> 
+		<%=node.hashCode()%>[label="<%=node.getText()%>"];
 	<% }%>
 	/* Edges */
-	<% for(Object edgeObject : graph.getConnections()){ GraphConnection edge = (GraphConnection) edgeObject; %> <%=edge.getSource().getText()%> -> <%=edge.getDestination().getText()%>;
+	<% for(Object edgeObject : graph.getConnections()){ GraphConnection edge = (GraphConnection) edgeObject; %> 
+		<%=edge.getSource().hashCode()%> <%= digraph ? "->" : "--" %> <%=edge.getDestination().hashCode()%>;
 	<% }%>
 }

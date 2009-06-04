@@ -14,16 +14,19 @@ public class DotTemplate
   }
 
   public final String NL = nl == null ? (System.getProperties().getProperty("line.separator")) : nl;
-  protected final String TEXT_1 = NL + "digraph ";
-  protected final String TEXT_2 = "{" + NL + "\t/* Global settings */" + NL + "\tlabel=\"";
-  protected final String TEXT_3 = "\"" + NL + "\t/* Nodes */" + NL + "\t";
-  protected final String TEXT_4 = " ";
-  protected final String TEXT_5 = ";" + NL + "\t";
-  protected final String TEXT_6 = NL + "\t/* Edges */" + NL + "\t";
-  protected final String TEXT_7 = " ";
-  protected final String TEXT_8 = " -> ";
-  protected final String TEXT_9 = ";" + NL + "\t";
-  protected final String TEXT_10 = NL + "}";
+  protected final String TEXT_1 = "";
+  protected final String TEXT_2 = " ";
+  protected final String TEXT_3 = "{" + NL + "\t/* Global settings */" + NL + "\tlabel=\"";
+  protected final String TEXT_4 = "\"" + NL + "\t/* Nodes */" + NL + "\t";
+  protected final String TEXT_5 = " " + NL + "\t\t";
+  protected final String TEXT_6 = "[label=\"";
+  protected final String TEXT_7 = "\"];" + NL + "\t";
+  protected final String TEXT_8 = NL + "\t/* Edges */" + NL + "\t";
+  protected final String TEXT_9 = " " + NL + "\t\t";
+  protected final String TEXT_10 = " ";
+  protected final String TEXT_11 = " ";
+  protected final String TEXT_12 = ";" + NL + "\t";
+  protected final String TEXT_13 = NL + "}";
 
   public String generate(Object argument)
   {
@@ -37,25 +40,32 @@ public class DotTemplate
  * Contributors: Fabian Steeg - initial API and implementation; see bug 277380
  *******************************************************************************/
      Graph graph = (Graph) argument; 
+     boolean digraph = graph.getConnectionStyle()==ZestStyles.CONNECTIONS_DIRECTED;
     stringBuffer.append(TEXT_1);
-    stringBuffer.append(graph.getClass().getSimpleName());
+    stringBuffer.append( digraph ? "digraph" : "graph" );
     stringBuffer.append(TEXT_2);
-    stringBuffer.append(graph);
+    stringBuffer.append(graph.getClass().getSimpleName());
     stringBuffer.append(TEXT_3);
-     for(Object nodeObject : graph.getNodes()){ GraphNode node = (GraphNode) nodeObject; 
+    stringBuffer.append(graph);
     stringBuffer.append(TEXT_4);
-    stringBuffer.append(node.getText());
+     for(Object nodeObject : graph.getNodes()){ GraphNode node = (GraphNode) nodeObject; 
     stringBuffer.append(TEXT_5);
-     }
+    stringBuffer.append(node.hashCode());
     stringBuffer.append(TEXT_6);
-     for(Object edgeObject : graph.getConnections()){ GraphConnection edge = (GraphConnection) edgeObject; 
+    stringBuffer.append(node.getText());
     stringBuffer.append(TEXT_7);
-    stringBuffer.append(edge.getSource().getText());
-    stringBuffer.append(TEXT_8);
-    stringBuffer.append(edge.getDestination().getText());
-    stringBuffer.append(TEXT_9);
      }
+    stringBuffer.append(TEXT_8);
+     for(Object edgeObject : graph.getConnections()){ GraphConnection edge = (GraphConnection) edgeObject; 
+    stringBuffer.append(TEXT_9);
+    stringBuffer.append(edge.getSource().hashCode());
     stringBuffer.append(TEXT_10);
+    stringBuffer.append( digraph ? "->" : "--" );
+    stringBuffer.append(TEXT_11);
+    stringBuffer.append(edge.getDestination().hashCode());
+    stringBuffer.append(TEXT_12);
+     }
+    stringBuffer.append(TEXT_13);
     return stringBuffer.toString();
   }
 }
