@@ -16,17 +16,20 @@ public class DotTemplate
   public final String NL = nl == null ? (System.getProperties().getProperty("line.separator")) : nl;
   protected final String TEXT_1 = "";
   protected final String TEXT_2 = " ";
-  protected final String TEXT_3 = "{" + NL + "\t/* Global settings */" + NL + "\tlabel=\"";
-  protected final String TEXT_4 = "\"" + NL + "\t/* Nodes */" + NL + "\t";
-  protected final String TEXT_5 = " " + NL + "\t\t";
+  protected final String TEXT_3 = "{" + NL + "" + NL + "\t/* Global settings */" + NL + "\tnode[shape=box] //more like the Zest default node look" + NL + "\tlabel=\"";
+  protected final String TEXT_4 = "\"" + NL + "\t" + NL + "\t/* Nodes */" + NL + "\t";
+  protected final String TEXT_5 = " ";
   protected final String TEXT_6 = "[label=\"";
-  protected final String TEXT_7 = "\"];" + NL + "\t";
-  protected final String TEXT_8 = NL + "\t/* Edges */" + NL + "\t";
-  protected final String TEXT_9 = " " + NL + "\t\t";
+  protected final String TEXT_7 = "\"];";
+  protected final String TEXT_8 = NL + "\t" + NL + "\t/* Edges */" + NL + "\t";
+  protected final String TEXT_9 = " ";
   protected final String TEXT_10 = " ";
   protected final String TEXT_11 = " ";
-  protected final String TEXT_12 = ";" + NL + "\t";
-  protected final String TEXT_13 = NL + "}";
+  protected final String TEXT_12 = " ";
+  protected final String TEXT_13 = "[style=";
+  protected final String TEXT_14 = " label=\"";
+  protected final String TEXT_15 = "\"];" + NL + "\t";
+  protected final String TEXT_16 = NL + "}";
 
   public String generate(Object argument)
   {
@@ -58,14 +61,20 @@ public class DotTemplate
     stringBuffer.append(TEXT_8);
      for(Object edgeObject : graph.getConnections()){ GraphConnection edge = (GraphConnection) edgeObject; 
     stringBuffer.append(TEXT_9);
-    stringBuffer.append(edge.getSource().hashCode());
+    boolean dashed = edge.getLineStyle() == 2; boolean dotted = edge.getLineStyle() == 3;
     stringBuffer.append(TEXT_10);
-    stringBuffer.append( digraph ? "->" : "--" );
+    stringBuffer.append(edge.getSource().hashCode());
     stringBuffer.append(TEXT_11);
-    stringBuffer.append(edge.getDestination().hashCode());
+    stringBuffer.append( digraph ? "->" : "--" );
     stringBuffer.append(TEXT_12);
-     }
+    stringBuffer.append(edge.getDestination().hashCode());
     stringBuffer.append(TEXT_13);
+    stringBuffer.append(dashed?"dashed":dotted?"dotted":"solid");
+    stringBuffer.append(TEXT_14);
+    stringBuffer.append(edge.getText());
+    stringBuffer.append(TEXT_15);
+     }
+    stringBuffer.append(TEXT_16);
     return stringBuffer.toString();
   }
 }

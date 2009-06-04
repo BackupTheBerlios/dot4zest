@@ -19,8 +19,10 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.zest.core.widgets.Graph;
 import org.eclipse.zest.dot.DotTemplate;
+import org.eclipse.zest.dot.export.test_data.LabeledGraph;
 import org.eclipse.zest.dot.export.test_data.SimpleDigraph;
 import org.eclipse.zest.dot.export.test_data.SimpleGraph;
+import org.eclipse.zest.dot.export.test_data.StyledGraph;
 import org.junit.Test;
 
 /**
@@ -40,6 +42,16 @@ public class TestDotTemplate {
     @Test
     public void directedGraph() {
         testDotGeneration(new SimpleDigraph(shell, SWT.NONE));
+    }
+    
+    @Test
+    public void labeledGraph() {
+        testDotGeneration(new LabeledGraph(shell, SWT.NONE));
+    }
+    
+    @Test
+    public void styledGraph() {
+        testDotGeneration(new StyledGraph(shell, SWT.NONE));
     }
 
     private void testDotGeneration(final Graph graph) {
