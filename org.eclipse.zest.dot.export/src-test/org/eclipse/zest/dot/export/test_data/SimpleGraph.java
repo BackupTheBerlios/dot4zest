@@ -23,7 +23,7 @@ public class SimpleGraph extends Graph {
 		super(parent, style);
 		String nodeLabel = null;
 		String edgeLabel = null;
-		int edgeStyle = 1; /* ZestStyles.CONNECTIONS_SOLID doesn't work for me, investigate, is this a bug? */
+		int edgeStyle = SWT.LINE_SOLID;
 
 		setLayoutAlgorithm(new TreeLayoutAlgorithm(
 				LayoutStyles.NO_LAYOUT_NODE_RESIZING), true);

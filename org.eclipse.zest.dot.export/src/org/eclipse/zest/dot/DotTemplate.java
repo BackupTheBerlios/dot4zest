@@ -1,6 +1,7 @@
 package org.eclipse.zest.dot;
 
 import org.eclipse.zest.core.widgets.*;
+import org.eclipse.swt.SWT;
 
 public class DotTemplate
 {
@@ -61,7 +62,7 @@ public class DotTemplate
     stringBuffer.append(TEXT_8);
      for(Object edgeObject : graph.getConnections()){ GraphConnection edge = (GraphConnection) edgeObject; 
     stringBuffer.append(TEXT_9);
-    boolean dashed = edge.getLineStyle() == 2; boolean dotted = edge.getLineStyle() == 3;
+    boolean dashed = edge.getLineStyle() == SWT.LINE_DASH; boolean dotted = edge.getLineStyle() == SWT.LINE_DOT;
     stringBuffer.append(TEXT_10);
     stringBuffer.append(edge.getSource().hashCode());
     stringBuffer.append(TEXT_11);

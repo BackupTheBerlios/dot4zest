@@ -96,15 +96,12 @@
 		«ELSE» n«node_id.name»«EXPAND edge_target FOREACH edgeRHS».setText(tryGlobal(edgeLabel, "")); «ENDIF» 
 	n«node_id.name»«EXPAND edge_target FOREACH edgeRHS».setLineStyle(edgeStyle);
 	«IF attributes.a_list.exists(e|e.name=="style")»
-		n«node_id.name»«EXPAND edge_target FOREACH edgeRHS».setLineStyle(
-			«EXPAND global_edge_attribute FOR attributes.a_list.select(e|e.name=="style").get(0)»); «ENDIF»
+		n«node_id.name»«EXPAND edge_target FOREACH edgeRHS».setLineStyle(«EXPAND global_edge_attribute FOR attributes.a_list.select(e|e.name=="style").get(0)»); «ENDIF»
 «ENDDEFINE»
 «DEFINE edge_target FOR edgeRHS»«ENDDEFINE»
 «DEFINE edge_target FOR edgeRHS_node»n«node.name»«ENDDEFINE»
 «REM» Expansion of a style-attribute to a Zest line style «ENDREM»
-«DEFINE global_edge_attribute FOR a_list»
-	«IF value.contains("dotted")&&value.contains("dashed")» 4 /* TODO: ZestStyles.CONNECTIONS_DASH_DOT doesn't work for me, investigate, is this a bug? */
-	«ELSEIF value.contains("dashed")» 2 /* TODO: ZestStyles.CONNECTIONS_DASH doesn't work for me, investigate, is this a bug? */
-	«ELSEIF value.contains("dotted")» 3 /* TODO: ZestStyles.CONNECTIONS_DOT doesn't work for me, investigate, is this a bug? */ «ENDIF»
+«DEFINE global_edge_attribute FOR a_list» 
+	«IF value.contains("dotted")&&value.contains("dashed")» SWT.LINE_DASHDOT «ELSEIF value.contains("dashed")» SWT.LINE_DASH «ELSEIF value.contains("dotted")» SWT.LINE_DOT «ENDIF»
 «ENDDEFINE»
 «REM» TODO: support for multiple target (1->2->3) and using undeclared nodes in edges «ENDREM»

@@ -31,33 +31,19 @@ public class StyledGraph extends Graph {
 		GraphConnection n1n2 = new GraphConnection(this, SWT.NONE, n1, n2);
 		n1n2.setText(tryGlobal(edgeLabel, ""));
 		n1n2.setLineStyle(edgeStyle);
-
-		n1n2.setLineStyle(
-
-		2 /* TODO: ZestStyles.CONNECTIONS_DASH doesn't work for me, investigate, is this a bug? */
-
-		);
+		n1n2.setLineStyle(SWT.LINE_DASH);
 
 		/* Connection from n2 to n3: */
 		GraphConnection n2n3 = new GraphConnection(this, SWT.NONE, n2, n3);
 		n2n3.setText(tryGlobal(edgeLabel, ""));
 		n2n3.setLineStyle(edgeStyle);
-
-		n2n3.setLineStyle(
-
-		3 /* TODO: ZestStyles.CONNECTIONS_DOT doesn't work for me, investigate, is this a bug? */
-		);
+		n2n3.setLineStyle(SWT.LINE_DOT);
 
 		/* Connection from n3 to n4: */
 		GraphConnection n3n4 = new GraphConnection(this, SWT.NONE, n3, n4);
 		n3n4.setText(tryGlobal(edgeLabel, ""));
 		n3n4.setLineStyle(edgeStyle);
-
-		n3n4.setLineStyle(
-
-		4 /* TODO: ZestStyles.CONNECTIONS_DASH_DOT doesn't work for me, investigate, is this a bug? */
-
-		);
+		n3n4.setLineStyle(SWT.LINE_DASHDOT);
 
 		/* Connection from n3 to n5: */
 		GraphConnection n3n5 = new GraphConnection(this, SWT.NONE, n3, n5);

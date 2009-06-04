@@ -16,7 +16,7 @@ public class LabeledGraph extends Graph {
 		super(parent, style);
 		String nodeLabel = null;
 		String edgeLabel = null;
-		int edgeStyle = 1; /* ZestStyles.CONNECTIONS_SOLID doesn't work for me, investigate, is this a bug? */
+		int edgeStyle = SWT.LINE_SOLID;
 		setConnectionStyle(ZestStyles.CONNECTIONS_DIRECTED);
 
 		setLayoutAlgorithm(new TreeLayoutAlgorithm(
@@ -29,13 +29,11 @@ public class LabeledGraph extends Graph {
 		/* Connection from n1 to n2: */
 		GraphConnection n1n2 = new GraphConnection(this, SWT.NONE, n1, n2);
 		n1n2.setText("+1");
-
 		n1n2.setLineStyle(edgeStyle);
 
 		/* Connection from n1 to n3: */
 		GraphConnection n1n3 = new GraphConnection(this, SWT.NONE, n1, n3);
 		n1n3.setText("+2");
-
 		n1n3.setLineStyle(edgeStyle);
 
 		/* Connection from n3 to n4: */

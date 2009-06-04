@@ -24,7 +24,7 @@ public class SimpleDigraph extends Graph {
 		super(parent, style);
 		String nodeLabel = null;
 		String edgeLabel = null;
-		int edgeStyle = 1; /* ZestStyles.CONNECTIONS_SOLID doesn't work for me, investigate, is this a bug? */
+		int edgeStyle = SWT.LINE_SOLID;
 		setConnectionStyle(ZestStyles.CONNECTIONS_DIRECTED);
 
 		setLayoutAlgorithm(new TreeLayoutAlgorithm(
