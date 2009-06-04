@@ -15,7 +15,6 @@ import java.io.IOException;
 import junit.framework.Assert;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.zest.core.widgets.Graph;
 import org.eclipse.zest.dot.DotTemplate;
@@ -32,7 +31,7 @@ import org.junit.Test;
  */
 public class TestDotTemplate {
     private static final File OUTPUT = new File("src-gen");
-    private static Shell shell = new Shell(new Display());
+    private static Shell shell = new Shell();
 
     @Test
     public void simpleGraph() {
