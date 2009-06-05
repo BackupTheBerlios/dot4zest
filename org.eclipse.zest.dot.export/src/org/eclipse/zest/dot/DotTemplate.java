@@ -17,20 +17,19 @@ public class DotTemplate
   public final String NL = nl == null ? (System.getProperties().getProperty("line.separator")) : nl;
   protected final String TEXT_1 = "";
   protected final String TEXT_2 = " ";
-  protected final String TEXT_3 = "{" + NL + "" + NL + "\t/* Global settings */" + NL + "\tnode[shape=box] //more like the Zest default node look" + NL + "\tlabel=\"";
-  protected final String TEXT_4 = "\"" + NL + "\t" + NL + "\t/* Nodes */" + NL + "\t";
-  protected final String TEXT_5 = " " + NL + "\t";
-  protected final String TEXT_6 = "[label=\"";
-  protected final String TEXT_7 = "\"];";
-  protected final String TEXT_8 = NL + "\t" + NL + "\t/* Edges */" + NL + "\t";
+  protected final String TEXT_3 = "{" + NL + "" + NL + "\t/* Global settings */" + NL + "\tnode[shape=box] //more like the Zest default node look" + NL + "\t" + NL + "\t/* Nodes */" + NL + "\t";
+  protected final String TEXT_4 = " " + NL + "\t";
+  protected final String TEXT_5 = "[label=\"";
+  protected final String TEXT_6 = "\"];";
+  protected final String TEXT_7 = NL + "\t" + NL + "\t/* Edges */" + NL + "\t";
+  protected final String TEXT_8 = " " + NL + "\t";
   protected final String TEXT_9 = " " + NL + "\t";
-  protected final String TEXT_10 = " " + NL + "\t";
+  protected final String TEXT_10 = " ";
   protected final String TEXT_11 = " ";
-  protected final String TEXT_12 = " ";
-  protected final String TEXT_13 = "[style=";
-  protected final String TEXT_14 = " label=\"";
-  protected final String TEXT_15 = "\"];" + NL + "\t";
-  protected final String TEXT_16 = NL + "}";
+  protected final String TEXT_12 = "[style=";
+  protected final String TEXT_13 = " label=\"";
+  protected final String TEXT_14 = "\"];" + NL + "\t";
+  protected final String TEXT_15 = NL + "}";
 
   public String generate(Object argument)
   {
@@ -50,33 +49,31 @@ public class DotTemplate
     stringBuffer.append(TEXT_2);
     stringBuffer.append(graph.getClass().getSimpleName());
     stringBuffer.append(TEXT_3);
-    stringBuffer.append(graph);
-    stringBuffer.append(TEXT_4);
      for(Object nodeObject : graph.getNodes()){ GraphNode node = (GraphNode) nodeObject; 
-    stringBuffer.append(TEXT_5);
+    stringBuffer.append(TEXT_4);
     stringBuffer.append(node.hashCode());
-    stringBuffer.append(TEXT_6);
+    stringBuffer.append(TEXT_5);
     stringBuffer.append(node.getText());
-    stringBuffer.append(TEXT_7);
+    stringBuffer.append(TEXT_6);
      
 	}
-    stringBuffer.append(TEXT_8);
+    stringBuffer.append(TEXT_7);
      for(Object edgeObject : graph.getConnections()){ GraphConnection edge = (GraphConnection) edgeObject; 
-    stringBuffer.append(TEXT_9);
+    stringBuffer.append(TEXT_8);
     boolean dashed = edge.getLineStyle() == SWT.LINE_DASH; boolean dotted = edge.getLineStyle() == SWT.LINE_DOT;
-    stringBuffer.append(TEXT_10);
+    stringBuffer.append(TEXT_9);
     stringBuffer.append(edge.getSource().hashCode());
-    stringBuffer.append(TEXT_11);
+    stringBuffer.append(TEXT_10);
     stringBuffer.append( digraph ? "->" : "--" );
-    stringBuffer.append(TEXT_12);
+    stringBuffer.append(TEXT_11);
     stringBuffer.append(edge.getDestination().hashCode());
-    stringBuffer.append(TEXT_13);
+    stringBuffer.append(TEXT_12);
     stringBuffer.append(dashed?"dashed":dotted?"dotted":"solid");
-    stringBuffer.append(TEXT_14);
+    stringBuffer.append(TEXT_13);
     stringBuffer.append(edge.getText());
-    stringBuffer.append(TEXT_15);
+    stringBuffer.append(TEXT_14);
      }
-    stringBuffer.append(TEXT_16);
+    stringBuffer.append(TEXT_15);
     return stringBuffer.toString();
   }
 }

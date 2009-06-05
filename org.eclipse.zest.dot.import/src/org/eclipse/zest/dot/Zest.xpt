@@ -35,7 +35,7 @@
 	        super(parent, style);
 	        String nodeLabel = null;
 	    	String edgeLabel = null;
-	    	int edgeStyle = 1; /* ZestStyles.CONNECTIONS_SOLID doesn't work for me, investigate, is this a bug? */
+	    	int edgeStyle = SWT.LINE_SOLID;
 	        «IF type == graphtype::digraph» setConnectionStyle(ZestStyles.CONNECTIONS_DIRECTED); «ENDIF»
 	        «IF !stmts.exists(e|e.metaType.name.contains("attribute")&&e.toString().contains("layout"))»
 	        setLayoutAlgorithm(new TreeLayoutAlgorithm(

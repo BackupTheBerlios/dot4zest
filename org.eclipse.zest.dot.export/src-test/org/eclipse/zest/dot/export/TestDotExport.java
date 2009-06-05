@@ -19,18 +19,28 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.zest.core.widgets.Graph;
 import org.eclipse.zest.dot.DotExport;
 import org.eclipse.zest.dot.export.test_data.LabeledGraph;
+import org.eclipse.zest.dot.export.test_data.SampleGraph;
 import org.eclipse.zest.dot.export.test_data.SimpleDigraph;
 import org.eclipse.zest.dot.export.test_data.SimpleGraph;
 import org.eclipse.zest.dot.export.test_data.StyledGraph;
 import org.junit.Test;
 
 /**
- * Tests for the generated {@link DotExport} class.
+ * Tests for the {@link DotExport} class.
  * @author Fabian Steeg (fsteeg)
  */
 public class TestDotExport {
     private static final File OUTPUT = new File("src-gen");
     private static Shell shell = new Shell();
+
+    /**
+     * Zest-To-Dot transformation for a full sample graph showing all that is
+     * currently supported in the Zest-To-Dot transformation.
+     */
+    @Test
+    public void sampleGraph() {
+        testDotGeneration(new SampleGraph(shell, SWT.NONE));
+    }
 
     /** Zest-To-Dot transformation for a minimal undirected graph. */
     @Test

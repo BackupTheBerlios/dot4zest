@@ -7,6 +7,7 @@
  * Contributors: Fabian Steeg - initial API and implementation; see bug 277380
  *******************************************************************************/
 package org.eclipse.zest.dot.export.test_data;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -17,49 +18,51 @@ import org.eclipse.zest.core.widgets.GraphConnection;
 import org.eclipse.zest.core.widgets.GraphNode;
 import org.eclipse.zest.layouts.LayoutStyles;
 import org.eclipse.zest.layouts.algorithms.TreeLayoutAlgorithm;
-/** Zest graph generated from Graphviz DOT graph 'SimpleGraph'. */
+
+/**
+ * Minimal Zest graph sample input for the Zest-To-Dot transformation.
+ */
 public class SimpleGraph extends Graph {
-	public SimpleGraph(final Composite parent, final int style) {
-		super(parent, style);
-		String nodeLabel = null;
-		String edgeLabel = null;
-		int edgeStyle = SWT.LINE_SOLID;
+    /**
+     * {@link Graph#Graph(Composite, int)}
+     * @param parent The parent
+     * @param style The style bits
+     */
+    public SimpleGraph(final Composite parent, final int style) {
+        super(parent, style);
 
-		setLayoutAlgorithm(new TreeLayoutAlgorithm(
-				LayoutStyles.NO_LAYOUT_NODE_RESIZING), true);
-		GraphNode n1 = new GraphNode(this, SWT.NONE, tryGlobal(nodeLabel, "1"));
-		GraphNode n2 = new GraphNode(this, SWT.NONE, tryGlobal(nodeLabel, "2"));
-		GraphNode n3 = new GraphNode(this, SWT.NONE, tryGlobal(nodeLabel, "3"));
+        /* Set a layout algorithm: */
+        setLayoutAlgorithm(new TreeLayoutAlgorithm(
+                LayoutStyles.NO_LAYOUT_NODE_RESIZING), true);
 
-		/* Connection from n1 to n2: */
-		GraphConnection n1n2 = new GraphConnection(this, SWT.NONE, n1, n2);
-		n1n2.setText(tryGlobal(edgeLabel, ""));
-		n1n2.setLineStyle(edgeStyle);
+        /* Set the nodes: */
+        GraphNode n1 = new GraphNode(this, SWT.NONE, "1");
+        GraphNode n2 = new GraphNode(this, SWT.NONE, "2");
+        GraphNode n3 = new GraphNode(this, SWT.NONE, "3");
 
-		/* Connection from n1 to n3: */
-		GraphConnection n1n3 = new GraphConnection(this, SWT.NONE, n1, n3);
-		n1n3.setText(tryGlobal(edgeLabel, ""));
-		n1n3.setLineStyle(edgeStyle);
+        /* Connection from n1 to n2: */
+        new GraphConnection(this, SWT.NONE, n1, n2);
 
-	}
-	private String tryGlobal(final String global, final String name) {
-		return global == null ? name : global;
-	}
-	public String toString() {
-		return super.toString();
-	}
-	public static void main(final String[] args) {
-		Display d = new Display();
-		Shell shell = new Shell(d);
-		shell.setText(SimpleGraph.class.getSimpleName());
-		shell.setLayout(new FillLayout());
-		shell.setSize(200, 250);
-		new SimpleGraph(shell, SWT.NONE);
-		shell.open();
-		while (!shell.isDisposed()) {
-			while (!d.readAndDispatch()) {
-				d.sleep();
-			}
-		}
-	}
+        /* Connection from n1 to n3: */
+        new GraphConnection(this, SWT.NONE, n1, n3);
+
+    }
+    /**
+     * Displays this graph in a shell.
+     * @param args Not used
+     */
+    public static void main(final String[] args) {
+        Display d = new Display();
+        Shell shell = new Shell(d);
+        shell.setText(SimpleGraph.class.getSimpleName());
+        shell.setLayout(new FillLayout());
+        shell.setSize(200, 250);
+        new SimpleGraph(shell, SWT.NONE);
+        shell.open();
+        while (!shell.isDisposed()) {
+            while (!d.readAndDispatch()) {
+                d.sleep();
+            }
+        }
+    }
 }
