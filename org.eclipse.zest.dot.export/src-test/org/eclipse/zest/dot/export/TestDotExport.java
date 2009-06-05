@@ -9,15 +9,15 @@
 package org.eclipse.zest.dot.export;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
 
 import junit.framework.Assert;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.zest.core.widgets.Graph;
-import org.eclipse.zest.dot.DotTemplate;
+import org.eclipse.zest.dot.DotExport;
 import org.eclipse.zest.dot.export.test_data.LabeledGraph;
 import org.eclipse.zest.dot.export.test_data.SimpleDigraph;
 import org.eclipse.zest.dot.export.test_data.SimpleGraph;
@@ -25,62 +25,77 @@ import org.eclipse.zest.dot.export.test_data.StyledGraph;
 import org.junit.Test;
 
 /**
- * Tests for the generated {@link DotTemplate} class.
+ * Tests for the generated {@link DotExport} class.
  * @author Fabian Steeg (fsteeg)
- *
  */
-public class TestDotTemplate {
+public class TestDotExport {
     private static final File OUTPUT = new File("src-gen");
     private static Shell shell = new Shell();
 
+    /** Zest-To-Dot transformation for a minimal undirected graph. */
     @Test
     public void simpleGraph() {
         testDotGeneration(new SimpleGraph(shell, SWT.NONE));
     }
-
+    /** Zest-To-Dot transformation for a minimal directed graph. */
     @Test
     public void directedGraph() {
         testDotGeneration(new SimpleDigraph(shell, SWT.NONE));
     }
-    
+    /** Zest-To-Dot transformation for a graph with edge and node labels. */
     @Test
     public void labeledGraph() {
         testDotGeneration(new LabeledGraph(shell, SWT.NONE));
     }
-    
+    /** Zest-To-Dot transformation for a graph with styled edges (dotted, etc). */
     @Test
     public void styledGraph() {
         testDotGeneration(new StyledGraph(shell, SWT.NONE));
     }
 
     private void testDotGeneration(final Graph graph) {
-        String dot = new DotTemplate().generate(graph);
+        String dot = DotExport.exportZestGraph(graph);
         Assert
                 .assertTrue(
                         "DOT representation must contain simple class name of Zest input!",
                         dot.contains(graph.getClass().getSimpleName()));
         System.out.println(dot);
         File file = new File(OUTPUT, graph.getClass().getSimpleName() + ".dot");
-        write(dot, file);
+        DotExport.exportZestGraph(graph, file);
         Assert.assertTrue("Generated file must exist!", file.exists());
+        String dotRead = read(file);
+        Assert
+                .assertTrue(
+                        "DOT file output representation must contain simple class name of Zest input!",
+                        dotRead.contains(graph.getClass().getSimpleName()));
+        Assert.assertEquals("File output and String output should be equal;",
+                dot, dotRead);
+
     }
 
-    private void write(final String dot, final File file) {
+    private String read(final File file) {
         try {
-            FileWriter writer = new FileWriter(file);
-            writer.write(dot);
-            writer.flush();
-            writer.close();
-        } catch (IOException e) {
+            Scanner scanner = new Scanner(file);
+            StringBuilder builder = new StringBuilder();
+            while (scanner.hasNextLine()) {
+                builder.append(scanner.nextLine() + "\n");
+            }
+            return builder.toString();
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-
+        return null;
     }
 
     // TODO: the two methods below are almost duplicates from dot.import,
     // but we don't want to depend on that here. Is there a different place
     // they would make more sense? Perhaps import should depend on export?
 
+    /**
+     * Wipes (does not delete hidden files and files starting with a '.') the
+     * default output folder used for generated files during testing and makes
+     * sure it contains no .dot files.
+     */
     public static void wipeDefaultOutput() {
         File defaultOutputFolder = OUTPUT;
         String[] files = defaultOutputFolder.list();

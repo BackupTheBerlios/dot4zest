@@ -19,12 +19,12 @@ public class DotTemplate
   protected final String TEXT_2 = " ";
   protected final String TEXT_3 = "{" + NL + "" + NL + "\t/* Global settings */" + NL + "\tnode[shape=box] //more like the Zest default node look" + NL + "\tlabel=\"";
   protected final String TEXT_4 = "\"" + NL + "\t" + NL + "\t/* Nodes */" + NL + "\t";
-  protected final String TEXT_5 = " ";
+  protected final String TEXT_5 = " " + NL + "\t";
   protected final String TEXT_6 = "[label=\"";
   protected final String TEXT_7 = "\"];";
   protected final String TEXT_8 = NL + "\t" + NL + "\t/* Edges */" + NL + "\t";
-  protected final String TEXT_9 = " ";
-  protected final String TEXT_10 = " ";
+  protected final String TEXT_9 = " " + NL + "\t";
+  protected final String TEXT_10 = " " + NL + "\t";
   protected final String TEXT_11 = " ";
   protected final String TEXT_12 = " ";
   protected final String TEXT_13 = "[style=";
@@ -58,7 +58,8 @@ public class DotTemplate
     stringBuffer.append(TEXT_6);
     stringBuffer.append(node.getText());
     stringBuffer.append(TEXT_7);
-     }
+     
+	}
     stringBuffer.append(TEXT_8);
      for(Object edgeObject : graph.getConnections()){ GraphConnection edge = (GraphConnection) edgeObject; 
     stringBuffer.append(TEXT_9);

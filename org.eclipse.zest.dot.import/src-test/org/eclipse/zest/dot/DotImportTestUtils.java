@@ -22,6 +22,7 @@ import org.junit.Assert;
  */
 public final class DotImportTestUtils {
     private DotImportTestUtils() { /* Enforce non-instantiability */}
+
     static final String RESOURCES_INPUT = "resources/input/";
     static final String RESOURCES_TESTS = "resources/tests/";
 
@@ -86,6 +87,11 @@ public final class DotImportTestUtils {
         return null;
     }
 
+    /**
+     * Wipes (does not delete hidden files and files starting with a '.') the
+     * default output folder used for generated files during testing and makes
+     * sure it contains no .java files.
+     */
     public static void wipeDefaultOutput() {
         File defaultOutputFolder = DotImport.DEFAULT_OUTPUT_FOLDER;
         String[] files = defaultOutputFolder.list();
