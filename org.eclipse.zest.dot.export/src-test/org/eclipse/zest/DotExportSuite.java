@@ -6,9 +6,10 @@
  * <p/>
  * Contributors: Fabian Steeg - initial API and implementation; see bug 277380
  *******************************************************************************/
-package org.eclipse.zest.dot;
+package org.eclipse.zest;
 
-import org.eclipse.zest.dot.export.TestDotExport;
+import org.eclipse.zest.dot.DotTestUtils;
+import org.eclipse.zest.dot.TestDotExport;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -23,6 +24,6 @@ public final class DotExportSuite {
     private DotExportSuite() { /* Enforce non-instantiability */}
     @BeforeClass
     public static void wipe() {
-        TestDotExport.wipeDefaultOutput();
+        DotTestUtils.wipeOutput(TestDotExport.OUTPUT, ".dot");
     }
 }

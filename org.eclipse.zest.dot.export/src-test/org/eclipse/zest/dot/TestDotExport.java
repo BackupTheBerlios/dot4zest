@@ -6,7 +6,7 @@
  * <p/>
  * Contributors: Fabian Steeg - initial API and implementation; see bug 277380
  *******************************************************************************/
-package org.eclipse.zest.dot.export;
+package org.eclipse.zest.dot;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -17,12 +17,11 @@ import junit.framework.Assert;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.zest.core.widgets.Graph;
-import org.eclipse.zest.dot.DotExport;
-import org.eclipse.zest.dot.export.test_data.LabeledGraph;
-import org.eclipse.zest.dot.export.test_data.SampleGraph;
-import org.eclipse.zest.dot.export.test_data.SimpleDigraph;
-import org.eclipse.zest.dot.export.test_data.SimpleGraph;
-import org.eclipse.zest.dot.export.test_data.StyledGraph;
+import org.eclipse.zest.dot.test_data.LabeledGraph;
+import org.eclipse.zest.dot.test_data.SampleGraph;
+import org.eclipse.zest.dot.test_data.SimpleDigraph;
+import org.eclipse.zest.dot.test_data.SimpleGraph;
+import org.eclipse.zest.dot.test_data.StyledGraph;
 import org.junit.Test;
 
 /**
@@ -30,7 +29,7 @@ import org.junit.Test;
  * @author Fabian Steeg (fsteeg)
  */
 public class TestDotExport {
-    private static final File OUTPUT = new File("src-gen");
+    public static final File OUTPUT = new File("src-gen");
     private static Shell shell = new Shell();
 
     /**
@@ -95,52 +94,5 @@ public class TestDotExport {
             e.printStackTrace();
         }
         return null;
-    }
-
-    // TODO: the two methods below are almost duplicates from dot.import,
-    // but we don't want to depend on that here. Is there a different place
-    // they would make more sense? Perhaps import should depend on export?
-
-    /**
-     * Wipes (does not delete hidden files and files starting with a '.') the
-     * default output folder used for generated files during testing and makes
-     * sure it contains no .dot files.
-     */
-    public static void wipeDefaultOutput() {
-        File defaultOutputFolder = OUTPUT;
-        String[] files = defaultOutputFolder.list();
-        int deleted = 0;
-        for (String file : files) {
-            File deletionCandidate = new File(defaultOutputFolder, file);
-            /*
-             * Relying on hidden is not safe on all platforms, so we double
-             * check so that no .cvsignore files etc. are deleted:
-             */
-            if (!deletionCandidate.isHidden()
-                    && !deletionCandidate.getName().startsWith(".")) {
-                boolean delete = deletionCandidate.delete();
-                if (delete) {
-                    deleted++;
-                }
-            }
-        }
-        int dotFiles = countDotFiles(defaultOutputFolder);
-        Assert
-                .assertEquals(
-                        "Default output directory should contain no DOT files before tests run;",
-                        0, dotFiles);
-        System.out.println(String.format("Deleted %s files in %s", deleted,
-                defaultOutputFolder));
-    }
-
-    private static int countDotFiles(final File folder) {
-        String[] list = folder.list();
-        int dotFiles = 0;
-        for (String name : list) {
-            if (name.endsWith(".dot")) {
-                dotFiles++;
-            }
-        }
-        return dotFiles;
     }
 }

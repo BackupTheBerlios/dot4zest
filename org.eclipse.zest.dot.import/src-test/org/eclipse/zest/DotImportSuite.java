@@ -9,6 +9,7 @@
 package org.eclipse.zest;
 
 import org.eclipse.zest.dot.DotImportTestUtils;
+import org.eclipse.zest.dot.DotTestUtils;
 import org.eclipse.zest.dot.TestBasicDotImport;
 import org.eclipse.zest.dot.TestBatchDotImport;
 import org.eclipse.zest.dot.TestLayoutDotImport;
@@ -27,6 +28,6 @@ public final class DotImportSuite {
     private DotImportSuite() { /* Enforce non-instantiability */}
     @BeforeClass
     public static void wipe() {
-        DotImportTestUtils.wipeDefaultOutput();
+        DotTestUtils.wipeOutput(DotImportTestUtils.OUTPUT, ".java");
     }
 }

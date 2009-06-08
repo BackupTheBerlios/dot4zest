@@ -1,4 +1,4 @@
-package org.eclipse.zest.dot.export.test_data;
+package org.eclipse.zest.dot.test_data;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;

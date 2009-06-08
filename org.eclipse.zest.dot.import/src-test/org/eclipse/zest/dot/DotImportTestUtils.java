@@ -25,6 +25,7 @@ public final class DotImportTestUtils {
 
     static final String RESOURCES_INPUT = "resources/input/";
     static final String RESOURCES_TESTS = "resources/tests/";
+    public static final File OUTPUT = DotImport.DEFAULT_OUTPUT_FOLDER;
 
     static void importFrom(final File dotFile) {
         Assert.assertTrue("DOT input file must exist: " + dotFile, dotFile
@@ -85,48 +86,5 @@ public final class DotImportTestUtils {
             e.printStackTrace();
         }
         return null;
-    }
-
-    /**
-     * Wipes (does not delete hidden files and files starting with a '.') the
-     * default output folder used for generated files during testing and makes
-     * sure it contains no .java files.
-     */
-    public static void wipeDefaultOutput() {
-        File defaultOutputFolder = DotImport.DEFAULT_OUTPUT_FOLDER;
-        String[] files = defaultOutputFolder.list();
-        int deleted = 0;
-        for (String file : files) {
-            File deletionCandidate = new File(defaultOutputFolder, file);
-            /*
-             * Relying on hidden is not safe on all platforms, so we double
-             * check so that no .cvsignore files etc. are deleted:
-             */
-            if (!deletionCandidate.isHidden()
-                    && !deletionCandidate.getName().startsWith(".")) {
-                boolean delete = deletionCandidate.delete();
-                if (delete) {
-                    deleted++;
-                }
-            }
-        }
-        int javaFiles = countJavaFiles(defaultOutputFolder);
-        Assert
-                .assertEquals(
-                        "Default output directory should contain no Java files before tests run;",
-                        0, javaFiles);
-        System.out.println(String.format("Deleted %s files in %s", deleted,
-                defaultOutputFolder));
-    }
-
-    private static int countJavaFiles(final File folder) {
-        String[] list = folder.list();
-        int javaFiles = 0;
-        for (String name : list) {
-            if (name.endsWith(".java")) {
-                javaFiles++;
-            }
-        }
-        return javaFiles;
     }
 }
