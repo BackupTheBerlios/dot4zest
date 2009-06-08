@@ -1,0 +1,16 @@
+digraph dependencies{
+	rankdir=TD
+	node[shape=box width=3]
+	edge[]
+	
+	zest[label="org.eclipse.zest.*"]
+	graphviz[label="org.openarchitectureware.graphviz"]
+	subgraph cluster_0{
+		label="dot4zest"
+		import[label="org.eclipse.zest.dot.import (M1)"]
+		export[label="org.eclipse.zest.dot.export (M2)"]
+	}
+	zest->export[label=" requires" dir=back]
+	export->import[label=" requires" dir=back constraint=false]
+	graphviz->import[label=" requires" dir=back]
+}
