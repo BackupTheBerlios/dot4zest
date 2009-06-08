@@ -45,8 +45,9 @@
 	    private String tryGlobal(final String global, final String name) {
 	    	return global==null?name:global;
     	}
-	    public String toString() { 
-	        return super.toString(); // TODO: new GraphTemplate().generate(this);
+    	/** @return This graph as a DOT representation, to be rendered with Graphviz. */
+	    public String toDot() { 
+	        return DotExport.exportZestGraph(this);
 	    }
 	    public static void main(final String[] args) {
 	        Display d = new Display();
@@ -54,7 +55,8 @@
 	        shell.setText(«name.toFirstUpper()».class.getSimpleName());
 	        shell.setLayout(new FillLayout());
 	        shell.setSize(200, 250);
-	        new «name.toFirstUpper()»(shell, SWT.NONE);
+	        String dot = new «name.toFirstUpper()»(shell, SWT.NONE).toDot();
+	        System.out.println("Graph as DOT:\n" + dot);
 	        shell.open();
 	        while (!shell.isDisposed()) {
 	            while (!d.readAndDispatch()) { d.sleep(); }
