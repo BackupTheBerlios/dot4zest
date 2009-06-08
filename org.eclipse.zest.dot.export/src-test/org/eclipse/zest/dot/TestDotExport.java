@@ -14,60 +14,25 @@ import java.util.Scanner;
 
 import junit.framework.Assert;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.zest.core.widgets.Graph;
-import org.eclipse.zest.dot.test_data.LabeledGraph;
-import org.eclipse.zest.dot.test_data.SampleGraph;
-import org.eclipse.zest.dot.test_data.SimpleDigraph;
-import org.eclipse.zest.dot.test_data.SimpleGraph;
-import org.eclipse.zest.dot.test_data.StyledGraph;
-import org.junit.Test;
 
 /**
  * Tests for the {@link DotExport} class.
  * @author Fabian Steeg (fsteeg)
  */
-public class TestDotExport {
+public class TestDotExport extends TestDotTemplate {
     public static final File OUTPUT = new File("src-gen");
-    private static Shell shell = new Shell();
 
-    /**
-     * Zest-To-Dot transformation for a full sample graph showing all that is
-     * currently supported in the Zest-To-Dot transformation.
-     */
-    @Test
-    public void sampleGraph() {
-        testDotGeneration(new SampleGraph(shell, SWT.NONE));
-    }
-
-    /** Zest-To-Dot transformation for a minimal undirected graph. */
-    @Test
-    public void simpleGraph() {
-        testDotGeneration(new SimpleGraph(shell, SWT.NONE));
-    }
-    /** Zest-To-Dot transformation for a minimal directed graph. */
-    @Test
-    public void directedGraph() {
-        testDotGeneration(new SimpleDigraph(shell, SWT.NONE));
-    }
-    /** Zest-To-Dot transformation for a graph with edge and node labels. */
-    @Test
-    public void labeledGraph() {
-        testDotGeneration(new LabeledGraph(shell, SWT.NONE));
-    }
-    /** Zest-To-Dot transformation for a graph with styled edges (dotted, etc). */
-    @Test
-    public void styledGraph() {
-        testDotGeneration(new StyledGraph(shell, SWT.NONE));
-    }
-
-    private void testDotGeneration(final Graph graph) {
+    @Override
+    protected void testDotGeneration(final Graph graph) {
+        /*
+         * The DotExport class wraps the simple DotTemplate class, so when we
+         * test DotExport, we also run the test in the test superclass:
+         */
+        super.testDotGeneration(graph);
+        /* DotExport adds stripping of blank lines and file output: */
         String dot = DotExport.exportZestGraph(graph);
-        Assert
-                .assertTrue(
-                        "DOT representation must contain simple class name of Zest input!",
-                        dot.contains(graph.getClass().getSimpleName()));
+        assertNoBlankLines(dot);
         System.out.println(dot);
         File file = new File(OUTPUT, graph.getClass().getSimpleName() + ".dot");
         DotExport.exportZestGraph(graph, file);
@@ -80,6 +45,15 @@ public class TestDotExport {
         Assert.assertEquals("File output and String output should be equal;",
                 dot, dotRead);
 
+    }
+
+    private void assertNoBlankLines(final String dot) {
+        Scanner scanner = new Scanner(dot);
+        while (scanner.hasNextLine()) {
+            if (scanner.nextLine().trim().equals("")) {
+                Assert.fail("Resulting DOT should contain no blank lines;");
+            }
+        }
     }
 
     private String read(final File file) {

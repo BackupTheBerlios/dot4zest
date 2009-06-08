@@ -10,6 +10,7 @@ package org.eclipse.zest;
 
 import org.eclipse.zest.dot.DotTestUtils;
 import org.eclipse.zest.dot.TestDotExport;
+import org.eclipse.zest.dot.TestDotTemplate;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -19,7 +20,7 @@ import org.junit.runners.Suite;
  * @author Fabian Steeg (fsteeg)
  */
 @RunWith( Suite.class )
-@Suite.SuiteClasses( { TestDotExport.class } )
+@Suite.SuiteClasses( { TestDotTemplate.class, TestDotExport.class } )
 public final class DotExportSuite {
     private DotExportSuite() { /* Enforce non-instantiability */}
     @BeforeClass
