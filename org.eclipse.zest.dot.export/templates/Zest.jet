@@ -9,7 +9,7 @@
  *******************************************************************************/%>
 <% Graph graph = (Graph) argument; %>
 <% boolean digraph = graph.getConnectionStyle()==ZestStyles.CONNECTIONS_DIRECTED;%>
-<%= digraph ? "digraph" : "graph" %> <%=graph.getClass().getSimpleName()%>{
+<%= digraph ? "digraph" : "graph" %> <%=DotExport.name(graph)%>{
 
 	/* Global settings */
 	node[shape=box] //more like the Zest default node look

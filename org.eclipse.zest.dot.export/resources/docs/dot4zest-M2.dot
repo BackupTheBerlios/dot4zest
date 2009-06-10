@@ -16,5 +16,4 @@ digraph M2{
 	dot->image[label=" Graphviz"]
 	dot->zestCode[constraint=false color=darkgreen style=dashed label="dot4zest\nM2" dir=back]
 	zestCode->zestVis[label=" Zest"]
-	
 }

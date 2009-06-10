@@ -41,6 +41,18 @@ public final class DotExport {
         write(graphToDot(graph), destination);
     }
 
+    /**
+     * @param graph The graph to get a name for
+     * @return A name for the given graph, that can be used as a filename and as
+     *         a valid name for a DOT graph
+     */
+    static String name(final Graph graph) {
+        String simpleClassName = graph.getClass().getSimpleName();
+        /* The exact name 'Graph' is not valid for rendering with Graphviz: */
+        return simpleClassName.equals("Graph")
+                ? "Zest" + simpleClassName : simpleClassName;
+    }
+
     private static String graphToDot(final Graph graph) {
         String raw = new DotTemplate().generate(graph);
         raw = removeBlankLines(raw);

@@ -13,6 +13,8 @@ import junit.framework.Assert;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.zest.core.widgets.Graph;
+import org.eclipse.zest.core.widgets.GraphConnection;
+import org.eclipse.zest.core.widgets.GraphNode;
 import org.eclipse.zest.core.widgets.ZestStyles;
 import org.eclipse.zest.dot.test_data.LabeledGraph;
 import org.eclipse.zest.dot.test_data.SampleGraph;
@@ -27,7 +29,19 @@ import org.junit.Test;
  */
 public class TestDotTemplate {
     private static Shell shell = new Shell();
-
+    
+    /** Zest-To-Dot transformation for a Zest graph itself (no subclass used). */
+    @Test
+    public void zestGraph() {
+        Graph graph = new Graph(shell, SWT.NONE);
+        graph.setConnectionStyle(ZestStyles.CONNECTIONS_DIRECTED);
+        GraphConnection edge = new GraphConnection(graph, SWT.NONE, 
+                new GraphNode(graph, SWT.NONE, "Node 1"), 
+                new GraphNode(graph, SWT.NONE, "Node 2"));
+        edge.setText("A dotted edge");
+        edge.setLineStyle(SWT.LINE_DOT);
+        testDotGeneration(graph);
+    }
     /**
      * Zest-To-Dot transformation for a full sample graph showing all that is
      * currently supported in the Zest-To-Dot transformation.
@@ -60,6 +74,12 @@ public class TestDotTemplate {
 
     protected void testDotGeneration(final Graph graph) {
         String dot = new DotTemplate().generate(graph);
+        /*
+         * We need to care for naming the DOT graph, as calling it 'Graph'
+         * causes Graphviz to fail when rendering.
+         */
+        Assert.assertFalse("DOT graph must not be named 'Graph',", dot
+                .contains("graph Graph"));
         Assert
                 .assertTrue(
                         "DOT representation must contain simple class name of Zest input!",
@@ -69,5 +89,4 @@ public class TestDotTemplate {
                         ? dot.contains("digraph") : !dot.contains("digraph"));
         System.out.println(dot);
     }
-
 }

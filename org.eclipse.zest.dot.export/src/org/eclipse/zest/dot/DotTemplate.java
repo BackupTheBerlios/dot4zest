@@ -47,7 +47,7 @@ public class DotTemplate
     stringBuffer.append(TEXT_1);
     stringBuffer.append( digraph ? "digraph" : "graph" );
     stringBuffer.append(TEXT_2);
-    stringBuffer.append(graph.getClass().getSimpleName());
+    stringBuffer.append(DotExport.name(graph));
     stringBuffer.append(TEXT_3);
      for(Object nodeObject : graph.getNodes()){ GraphNode node = (GraphNode) nodeObject; 
     stringBuffer.append(TEXT_4);

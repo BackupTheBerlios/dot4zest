@@ -34,7 +34,7 @@ public class TestDotExport extends TestDotTemplate {
         String dot = DotExport.exportZestGraph(graph);
         assertNoBlankLines(dot);
         System.out.println(dot);
-        File file = new File(OUTPUT, graph.getClass().getSimpleName() + ".dot");
+        File file = new File(OUTPUT, DotExport.name(graph) + ".dot");
         DotExport.exportZestGraph(graph, file);
         Assert.assertTrue("Generated file must exist!", file.exists());
         String dotRead = read(file);
@@ -69,4 +69,5 @@ public class TestDotExport extends TestDotTemplate {
         }
         return null;
     }
+
 }
