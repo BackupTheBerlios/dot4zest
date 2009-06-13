@@ -10,12 +10,15 @@
 package org.eclipse.zest.dot;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -24,7 +27,7 @@ import org.openarchitectureware.workflow.monitor.NullProgressMonitor;
 import org.openarchitectureware.workflow.monitor.ProgressMonitor;
 
 /**
- * Transformation of DOT files to Zest Graph subclasses.
+ * Transformation of DOT files or strings to Zest Graph subclasses.
  * @author Fabian Steeg (fsteeg)
  */
 public final class DotImport {
@@ -74,6 +77,40 @@ public final class DotImport {
          */
     }
 
+    /**
+     * @param dotText The DOT graph to import
+     * @param targetDirectory The container for the file to generate
+     */
+    public static void importDotString(final String dotText,
+            final IContainer targetDirectory) {
+        URL url;
+        try {
+            url = targetDirectory.getLocationURI().toURL();
+            importDotString(dotText, resolve(url));
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * @param dotText The DOT graph to import
+     * @param targetDirectory The directory to store the file to generate
+     */
+    public static void importDotString(final String dotText,
+            final File targetDirectory) {
+        try {
+            File input = File.createTempFile("zest-wizard", ".dot");
+            FileWriter writer = new FileWriter(input);
+            writer.write(dotText);
+            writer.flush();
+            writer.close();
+            importDotFile(input, targetDirectory);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     private enum Slot {
         MODEL_FILE("modelFile"), TARGET_DIR("targetDir");
         private String v;
@@ -94,19 +131,27 @@ public final class DotImport {
 
     private static File loadWorkflow() {
         File oawFile = null;
-        try {
-            URL resolved = WORKFLOW;
-            /*
-             * If we don't check the protocol here, the FileLocator throws a
-             * NullPointerException if the WORKFLOW URL is a normal file URL.
-             */
-            if (!resolved.getProtocol().equals("file")) {
+        oawFile = resolve(WORKFLOW);
+        return oawFile;
+    }
+
+    private static File resolve(final URL url) {
+        File oawFile = null;
+        URL resolved = url;
+        /*
+         * If we don't check the protocol here, the FileLocator throws a
+         * NullPointerException if the WORKFLOW URL is a normal file URL.
+         */
+        if (!url.getProtocol().equals("file")) {
+            try {
                 resolved = FileLocator.resolve(resolved);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+        }
+        try {
             oawFile = new File(resolved.toURI());
         } catch (URISyntaxException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
             e.printStackTrace();
         }
         return oawFile;
