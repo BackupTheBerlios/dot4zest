@@ -43,8 +43,8 @@ public final class DotImport {
      * @param file The DOT file to import
      * @return The generated file, placed in the default output folder
      */
-    public static void importDotFile(final File file) {
-        importDotFile(file, DEFAULT_OUTPUT_FOLDER);
+    public static File importDotFile(final File file) {
+        return importDotFile(file, DEFAULT_OUTPUT_FOLDER);
     }
 
     /**
@@ -53,9 +53,8 @@ public final class DotImport {
      * @return The Java file containing the definition of a Zest graph subclass
      *         generated from the given DOT file
      */
-    public static void importDotFile(final File dotFile,
+    public static File importDotFile(final File dotFile,
             final File targetDirectory) {
-
         String dotLocation = dotFile.getAbsolutePath();
         File oawFile = loadWorkflow();
         String oawLocation = oawFile.getAbsolutePath();
@@ -65,23 +64,24 @@ public final class DotImport {
         ProgressMonitor monitor = new NullProgressMonitor();
         workflowRunner.run(oawLocation, monitor, properties,
                 new HashMap<String, String>());
-        /*
-         * Returning the generated File here turns out to be trickier than
-         * expected. Ideally, I'd like to be able to say: give the generated
-         * file the same name as the input file, but with the .java ending
-         * instead. This would make testing very easy. I currently don't see an
-         * easy way to do that, as the name of the target file is defined in the
-         * template, not as part of the workflow. Also, it is not required to
-         * provide basic functionality (as the generated files are in the
-         * specified target directory), so for now we return nothing here.
-         */
+        return findResultFile(dotFile, targetDirectory);
+    }
+
+    private static File findResultFile(final File dotFile,
+            final File targetDirectory) {
+        String name = DotAst.graphName(dotFile);
+        File resultFile = new File(targetDirectory, name + ".java");
+        if (!resultFile.exists()) {
+            throw new IllegalStateException(resultFile + " does not exist.");
+        }
+        return resultFile;
     }
 
     /**
      * @param dotText The DOT graph to import
      * @param targetDirectory The container for the file to generate
      */
-    public static void importDotString(final String dotText,
+    public static File importDotString(final String dotText,
             final IContainer targetDirectory) {
         URL url;
         try {
@@ -90,6 +90,14 @@ public final class DotImport {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
+        try {
+            return findResultFile(writeToTempFile(dotText), new File(resolve(
+                    targetDirectory.getLocationURI().toURL()).toURI()));
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        System.err.println("Could not find result file in: " + targetDirectory);
+        return null;
     }
 
     /**
@@ -98,17 +106,21 @@ public final class DotImport {
      */
     public static void importDotString(final String dotText,
             final File targetDirectory) {
+        importDotFile(writeToTempFile(dotText), targetDirectory);
+    }
+
+    private static File writeToTempFile(final String text) {
         try {
             File input = File.createTempFile("zest-wizard", ".dot");
             FileWriter writer = new FileWriter(input);
-            writer.write(dotText);
+            writer.write(text);
             writer.flush();
             writer.close();
-            importDotFile(input, targetDirectory);
+            return input;
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        return null;
     }
 
     private enum Slot {

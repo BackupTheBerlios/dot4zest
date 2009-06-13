@@ -9,10 +9,6 @@
 package org.eclipse.zest.dot;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.junit.Assert;
 
@@ -30,8 +26,7 @@ public final class DotImportTestUtils {
     static void importFrom(final File dotFile) {
         Assert.assertTrue("DOT input file must exist: " + dotFile, dotFile
                 .exists());
-        DotImport.importDotFile(dotFile);
-        File zest = findResultFile(dotFile, DotImport.DEFAULT_OUTPUT_FOLDER);
+        File zest = DotImport.importDotFile(dotFile);
         Assert.assertNotNull("Resulting file must not be null", zest);
         Assert.assertTrue("Resulting file must exist", zest.exists());
         /*
@@ -39,52 +34,9 @@ public final class DotImportTestUtils {
          * (part of the content of the DOT file, NOT the name of the file), plus
          * the ".java" extension:
          */
-        Assert.assertEquals(zest.getName().split("\\.")[0],
-                graphName(read(dotFile)));
+        Assert.assertEquals(zest.getName().split("\\.")[0], DotAst
+                .graphName(dotFile));
         System.out.println(String.format(
                 "Transformed DOT in '%s' to Zest in '%s'", dotFile, zest));
-    }
-
-    private static File findResultFile(final File dotFile,
-            final File targetDirectory) {
-        String name = graphName(read(dotFile));
-        File resultFile = new File(targetDirectory, name + ".java");
-        if (!resultFile.exists()) {
-            throw new IllegalStateException(resultFile + " does not exist.");
-        }
-        return resultFile;
-    }
-
-    private static String graphName(final String dotContent) {
-        if (dotContent == null) {
-            throw new IllegalArgumentException();
-        }
-        /*
-         * Work-around for testing, until we return the generated file when
-         * doing the import: get the graph name from the actual DOT content
-         * using a regular expression (while this is OK for testing, it is not
-         * in general robust and therefore used for testing only).
-         */
-        Matcher m = Pattern.compile("[.]*?graph\\s*?(.+?)\\s*?\\{.*").matcher(
-                dotContent);
-        if (m.find()) {
-            String name = m.group(1).trim();
-            return name;
-        }
-        return null;
-    }
-
-    private static String read(final File dotFile) {
-        try {
-            StringBuilder builder = new StringBuilder();
-            Scanner s = new Scanner(dotFile);
-            while (s.hasNextLine()) {
-                builder.append(s.nextLine());
-            }
-            return builder.toString();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 }
