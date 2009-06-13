@@ -39,7 +39,7 @@ import org.eclipse.zest.dot.DotImport;
  * subclass in the provided container. If the container resource (a folder or a
  * project) is selected in the workspace when the wizard is opened, it will
  * accept it as the target container. The wizard creates one file with the
- * extension "java", and opens it.
+ * extension "java".
  * @author Fabian Steeg (fsteeg)
  */
 public final class ZestGraphWizard extends Wizard implements INewWizard {
@@ -124,7 +124,10 @@ public final class ZestGraphWizard extends Wizard implements INewWizard {
         }
         final IContainer container = (IContainer) resource;
         createFile(container, fileName, monitor);
-        openFile(container, container.getFile(new Path(fileName)), monitor);
+        refreshContainer(container, monitor);
+        // TODO there is currently no clean way to get the file name, as it
+        // depends on the name of the DOT graph
+        // openFile(container, container.getFile(new Path(fileName)), monitor);
     }
 
     private void createFile(final IContainer container, final String fileName,
@@ -139,6 +142,8 @@ public final class ZestGraphWizard extends Wizard implements INewWizard {
         monitor.worked(1);
     }
 
+    @SuppressWarnings( "unused" )
+    // TODO add back when we have a way to get the file
     private void openFile(final IContainer container, final IFile file,
             final IProgressMonitor monitor) {
         monitor.setTaskName(OPENING_FILE);
@@ -155,6 +160,20 @@ public final class ZestGraphWizard extends Wizard implements INewWizard {
                     IDE.openEditor(page, file, true);
                 } catch (PartInitException e) {
                     e.printStackTrace();
+                }
+            }
+        });
+        monitor.worked(1);
+    }
+
+    private void refreshContainer(final IContainer container,
+            final IProgressMonitor monitor) {
+        getShell().getDisplay().asyncExec(new Runnable() {
+            public void run() {
+                try {
+                    container.refreshLocal(1, monitor);
+                } catch (CoreException e1) {
+                    e1.printStackTrace();
                 }
             }
         });

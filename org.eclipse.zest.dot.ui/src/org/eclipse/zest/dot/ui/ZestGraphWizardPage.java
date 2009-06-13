@@ -26,6 +26,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -52,12 +53,13 @@ public final class ZestGraphWizardPage extends WizardPage {
     private static final String TEMPLATE = "&Template:";
     private static final String BROWSE = "Browse...";
     private static final String CONTAINER = "&Container:";
-    private static final String GRAPH_NAME = "CustomZestGraph";
-    private static final String DOT_GRAPH = "digraph " + GRAPH_NAME
-            + " {\n\t1; 2; \n\t1->2 \n}";
+    private static final String DEFAULT_GRAPH_NAME = "CustomZestGraph";
+    private static final String DEFAULT_DOT_GRAPH = "digraph "
+            + DEFAULT_GRAPH_NAME + " {\n\t1; 2; \n\t1->2 \n}";
     private Text containerText;
     private ISelection selection;
     private Text inputText;
+    private Combo combo;
 
     /**
      * Constructor for ZestGraphWizardPage.
@@ -80,16 +82,38 @@ public final class ZestGraphWizardPage extends WizardPage {
         composite.setLayout(layout);
         layout.numColumns = 3;
         layout.verticalSpacing = 9;
-        Label label = new Label(composite, SWT.NULL);
-        label.setText(CONTAINER);
         createContainerRow(composite);
+        createComboRow(composite);
         createTemplateRow(composite);
         validateSelection();
         validateFields();
         setControl(composite);
     }
 
+    private void createComboRow(final Composite composite) {
+        Label label = new Label(composite, SWT.NULL);
+        label.setText(TEMPLATE);
+        combo = new Combo(composite, SWT.NONE);
+        combo.setItems(ZestGraphTemplate.availableTemplateNames());
+        combo.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        combo.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(final SelectionEvent e) {
+                if (e.getSource() instanceof Combo) {
+                    Combo combo = ((Combo) e.getSource());
+                    inputText.setText(ZestGraphTemplate
+                            .availableTemplateContents()[(combo
+                            .getSelectionIndex())]);
+                }
+            }
+        });
+        combo.select(0);
+        label = new Label(composite, SWT.NULL);
+        label.setText("");
+    }
+
     private void createContainerRow(final Composite composite) {
+        Label label = new Label(composite, SWT.NULL);
+        label.setText(CONTAINER);
         containerText = new Text(composite, SWT.BORDER | SWT.SINGLE);
         GridData gd = new GridData(GridData.FILL_HORIZONTAL);
         containerText.setLayoutData(gd);
@@ -111,15 +135,16 @@ public final class ZestGraphWizardPage extends WizardPage {
     private void createTemplateRow(final Composite composite) {
         GridData gd = new GridData(GridData.FILL_BOTH);
         Label label = new Label(composite, SWT.NULL);
-        label.setText(TEMPLATE);
+        label.setText("");
         inputText = new Text(composite, SWT.BORDER | SWT.MULTI);
-        inputText.setText(DOT_GRAPH);
+        inputText.setText(DEFAULT_DOT_GRAPH);
         inputText.setLayoutData(gd);
         inputText.addModifyListener(new ModifyListener() {
             public void modifyText(final ModifyEvent e) {
                 validateFields();
             }
         });
+        inputText.setText(ZestGraphTemplate.availableTemplateContents()[0]);
         label = new Label(composite, SWT.NULL);
         label.setText("");
     }
@@ -214,7 +239,8 @@ public final class ZestGraphWizardPage extends WizardPage {
      * @return The name of the file to create
      */
     String getFileName() {
-        return GRAPH_NAME + "." + JAVA;
+        // TODO this only works for the default, and is currently not used
+        return DEFAULT_GRAPH_NAME + "." + JAVA;
     }
 
     /**
