@@ -31,6 +31,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
+import org.eclipse.zest.dot.DotImport;
 
 /**
  * This wizard page allows setting the container for the new Zest graph and the
@@ -239,8 +240,7 @@ public final class ZestGraphWizardPage extends WizardPage {
      * @return The name of the file to create
      */
     String getFileName() {
-        // TODO this only works for the default, and is currently not used
-        return DEFAULT_GRAPH_NAME + "." + JAVA;
+        return DotImport.graphName(getInputText()) + "." + JAVA;
     }
 
     /**

@@ -125,9 +125,7 @@ public final class ZestGraphWizard extends Wizard implements INewWizard {
         final IContainer container = (IContainer) resource;
         createFile(container, fileName, monitor);
         refreshContainer(container, monitor);
-        // TODO there is currently no clean way to get the file name, as it
-        // depends on the name of the DOT graph
-        // openFile(container, container.getFile(new Path(fileName)), monitor);
+        openFile(container, container.getFile(new Path(fileName)), monitor);
     }
 
     private void createFile(final IContainer container, final String fileName,
@@ -142,8 +140,6 @@ public final class ZestGraphWizard extends Wizard implements INewWizard {
         monitor.worked(1);
     }
 
-    @SuppressWarnings( "unused" )
-    // TODO add back when we have a way to get the file
     private void openFile(final IContainer container, final IFile file,
             final IProgressMonitor monitor) {
         monitor.setTaskName(OPENING_FILE);

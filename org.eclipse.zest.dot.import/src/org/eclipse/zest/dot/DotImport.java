@@ -101,6 +101,22 @@ public final class DotImport {
     }
 
     /**
+     * @param dotText The DOT graph representation
+     * @return The name of the DOT graph
+     */
+    public static String graphName(final String dotText) {
+        return DotAst.graphName(writeToTempFile(dotText));
+    }
+
+    /**
+     * @param dotFile The DOT file
+     * @return The name of the DOT graph defined in the given file
+     */
+    public static String graphName(final File dotFile) {
+        return DotAst.graphName(dotFile);
+    }
+
+    /**
      * @param dotText The DOT graph to import
      * @param targetDirectory The directory to store the file to generate
      */
