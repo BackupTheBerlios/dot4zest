@@ -120,12 +120,14 @@ public final class DotImport {
     /**
      * @param dotText The DOT graph to import
      * @param targetDirectory The directory to store the file to generate
+     * @return The Java file containing the definition of a Zest graph subclass
+     *         generated from the given DOT text
      */
-    public static void importDotString(final String dotText,
+    public static File importDotString(final String dotText,
             final File targetDirectory) {
-        importDotFile(writeToTempFile(dotText), targetDirectory);
+        return importDotFile(writeToTempFile(dotText), targetDirectory);
     }
-    
+
     /**
      * @param dotText The DOT graph
      * @return The errors the parser reported when parsing the given DOT graph

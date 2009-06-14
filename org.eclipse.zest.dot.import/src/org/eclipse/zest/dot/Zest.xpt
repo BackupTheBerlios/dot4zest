@@ -54,36 +54,39 @@
 	    
 	    /* Support to run this graph as a Java application or a JUnit test: */
 
-	    private static final Display DISPLAY = new Display();
-	    private static final Shell SHELL = new Shell(DISPLAY);
-	    static {
-	        SHELL.setText(«name.toFirstUpper()».class.getSimpleName());
-	        SHELL.setLayout(new FillLayout());
-	        SHELL.setSize(200, 250);
-	    }
-	
 	    public static void main(final String[] args) {
-	        String dot = new «name.toFirstUpper()»(SHELL, SWT.NONE).toDot();
+	        final Shell shell = createShell();
+	        String dot = new «name.toFirstUpper()»(shell, SWT.NONE).toDot();
 	        System.out.println("Graph as DOT:\n" + dot);
-	        open();
+	        open(shell);
 	    }
 	
+	    private static Shell createShell() {
+	        final Display display = new Display();
+	        final Shell shell = new Shell(display);
+	        shell.setText(«name.toFirstUpper()».class.getSimpleName());
+	        shell.setLayout(new FillLayout());
+	        shell.setSize(200, 250);
+	        return shell;
+	    }
+		
+		/** Default constructor for JUnit. Creates a new graph in a new shell, with no style. */
 	    public «name.toFirstUpper()»() { // for JUnit
-	        this(SHELL, SWT.NONE);
+	        this(createShell(), SWT.NONE);
 	    }
 	
 	    @Test
 	    public void test() {
 	        String dot = this.toDot();
 	        System.out.println("Graph as DOT:\n" + dot);
-	        open();
+	        open(this.getShell());
 	    }
 	
-	    private static void open() {
-	        SHELL.open();
-	        while (!SHELL.isDisposed()) {
-	            while (!DISPLAY.readAndDispatch()) {
-	                DISPLAY.sleep();
+	    private static void open(final Shell shell) {
+	        shell.open();
+	        while (!shell.isDisposed()) {
+	            while (!shell.getDisplay().readAndDispatch()) {
+	                shell.getDisplay().sleep();
 	            }
 	        }
 	    }

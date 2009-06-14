@@ -4,6 +4,6 @@ Bundle-Name: org.eclipse.zest.dot.import
 Bundle-SymbolicName: org.eclipse.zest.dot.import;singleton:=true
 Bundle-Version: 0.2.0
 Require-Bundle: org.openarchitectureware.graphviz;bundle-version="4.3.1",
- org.eclipse.zest.dot.export;bundle-version="0.2.0"
+ org.eclipse.zest.dot.export;bundle-version="0.2.0";visibility:=reexport
 Export-Package: org.eclipse.zest.dot
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
