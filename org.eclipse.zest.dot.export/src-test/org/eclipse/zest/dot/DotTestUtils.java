@@ -29,27 +29,29 @@ public final class DotTestUtils {
     public static void wipeOutput(final File location, final String suffix) {
         String[] files = location.list();
         int deleted = 0;
-        for (String file : files) {
-            File deletionCandidate = new File(location, file);
-            /*
-             * Relying on hidden is not safe on all platforms, so we double
-             * check so that no .cvsignore files etc. are deleted:
-             */
-            if (!deletionCandidate.isHidden()
-                    && !deletionCandidate.getName().startsWith(".")) {
-                boolean delete = deletionCandidate.delete();
-                if (delete) {
-                    deleted++;
+        if (files != null && files.length > 0) {
+            for (String file : files) {
+                File deletionCandidate = new File(location, file);
+                /*
+                 * Relying on hidden is not safe on all platforms, so we double
+                 * check so that no .cvsignore files etc. are deleted:
+                 */
+                if (!deletionCandidate.isHidden()
+                        && !deletionCandidate.getName().startsWith(".")) {
+                    boolean delete = deletionCandidate.delete();
+                    if (delete) {
+                        deleted++;
+                    }
                 }
             }
+            int dotFiles = countFilesWithSuffix(location, suffix);
+            Assert
+                    .assertEquals(
+                            "Default output directory should contain no files matching the suffix before tests run;",
+                            0, dotFiles);
+            System.out.println(String.format("Deleted %s files in %s", deleted,
+                    location));
         }
-        int dotFiles = countFilesWithSuffix(location, suffix);
-        Assert
-                .assertEquals(
-                        "Default output directory should contain no files matching the suffix before tests run;",
-                        0, dotFiles);
-        System.out.println(String.format("Deleted %s files in %s", deleted,
-                location));
     }
 
     private static int countFilesWithSuffix(final File folder,
