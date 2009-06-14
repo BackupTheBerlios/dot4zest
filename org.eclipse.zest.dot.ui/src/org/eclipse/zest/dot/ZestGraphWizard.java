@@ -7,7 +7,7 @@
  * Contributors: Fabian Steeg - initial API and implementation; see bug 277380
  *******************************************************************************/
 
-package org.eclipse.zest.dot.ui;
+package org.eclipse.zest.dot;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -34,7 +34,6 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
-import org.eclipse.zest.dot.DotImport;
 
 /**
  * This is a Zest Graph new wizard. Its role is to create a new Zest Graph

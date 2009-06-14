@@ -9,7 +9,7 @@
       </category>
       <wizard
             category="org.eclipse.zest"
-            class="org.eclipse.zest.dot.ui.ZestGraphWizard"
+            class="org.eclipse.zest.dot.ZestGraphWizard"
             icon="resources/icons/graph.gif"
             id="org.eclipse.zest.dot.ui.ZestGraphWizard"
             name="Zest Graph">

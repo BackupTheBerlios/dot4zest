@@ -7,7 +7,7 @@
  * Contributors: Fabian Steeg - initial API and implementation; see bug 277380
  *******************************************************************************/
 
-package org.eclipse.zest.dot.ui;
+package org.eclipse.zest.dot;
 
 import java.util.List;
 
@@ -33,7 +33,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
-import org.eclipse.zest.dot.DotImport;
 
 /**
  * This wizard page allows setting the container for the new Zest graph and the

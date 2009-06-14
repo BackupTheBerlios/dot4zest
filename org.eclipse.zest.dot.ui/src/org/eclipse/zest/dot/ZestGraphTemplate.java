@@ -7,7 +7,7 @@
  * Contributors: Fabian Steeg - initial API and implementation; see bug 277380
  *******************************************************************************/
 
-package org.eclipse.zest.dot.ui;
+package org.eclipse.zest.dot;
 
 import java.io.File;
 import java.io.FileNotFoundException;

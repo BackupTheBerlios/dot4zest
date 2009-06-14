@@ -129,6 +129,15 @@ public final class DotImport {
     }
 
     /**
+     * @param dot The DOT graph
+     * @return The file generated from the DOT graph
+     */
+    public static File importDotString(final String dot) {
+        // TODO make path flexible
+        return importDotString(dot, new File("bin/org/eclipse/zest/dot/"));
+    }
+
+    /**
      * @param dotText The DOT graph
      * @return The errors the parser reported when parsing the given DOT graph
      */
