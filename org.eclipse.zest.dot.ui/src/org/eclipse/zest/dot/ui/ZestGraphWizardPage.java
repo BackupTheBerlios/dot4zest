@@ -9,6 +9,8 @@
 
 package org.eclipse.zest.dot.ui;
 
+import java.util.List;
+
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -189,11 +191,13 @@ public final class ZestGraphWizardPage extends WizardPage {
                 && !fileName.substring(fileName.lastIndexOf('.') + 1)
                         .equalsIgnoreCase(JAVA)) {
             updateStatus(EXTENSION_MUST_BE_JAVA);
+        } else if (DotImport.errors(getInputText()).size() > 0) {
+            List<String> errors = DotImport.errors(getInputText());
+            updateStatus(errors.get(0));
         } else {
             updateStatus(null);
         }
     }
-
     private void setContainerFromSelection() {
         Object o = ((IStructuredSelection) selection).getFirstElement();
         if (o instanceof IPackageFragmentRoot) {

@@ -16,6 +16,7 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IContainer;
@@ -123,6 +124,14 @@ public final class DotImport {
     public static void importDotString(final String dotText,
             final File targetDirectory) {
         importDotFile(writeToTempFile(dotText), targetDirectory);
+    }
+    
+    /**
+     * @param dotText The DOT graph
+     * @return The errors the parser reported when parsing the given DOT graph
+     */
+    public static List<String> errors(final String dotText) {
+        return DotAst.errors(writeToTempFile(dotText));
     }
 
     private static File writeToTempFile(final String text) {

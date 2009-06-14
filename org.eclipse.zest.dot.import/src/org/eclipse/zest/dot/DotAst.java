@@ -11,8 +11,10 @@ package org.eclipse.zest.dot;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
@@ -70,6 +72,22 @@ final class DotAst {
         return graph;
     }
 
+    /**
+     * @param dotFile The DOT file to parse
+     * @return The errors reported by the parser when parsing the given file
+     */
+    static List<String> errors(final File dotFile) {
+        List<String> result = new ArrayList<String>();
+        EList<Diagnostic> errors = loadResource(dotFile).getErrors();
+        Iterator<Diagnostic> i = errors.iterator();
+        while (i.hasNext()) {
+            Diagnostic next = i.next();
+            result.add(String.format("Error in line %s, column %s: %s ", next
+                    .getLine(), next.getColumn(), next.getMessage()));
+        }
+        return result;
+    }
+
     private static Resource loadResource(final File file) {
         new StandaloneSetup().setPlatformUri("..");
         DotResourceFactory.register();
@@ -82,11 +100,6 @@ final class DotAst {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
-        EList<Diagnostic> errors = res.getErrors();
-        Iterator<Diagnostic> i = errors.iterator();
-        while (i.hasNext()) {
-            System.err.println("Error: " + i.next());
         }
         return res;
     }
@@ -118,5 +131,4 @@ final class DotAst {
                     "dot", new DotResourceFactory());
         }
     }
-
 }
