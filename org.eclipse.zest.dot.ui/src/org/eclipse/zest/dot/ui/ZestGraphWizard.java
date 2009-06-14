@@ -21,6 +21,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.jdt.junit.launcher.JUnitLaunchShortcut;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ISelection;
@@ -48,6 +50,7 @@ public final class ZestGraphWizard extends Wizard implements INewWizard {
     private static final String ERROR = "Error";
     private static final String OPENING_FILE = "Opening file for editing...";
     private static final String PLUGIN_ID = "org.eclipse.zest.dot.ui";
+    private static final String RUNNING_FILE = "Running generated file...";
     private ZestGraphWizardPage page;
     private ISelection selection;
 
@@ -125,12 +128,13 @@ public final class ZestGraphWizard extends Wizard implements INewWizard {
         final IContainer container = (IContainer) resource;
         createFile(container, fileName, monitor);
         refreshContainer(container, monitor);
-        openFile(container, container.getFile(new Path(fileName)), monitor);
+        IFile file = container.getFile(new Path(fileName));
+        openFile(container, file, monitor);
     }
 
     private void createFile(final IContainer container, final String fileName,
             final IProgressMonitor monitor) {
-        monitor.beginTask(CREATING + fileName, 2);
+        monitor.beginTask(CREATING + fileName, 3);
         getShell().getDisplay().asyncExec(new Runnable() {
             public void run() {
                 /* We import the DOT string given in the input text field: */
@@ -154,11 +158,27 @@ public final class ZestGraphWizard extends Wizard implements INewWizard {
                         .getActiveWorkbenchWindow().getActivePage();
                 try {
                     IDE.openEditor(page, file, true);
+                    launchOpenFile(file, monitor);
                 } catch (PartInitException e) {
                     e.printStackTrace();
                 }
             }
         });
+        monitor.worked(1);
+    }
+
+    private void launchOpenFile(final IFile file, final IProgressMonitor monitor) {
+        monitor.setTaskName(RUNNING_FILE);
+        try {
+            JUnitLaunchShortcut f = new JUnitLaunchShortcut();
+            f
+                    .launch(PlatformUI.getWorkbench()
+                            .getActiveWorkbenchWindow().getActivePage()
+                            .getActiveEditor(), ILaunchManager.RUN_MODE);
+
+        } catch (Exception e1) {
+            e1.printStackTrace();
+        }
         monitor.worked(1);
     }
 

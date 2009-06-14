@@ -30,6 +30,7 @@
 	import org.eclipse.zest.layouts.LayoutStyles;
 	import org.eclipse.zest.layouts.algorithms.*;
 	import org.eclipse.zest.dot.DotExport;
+	import org.junit.Test;
 	/** Zest graph generated from Graphviz DOT graph '«name»'. */
 	public class «name.toFirstUpper()» extends Graph {
 	    public «name.toFirstUpper()» (final Composite parent, final int style) {
@@ -50,17 +51,40 @@
 	    public String toDot() { 
 	        return DotExport.exportZestGraph(this);
 	    }
+	    
+	    /* Support to run this graph as a Java application or a JUnit test: */
+
+	    private static final Display DISPLAY = new Display();
+	    private static final Shell SHELL = new Shell(DISPLAY);
+	    static {
+	        SHELL.setText(«name.toFirstUpper()».class.getSimpleName());
+	        SHELL.setLayout(new FillLayout());
+	        SHELL.setSize(200, 250);
+	    }
+	
 	    public static void main(final String[] args) {
-	        Display d = new Display();
-	        Shell shell = new Shell(d);
-	        shell.setText(«name.toFirstUpper()».class.getSimpleName());
-	        shell.setLayout(new FillLayout());
-	        shell.setSize(200, 250);
-	        String dot = new «name.toFirstUpper()»(shell, SWT.NONE).toDot();
+	        String dot = new «name.toFirstUpper()»(SHELL, SWT.NONE).toDot();
 	        System.out.println("Graph as DOT:\n" + dot);
-	        shell.open();
-	        while (!shell.isDisposed()) {
-	            while (!d.readAndDispatch()) { d.sleep(); }
+	        open();
+	    }
+	
+	    public «name.toFirstUpper()»() { // for JUnit
+	        this(SHELL, SWT.NONE);
+	    }
+	
+	    @Test
+	    public void test() {
+	        String dot = this.toDot();
+	        System.out.println("Graph as DOT:\n" + dot);
+	        open();
+	    }
+	
+	    private static void open() {
+	        SHELL.open();
+	        while (!SHELL.isDisposed()) {
+	            while (!DISPLAY.readAndDispatch()) {
+	                DISPLAY.sleep();
+	            }
 	        }
 	    }
 	}
