@@ -27,22 +27,13 @@ import org.eclipse.zest.core.widgets.Graph;
  */
 class GraphFromDotViaJavaCompilerApi implements GraphFromDot {
 
-    private String dot;
-
-    /**
-     * @param dotText The DOT text to import
-     */
-    public GraphFromDotViaJavaCompilerApi(final String dotText) {
-        this.dot = dotText;
-    }
-
     /**
      * {@inheritDoc}
      * @see org.eclipse.zest.dot.GraphFromDot#create(org.eclipse.swt.widgets.Composite,
      *      int)
      */
     @Override
-    public Graph create(final Composite parent, final int style) {
+    public Graph create(final Composite parent, final int style, final String dot) {
         File zestFile = DotImport.importDotString(dot);
         URL url = compileWithJavaCompiler(zestFile);
         Graph graph = ExperimentalDotImport.loadGraph(DotImport.graphName(dot),

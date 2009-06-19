@@ -50,7 +50,8 @@ public final class ZestGraphWizard extends Wizard implements INewWizard {
     private static final String OPENING_FILE = "Opening file for editing...";
     private static final String PLUGIN_ID = "org.eclipse.zest.dot.ui";
     private static final String RUNNING_FILE = "Running generated file...";
-    private ZestGraphWizardPage page;
+    private ZestGraphWizardPageInput inputPage;
+    private ZestGraphWizardPagePreview previewPage;
     private ISelection selection;
 
     /** Create a new ZestGraphWizard. */
@@ -64,8 +65,10 @@ public final class ZestGraphWizard extends Wizard implements INewWizard {
      * @see org.eclipse.jface.wizard.Wizard#addPages()
      */
     public void addPages() {
-        page = new ZestGraphWizardPage(selection);
-        addPage(page);
+        inputPage = new ZestGraphWizardPageInput(selection);
+        previewPage = new ZestGraphWizardPagePreview(new GraphFromDotViaInternalJdtCompiler());
+        addPage(inputPage);
+        addPage(previewPage);
     }
 
     /**
@@ -83,8 +86,8 @@ public final class ZestGraphWizard extends Wizard implements INewWizard {
      * @see org.eclipse.jface.wizard.Wizard#performFinish()
      */
     public boolean performFinish() {
-        final String containerName = page.getContainerName();
-        final String fileName = page.getFileName();
+        final String containerName = inputPage.getContainerName();
+        final String fileName = inputPage.getFileName();
         IRunnableWithProgress op = createRunnable(containerName, fileName);
         try {
             getContainer().run(true, false, op);
@@ -137,7 +140,7 @@ public final class ZestGraphWizard extends Wizard implements INewWizard {
         getShell().getDisplay().asyncExec(new Runnable() {
             public void run() {
                 /* We import the DOT string given in the input text field: */
-                DotImport.importDotString(page.getInputText(), container);
+                DotImport.importDotString(inputPage.getInputText(), container);
             }
         });
         monitor.worked(1);

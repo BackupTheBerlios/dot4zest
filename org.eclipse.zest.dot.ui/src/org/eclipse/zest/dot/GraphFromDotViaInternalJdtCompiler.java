@@ -34,22 +34,13 @@ import org.eclipse.zest.core.widgets.Graph;
 // with Java 5 (contrary to the other solution, based on the Java compiler API)
 class GraphFromDotViaInternalJdtCompiler implements GraphFromDot {
 
-    private String dot;
-
-    /**
-     * @param dotText
-     */
-    public GraphFromDotViaInternalJdtCompiler(final String dotText) {
-        this.dot = dotText;
-    }
-
     /**
      * {@inheritDoc}
      * @see org.eclipse.zest.dot.GraphFromDot#create(org.eclipse.swt.widgets.Composite,
      *      int)
      */
     @Override
-    public Graph create(final Composite parent, final int style) {
+    public Graph create(final Composite parent, final int style, final String dot) {
         File zestFile = DotImport.importDotString(dot);
         URL url = compileWithInternalJdtCompiler(zestFile);
         Graph graph = ExperimentalDotImport.loadGraph(DotImport.graphName(dot),
@@ -73,7 +64,7 @@ class GraphFromDotViaInternalJdtCompiler implements GraphFromDot {
                 .compile(new org.eclipse.jdt.internal.compiler.env.ICompilationUnit[] { new org.eclipse.jdt.internal.compiler.env.ICompilationUnit() {
                     @Override
                     public char[] getFileName() {
-                        return zestFile.getName().toCharArray();
+                        return zestFile.getAbsolutePath().toCharArray();
                     }
                     @Override
                     public char[][] getPackageName() {

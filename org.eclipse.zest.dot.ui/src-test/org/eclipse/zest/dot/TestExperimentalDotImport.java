@@ -29,7 +29,7 @@ public class TestExperimentalDotImport {
      */
     @Test
     public void viaJavaCompilerApi() {
-        test(new GraphFromDotViaJavaCompilerApi(DOT_TEXT));
+        test(new GraphFromDotViaJavaCompilerApi());
     }
 
     /**
@@ -38,7 +38,7 @@ public class TestExperimentalDotImport {
      */
     @Test
     public void viaInternalJdtCompiler() {
-        test(new GraphFromDotViaInternalJdtCompiler(DOT_TEXT));
+        test(new GraphFromDotViaInternalJdtCompiler());
     }
 
     /**
@@ -47,7 +47,7 @@ public class TestExperimentalDotImport {
      */
     private void test(final GraphFromDot converter) {
         Shell shell = new Shell();
-        Graph graph = converter.create(shell, SWT.NONE);
+        Graph graph = converter.create(shell, SWT.NONE, DOT_TEXT);
         Assert.assertNotNull(graph);
         System.out.println(String.format(
                 "Imported '%s' to Graph '%s' of type '%s'", DOT_TEXT, graph,

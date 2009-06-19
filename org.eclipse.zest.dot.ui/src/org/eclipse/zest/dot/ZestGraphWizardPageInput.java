@@ -40,7 +40,7 @@ import org.eclipse.ui.dialogs.ContainerSelectionDialog;
  * the extension that matches the expected one (java).
  * @author Fabian Steeg (fsteeg)
  */
-public final class ZestGraphWizardPage extends WizardPage {
+public final class ZestGraphWizardPageInput extends WizardPage {
 
     private static final String WIZARD_DESCRIPTION = "This wizard creates a new Zest Graph Subclass.";
     private static final String NEW_ZEST_GRAPH = "New Zest Graph";
@@ -62,12 +62,14 @@ public final class ZestGraphWizardPage extends WizardPage {
     private ISelection selection;
     private Text inputText;
     private Combo combo;
+    private Composite composite;
 
     /**
      * Constructor for ZestGraphWizardPage.
      * @param selection The current selection
+     * @param previewPage
      */
-    public ZestGraphWizardPage(final ISelection selection) {
+    public ZestGraphWizardPageInput(final ISelection selection) {
         super("wizardPage");
         setTitle(NEW_ZEST_GRAPH);
         setDescription(WIZARD_DESCRIPTION);
@@ -79,7 +81,7 @@ public final class ZestGraphWizardPage extends WizardPage {
      * @see org.eclipse.jface.dialogs.IDialogPage#createControl(org.eclipse.swt.widgets.Composite)
      */
     public void createControl(final Composite parent) {
-        Composite composite = new Composite(parent, SWT.NULL);
+        composite = new Composite(parent, SWT.NULL);
         GridLayout layout = new GridLayout();
         composite.setLayout(layout);
         layout.numColumns = 3;
@@ -137,18 +139,26 @@ public final class ZestGraphWizardPage extends WizardPage {
     private void createTemplateRow(final Composite composite) {
         GridData gd = new GridData(GridData.FILL_BOTH);
         Label label = new Label(composite, SWT.NULL);
-        label.setText("");
+        label.setText("&Edit:");
         inputText = new Text(composite, SWT.BORDER | SWT.MULTI);
         inputText.setText(DEFAULT_DOT_GRAPH);
         inputText.setLayoutData(gd);
         inputText.addModifyListener(new ModifyListener() {
             public void modifyText(final ModifyEvent e) {
                 validateFields();
+                updatePreview();
             }
         });
-        inputText.setText(ZestGraphTemplate.availableTemplateContents()[0]);
+        String[] templates = ZestGraphTemplate.availableTemplateContents();
+        inputText.setText(templates[0]);
         label = new Label(composite, SWT.NULL);
         label.setText("");
+    }
+
+    private void updatePreview() {
+        ZestGraphWizardPagePreview previewPage = (ZestGraphWizardPagePreview) getWizard()
+                .getNextPage(this);
+        previewPage.updateGraph(getInputText());
     }
 
     /**

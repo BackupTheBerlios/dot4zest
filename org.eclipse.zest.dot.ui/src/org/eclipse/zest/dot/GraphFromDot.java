@@ -20,8 +20,9 @@ interface GraphFromDot {
     /**
      * @param parent The parent for the graph
      * @param style The style bits for the graph
+     * @param dot The DOT string to import
      * @return The new graph
      */
-    Graph create(Composite parent, int style);
+    Graph create(Composite parent, int style, String dot);
 
 }
