@@ -116,6 +116,15 @@ public final class ZestGraphWizardPageTemplateSelection extends WizardPage {
     }
 
     /**
+     * {@inheritDoc}
+     * @see org.eclipse.jface.wizard.WizardPage#canFlipToNextPage()
+     */
+    @Override
+    public boolean canFlipToNextPage() {
+        return true; // we don't want to get stuck with invalid input on page 2
+    }
+
+    /**
      * Updates the preview graph based on the wizard's DOT content
      */
     void updatePreview() {
@@ -310,7 +319,13 @@ public final class ZestGraphWizardPageTemplateSelection extends WizardPage {
     }
 
     private void updateStatus(final String message) {
-        setErrorMessage(message);
-        setPageComplete(message == null);
+        updatePageStatus(message, this);
+        updatePageStatus(message, getDotPage());
+
+    }
+
+    private void updatePageStatus(final String message, final WizardPage page) {
+        page.setErrorMessage(message);
+        page.setPageComplete(message == null);
     }
 }

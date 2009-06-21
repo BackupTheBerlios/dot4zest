@@ -95,7 +95,7 @@ public final class ZestGraphWizardPageCustomize extends WizardPage {
         String[] templates = ZestGraphTemplate.availableTemplateContents();
         inputText.setText(templates[0]);
         ZestGraphWizard wizard = (ZestGraphWizard) getWizard();
-        if(wizard.getDotText()!=null){
+        if (wizard.getDotText() != null) {
             inputText.setText(wizard.getDotText());
         }
     }
