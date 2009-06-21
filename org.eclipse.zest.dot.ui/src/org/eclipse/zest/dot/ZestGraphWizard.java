@@ -70,8 +70,17 @@ public final class ZestGraphWizard extends Wizard implements INewWizard {
      */
     public void addPages() {
         customizationPage = new ZestGraphWizardPageCustomize();
+        /*
+         * Logic is implemented: we pass the cpnverter to use to the page. The
+         * converter should compile the generated Java source file and load the
+         * Graph using reflection. This does not work yet. We do get the
+         * preview, however. Classes corresponding to the templates are exported
+         * by the zest.dot.import bundle (generated from the same template files
+         * used in the wizard). The DOT can still be customized in the second
+         * page, and the generated Zest graph will be customized.
+         */
         templatePage = new ZestGraphWizardPageTemplateSelection(selection,
-                new GraphCreatorViaInternalJdtCompiler());
+                new GraphCreatorViaJavaCompilerApi());
         addPage(templatePage);
         addPage(customizationPage);
     }

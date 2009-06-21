@@ -15,6 +15,7 @@ import java.net.URL;
 import java.util.Locale;
 import java.util.Scanner;
 
+import org.eclipse.jdt.core.compiler.CategorizedProblem;
 import org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.eclipse.jdt.internal.compiler.DefaultErrorHandlingPolicies;
 import org.eclipse.jdt.internal.compiler.ICompilerRequestor;
@@ -26,6 +27,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.zest.core.widgets.Graph;
 
 /**
+ * EXPERIMENTAL - NOT REALLY WORKING YET
+ * <p/>
  * Import DOT to a Zest Graph instance via the internal Eclipse JDT compiler.
  * @author Fabian Steeg (fsteeg)
  */
@@ -39,42 +42,54 @@ final class GraphCreatorViaInternalJdtCompiler implements IGraphCreator {
      * @see org.eclipse.zest.dot.IGraphCreator#create(org.eclipse.swt.widgets.Composite,
      *      int)
      */
-    @Override
-    public Graph create(final Composite parent, final int style, final String dot) {
+    public Graph create(final Composite parent, final int style,
+            final String dot) {
+        String graphName = DotImport.graphName(dot);
         File zestFile = DotImport.importDotString(dot);
-        URL url = compileWithInternalJdtCompiler(zestFile);
-        Graph graph = ExperimentalDotImport.loadGraph(DotImport.graphName(dot),
-                url, parent, style);
+        URL url = compileWithInternalJdtCompiler(zestFile, graphName);
+        Graph graph = ExperimentalDotImport.loadGraph(graphName, url, parent,
+                style);
         return graph;
     }
 
-    private URL compileWithInternalJdtCompiler(final File zestFile) {
+    private URL compileWithInternalJdtCompiler(final File zestFile,
+            final String graphName) {
+        /* TODO we need to set up the environment here */
         INameEnvironment nameEnvironment = new FileSystem(new String[0],
                 new String[0], "UTF-8");
         CompilerOptions compilerOptions = new CompilerOptions();
+        compilerOptions.generateClassFiles = true;
+        compilerOptions.verbose = true;
         org.eclipse.jdt.internal.compiler.Compiler compiler = new org.eclipse.jdt.internal.compiler.Compiler(
                 nameEnvironment, DefaultErrorHandlingPolicies
                         .proceedWithAllProblems(), compilerOptions,
                 new ICompilerRequestor() {
-                    @Override
-                    public void acceptResult(final CompilationResult result) {}
+                    public void acceptResult(final CompilationResult result) {
+                        CategorizedProblem[] errors = result.getErrors();
+                        for (CategorizedProblem categorizedProblem : errors) {
+                            System.err.println(String.format(
+                                    "%s: '%s' (%s, line %s)",
+                                    categorizedProblem.getMarkerType(),
+                                    categorizedProblem.getMessage(),
+                                    new String(categorizedProblem
+                                            .getOriginatingFileName()),
+                                    categorizedProblem.getSourceLineNumber()));
+                        }
+
+                    }
                 }, ProblemFactory.getProblemFactory(Locale.getDefault()));
 
         compiler
                 .compile(new org.eclipse.jdt.internal.compiler.env.ICompilationUnit[] { new org.eclipse.jdt.internal.compiler.env.ICompilationUnit() {
-                    @Override
                     public char[] getFileName() {
                         return zestFile.getAbsolutePath().toCharArray();
                     }
-                    @Override
                     public char[][] getPackageName() {
                         return null;
                     }
-                    @Override
                     public char[] getMainTypeName() {
-                        return null;
+                        return graphName.toCharArray();
                     }
-                    @Override
                     public char[] getContents() {
                         return read(zestFile).toCharArray();
                     }

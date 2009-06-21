@@ -133,8 +133,7 @@ public final class DotImport {
      * @return The file generated from the DOT graph
      */
     public static File importDotString(final String dot) {
-        // TODO make path flexible
-        return importDotString(dot, new File("bin/org/eclipse/zest/dot/"));
+        return importDotString(dot, DotImport.DEFAULT_OUTPUT_FOLDER);
     }
 
     /**

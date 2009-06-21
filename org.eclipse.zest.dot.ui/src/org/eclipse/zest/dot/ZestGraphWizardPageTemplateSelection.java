@@ -63,6 +63,11 @@ public final class ZestGraphWizardPageTemplateSelection extends WizardPage {
     private Combo combo;
     private Composite composite;
     private Graph previewGraph;
+    /*
+     * TODO: The importer is not actually importing the DOT here, but uses the
+     * exported Zest graphs from the import bundle, which are generated from the
+     * same template files used in the wizard.
+     */
     private IGraphCreator importer;
 
     /**
@@ -118,6 +123,7 @@ public final class ZestGraphWizardPageTemplateSelection extends WizardPage {
             previewGraph.dispose();
         }
         if (composite != null) {
+            // FIXME instance is not actually loaded from generated file
             previewGraph = importer.create(composite, SWT.BORDER, getDotText());
             setupLayout();
             composite.layout();
@@ -234,6 +240,7 @@ public final class ZestGraphWizardPageTemplateSelection extends WizardPage {
     private void createPreviewRow(final Composite composite) {
         Label label = new Label(composite, SWT.NULL);
         label.setText("&Preview:");
+        // FIXME instance is not actually loaded from generated file
         previewGraph = importer.create(composite, SWT.BORDER, getDotText());
         setupLayout();
     }

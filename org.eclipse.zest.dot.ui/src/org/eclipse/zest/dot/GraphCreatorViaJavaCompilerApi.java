@@ -22,6 +22,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.zest.core.widgets.Graph;
 
 /**
+ * EXPERIMENTAL - NOT REALLY WORKING YET
+ * <p/>
  * Import DOT to a Zest Graph instance via the Java compiler API.
  * @author Fabian Steeg (fsteeg)
  */
@@ -32,8 +34,8 @@ final class GraphCreatorViaJavaCompilerApi implements IGraphCreator {
      * @see org.eclipse.zest.dot.IGraphCreator#create(org.eclipse.swt.widgets.Composite,
      *      int)
      */
-    @Override
-    public Graph create(final Composite parent, final int style, final String dot) {
+    public Graph create(final Composite parent, final int style,
+            final String dot) {
         File zestFile = DotImport.importDotString(dot);
         URL url = compileWithJavaCompiler(zestFile);
         Graph graph = ExperimentalDotImport.loadGraph(DotImport.graphName(dot),

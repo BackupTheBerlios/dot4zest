@@ -20,15 +20,17 @@ import org.junit.Test;
  * Tests for the {@link ExperimentalDotImport} class.
  * @author Fabian Steeg (fsteeg)
  */
-public class TestExperimentalDotImport {
-    static final String DOT_TEXT = "digraph ExperimentalGraph{1;2;3;4; 1->2;2->3;2->4}";
-
+public final class TestExperimentalDotImport {
     /**
      * Import instance by compiling the generated Zest graph using the Java
      * Compiler API (downside: requires Java 6)
      */
     @Test
     public void viaJavaCompilerApi() {
+        /*
+         * Implementation using Java compiler API is excluded to depend on Java
+         * 5 only, so this test cannot run.
+         */
         test(new GraphCreatorViaJavaCompilerApi());
     }
 
@@ -39,6 +41,7 @@ public class TestExperimentalDotImport {
     @Test
     public void viaInternalJdtCompiler() {
         test(new GraphCreatorViaInternalJdtCompiler());
+
     }
 
     /**
@@ -46,19 +49,53 @@ public class TestExperimentalDotImport {
      * this compiles the generated Zest class and loads it using Reflection.
      */
     private void test(final IGraphCreator converter) {
+
+        /*
+         * This is not really working, it only appears to be, as the generated
+         * file will be compiled by the IDE and will then be available to the
+         * classloader. A symptom of this is that it will only work starting
+         * with the second run.
+         */
         Shell shell = new Shell();
-        Graph graph = converter.create(shell, SWT.NONE, DOT_TEXT);
-        Assert.assertNotNull(graph);
+        String dot1 = "digraph TestingGraph {1;2;3;4; 1->2;2->3;2->4}";
+        Graph graph = converter.create(shell, SWT.NONE, dot1);
+        Assert.assertNotNull("Created graph must exist!", graph);
+        Assert.assertEquals(4, graph.getNodes().size());
+        Assert.assertEquals(3, graph.getConnections().size());
         System.out.println(String.format(
-                "Imported '%s' to Graph '%s' of type '%s'", DOT_TEXT, graph,
-                graph.getClass().getSimpleName()));
-        //open(shell); // blocks UI when running tests
+                "Imported '%s' to Graph '%s' of type '%s'", dot1, graph, graph
+                        .getClass().getSimpleName()));
+
+        /*
+         * TODO this shows that compiling the result class is not really working
+         * yet: If we use a changing name, it won't work:
+         */
+        String dot2 = "digraph TestingGraph" + System.currentTimeMillis()
+                + "{1;2;3;4; 1->2;2->3;2->4}";
+        graph = converter.create(shell, SWT.NONE, dot2);
+        Assert.assertNotNull("Created graph must exist!", graph);
+        Assert.assertEquals(4, graph.getNodes().size());
+        Assert.assertEquals(3, graph.getConnections().size());
+        System.out.println(String.format(
+                "Imported '%s' to Graph '%s' of type '%s'", dot2, graph, graph
+                        .getClass().getSimpleName()));
+
+        /* TODO: support changing an existing graph (= name exists) */
+        String dot3 = "digraph TestingGraph{1;2;3 1->2;2->3}";
+        graph = converter.create(shell, SWT.NONE, dot3);
+        Assert.assertNotNull("Created graph must exist!", graph);
+        Assert.assertEquals(3, graph.getNodes().size());
+        Assert.assertEquals(2, graph.getConnections().size());
+        System.out.println(String.format(
+                "Imported '%s' to Graph '%s' of type '%s'", dot3, graph, graph
+                        .getClass().getSimpleName()));
+        // open(shell); // blocks UI when running tests
     }
 
     @SuppressWarnings( "unused" )
     // optional when running the tests
     private static void open(final Shell shell) {
-        shell.setText(GlobalEdgeGraph.class.getSimpleName());
+        shell.setText("Testing");
         shell.setLayout(new FillLayout());
         shell.setSize(200, 250);
         shell.open();
