@@ -53,7 +53,7 @@ public final class ZestGraphWizard extends Wizard implements INewWizard {
     private ZestGraphWizardPageTemplateSelection templatePage;
     private ZestGraphWizardPageCustomize customizationPage;
     private ISelection selection;
-    private static final String DEFAULT_GRAPH_NAME = "CustomZestGraph";
+    private static final String DEFAULT_GRAPH_NAME = "SimpleGraph";
     private static final String DEFAULT_DOT_GRAPH = "digraph "
             + DEFAULT_GRAPH_NAME + " {\n\t1; 2; \n\t1->2 \n}";
     private String dotText = DEFAULT_DOT_GRAPH;
@@ -157,7 +157,7 @@ public final class ZestGraphWizard extends Wizard implements INewWizard {
 
     private void createFile(final IContainer container, final String fileName,
             final IProgressMonitor monitor) {
-        monitor.beginTask(CREATING + fileName, 3);
+        monitor.beginTask(CREATING + fileName, 4);
         getShell().getDisplay().asyncExec(new Runnable() {
             public void run() {
                 DotImport.importDotString(templatePage.getDotText(), container);

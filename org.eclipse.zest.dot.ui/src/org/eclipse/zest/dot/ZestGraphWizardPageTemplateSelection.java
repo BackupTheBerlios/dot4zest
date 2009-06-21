@@ -93,8 +93,21 @@ public final class ZestGraphWizardPageTemplateSelection extends WizardPage {
         createComboRow(composite);
         createPreviewRow(composite);
         validateSelection();
-        validate();
+        validateContent();
         setControl(composite);
+    }
+
+    /**
+     * {@inheritDoc}
+     * @see org.eclipse.jface.dialogs.DialogPage#dispose()
+     */
+    @Override
+    public void dispose() {
+        super.dispose();
+        previewGraph.dispose();
+        composite.dispose();
+        combo.dispose();
+        containerText.dispose();
     }
 
     /**
@@ -115,7 +128,7 @@ public final class ZestGraphWizardPageTemplateSelection extends WizardPage {
      * Validates the page's container selection and the selected DOT template,
      * displays errors happening during parsing of the DOT representation.
      */
-    void validate() {
+    void validateContent() {
         IResource container = ResourcesPlugin.getWorkspace().getRoot()
                 .findMember(new Path(getContainerName()));
         String fileName = getFileName();
@@ -206,7 +219,7 @@ public final class ZestGraphWizardPageTemplateSelection extends WizardPage {
         setContainerFromSelection();
         containerText.addModifyListener(new ModifyListener() {
             public void modifyText(final ModifyEvent e) {
-                validate();
+                validateContent();
             }
         });
         Button button = new Button(composite, SWT.PUSH);

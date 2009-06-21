@@ -39,6 +39,17 @@ public final class ZestGraphWizardPageCustomize extends WizardPage {
 
     /**
      * {@inheritDoc}
+     * @see org.eclipse.jface.dialogs.DialogPage#dispose()
+     */
+    @Override
+    public void dispose() {
+        super.dispose();
+        composite.dispose();
+        inputText.dispose();
+    }
+
+    /**
+     * {@inheritDoc}
      * @see org.eclipse.jface.dialogs.IDialogPage#createControl(org.eclipse.swt.widgets.Composite)
      */
     public void createControl(final Composite parent) {
@@ -77,12 +88,16 @@ public final class ZestGraphWizardPageCustomize extends WizardPage {
             }
             private void updateFistPage() {
                 ZestGraphWizardPageTemplateSelection page = getFirstPage();
-                page.validate();
+                page.validateContent();
                 page.updatePreview();
             }
         });
         String[] templates = ZestGraphTemplate.availableTemplateContents();
         inputText.setText(templates[0]);
+        ZestGraphWizard wizard = (ZestGraphWizard) getWizard();
+        if(wizard.getDotText()!=null){
+            inputText.setText(wizard.getDotText());
+        }
     }
 
     private ZestGraphWizardPageTemplateSelection getFirstPage() {
