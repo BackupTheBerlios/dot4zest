@@ -12,10 +12,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.zest.core.widgets.Graph;
 
 /**
- * Interface for different ways to create a Zest Graph instance from DOT.
+ * Common interface for different ways to create a Zest Graph instance from DOT.
  * @author Fabian Steeg (fsteeg)
  */
-interface GraphFromDot {
+interface IGraphCreator {
 
     /**
      * @param parent The parent for the graph

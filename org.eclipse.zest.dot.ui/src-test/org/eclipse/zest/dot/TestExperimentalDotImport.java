@@ -29,7 +29,7 @@ public class TestExperimentalDotImport {
      */
     @Test
     public void viaJavaCompilerApi() {
-        test(new GraphFromDotViaJavaCompilerApi());
+        test(new GraphCreatorViaJavaCompilerApi());
     }
 
     /**
@@ -38,14 +38,14 @@ public class TestExperimentalDotImport {
      */
     @Test
     public void viaInternalJdtCompiler() {
-        test(new GraphFromDotViaInternalJdtCompiler());
+        test(new GraphCreatorViaInternalJdtCompiler());
     }
 
     /**
      * Test importing a DOT graph to a Zest graph instance directly. Internally,
      * this compiles the generated Zest class and loads it using Reflection.
      */
-    private void test(final GraphFromDot converter) {
+    private void test(final IGraphCreator converter) {
         Shell shell = new Shell();
         Graph graph = converter.create(shell, SWT.NONE, DOT_TEXT);
         Assert.assertNotNull(graph);

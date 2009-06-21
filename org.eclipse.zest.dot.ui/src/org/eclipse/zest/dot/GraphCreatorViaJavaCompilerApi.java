@@ -25,11 +25,11 @@ import org.eclipse.zest.core.widgets.Graph;
  * Import DOT to a Zest Graph instance via the Java compiler API.
  * @author Fabian Steeg (fsteeg)
  */
-class GraphFromDotViaJavaCompilerApi implements GraphFromDot {
+final class GraphCreatorViaJavaCompilerApi implements IGraphCreator {
 
     /**
      * {@inheritDoc}
-     * @see org.eclipse.zest.dot.GraphFromDot#create(org.eclipse.swt.widgets.Composite,
+     * @see org.eclipse.zest.dot.IGraphCreator#create(org.eclipse.swt.widgets.Composite,
      *      int)
      */
     @Override

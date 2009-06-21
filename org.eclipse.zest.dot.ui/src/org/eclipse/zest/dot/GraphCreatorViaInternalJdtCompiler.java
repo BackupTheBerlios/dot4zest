@@ -32,11 +32,11 @@ import org.eclipse.zest.core.widgets.Graph;
 @SuppressWarnings( "restriction" )
 // The downside of this solution is it uses internal API; upside is it works
 // with Java 5 (contrary to the other solution, based on the Java compiler API)
-class GraphFromDotViaInternalJdtCompiler implements GraphFromDot {
+final class GraphCreatorViaInternalJdtCompiler implements IGraphCreator {
 
     /**
      * {@inheritDoc}
-     * @see org.eclipse.zest.dot.GraphFromDot#create(org.eclipse.swt.widgets.Composite,
+     * @see org.eclipse.zest.dot.IGraphCreator#create(org.eclipse.swt.widgets.Composite,
      *      int)
      */
     @Override

@@ -50,9 +50,13 @@ public final class ZestGraphWizard extends Wizard implements INewWizard {
     private static final String OPENING_FILE = "Opening file for editing...";
     private static final String PLUGIN_ID = "org.eclipse.zest.dot.ui";
     private static final String RUNNING_FILE = "Running generated file...";
-    private ZestGraphWizardPageInput inputPage;
-    private ZestGraphWizardPagePreview previewPage;
+    private ZestGraphWizardPageTemplateSelection templatePage;
+    private ZestGraphWizardPageCustomize customizationPage;
     private ISelection selection;
+    private static final String DEFAULT_GRAPH_NAME = "CustomZestGraph";
+    private static final String DEFAULT_DOT_GRAPH = "digraph "
+            + DEFAULT_GRAPH_NAME + " {\n\t1; 2; \n\t1->2 \n}";
+    private String dotText = DEFAULT_DOT_GRAPH;
 
     /** Create a new ZestGraphWizard. */
     public ZestGraphWizard() {
@@ -65,10 +69,11 @@ public final class ZestGraphWizard extends Wizard implements INewWizard {
      * @see org.eclipse.jface.wizard.Wizard#addPages()
      */
     public void addPages() {
-        inputPage = new ZestGraphWizardPageInput(selection);
-        previewPage = new ZestGraphWizardPagePreview(new GraphFromDotViaInternalJdtCompiler());
-        addPage(inputPage);
-        addPage(previewPage);
+        customizationPage = new ZestGraphWizardPageCustomize();
+        templatePage = new ZestGraphWizardPageTemplateSelection(selection,
+                new GraphCreatorViaInternalJdtCompiler());
+        addPage(templatePage);
+        addPage(customizationPage);
     }
 
     /**
@@ -86,8 +91,8 @@ public final class ZestGraphWizard extends Wizard implements INewWizard {
      * @see org.eclipse.jface.wizard.Wizard#performFinish()
      */
     public boolean performFinish() {
-        final String containerName = inputPage.getContainerName();
-        final String fileName = inputPage.getFileName();
+        final String containerName = templatePage.getContainerName();
+        final String fileName = templatePage.getFileName();
         IRunnableWithProgress op = createRunnable(containerName, fileName);
         try {
             getContainer().run(true, false, op);
@@ -101,6 +106,22 @@ public final class ZestGraphWizard extends Wizard implements INewWizard {
             return false;
         }
         return true;
+    }
+
+    /**
+     * @param text The DOT text that this wizard should use to generate the Zest
+     *            graph
+     */
+    public void setDotText(final String text) {
+        this.dotText = text;
+
+    }
+
+    /**
+     * @return The DOT text that this wizard will use to generate the Zest graph
+     */
+    public String getDotText() {
+        return dotText;
     }
 
     private IRunnableWithProgress createRunnable(final String containerName,
@@ -139,8 +160,7 @@ public final class ZestGraphWizard extends Wizard implements INewWizard {
         monitor.beginTask(CREATING + fileName, 3);
         getShell().getDisplay().asyncExec(new Runnable() {
             public void run() {
-                /* We import the DOT string given in the input text field: */
-                DotImport.importDotString(inputPage.getInputText(), container);
+                DotImport.importDotString(templatePage.getDotText(), container);
             }
         });
         monitor.worked(1);
