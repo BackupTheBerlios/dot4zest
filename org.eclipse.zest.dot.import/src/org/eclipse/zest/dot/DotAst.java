@@ -82,8 +82,8 @@ final class DotAst {
         Iterator<Diagnostic> i = errors.iterator();
         while (i.hasNext()) {
             Diagnostic next = i.next();
-            result.add(String.format("Error in line %s, column %s: %s ", next
-                    .getLine(), next.getColumn(), next.getMessage()));
+            result.add(String.format("Error in line %s: %s ", next
+                    .getLine(), next.getMessage()));
         }
         return result;
     }

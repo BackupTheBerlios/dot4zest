@@ -194,7 +194,7 @@ public final class ZestGraphWizardPageTemplateSelection extends WizardPage {
     private void createComboRow(final Composite composite) {
         Label label = new Label(composite, SWT.NULL);
         label.setText(TEMPLATE);
-        combo = new Combo(composite, SWT.NONE);
+        combo = new Combo(composite, SWT.READ_ONLY);
         combo.setItems(ZestGraphTemplate.availableTemplateNames());
         combo.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         combo.addSelectionListener(new SelectionAdapter() {

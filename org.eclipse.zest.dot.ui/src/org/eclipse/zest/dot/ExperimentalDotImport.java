@@ -57,11 +57,13 @@ final class ExperimentalDotImport {
              * the Java 6 compiler API. Theread.sleep has no effect.
              */
             Class<?> clazz = ucl.loadClass("org.eclipse.zest.dot." + graphName);
-            // TODO can we get safer? the method passing class literals doesn't
-            // work, I guess because of the primitive int type
-            Constructor<?> constructor = clazz.getConstructors()[1];
-            Object object = constructor.newInstance(parent, (Integer) style);
-            return (Graph) object;
+            for (Constructor<?> c : clazz.getConstructors()) {
+				if (c.getParameterTypes().length == 2) {
+					Object object = c.newInstance(parent,
+							(Integer) style);
+					return (Graph) object;
+				}
+			}
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         } catch (IllegalArgumentException e) {

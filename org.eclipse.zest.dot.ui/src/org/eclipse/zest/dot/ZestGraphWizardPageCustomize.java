@@ -34,7 +34,7 @@ public final class ZestGraphWizardPageCustomize extends WizardPage {
         super("wizardPage");
         setTitle("Zest Graph Customization");
         setDescription("Customize the DOT representation of the Zest graph to generate below. "
-                + "To select a different template switch back to the fist page.");
+                + "To select a different template switch back to the first page.");
     }
 
     /**
