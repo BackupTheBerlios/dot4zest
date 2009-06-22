@@ -80,7 +80,7 @@ public final class ZestGraphWizard extends Wizard implements INewWizard {
          * page, and the generated Zest graph will be customized.
          */
         templatePage = new ZestGraphWizardPageTemplateSelection(selection,
-                new GraphCreatorViaJavaCompilerApi());
+                new GraphCreatorViaInternalJdtCompiler());
         addPage(templatePage);
         addPage(customizationPage);
     }

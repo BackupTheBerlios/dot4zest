@@ -31,7 +31,8 @@ public final class TestExperimentalDotImport {
          * Implementation using Java compiler API is excluded to depend on Java
          * 5 only, so this test cannot run.
          */
-        test(new GraphCreatorViaJavaCompilerApi());
+        Assert.fail("Java 6 dependency deactivated");
+        // test(new GraphCreatorViaJavaCompilerApi());
     }
 
     /**
