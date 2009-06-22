@@ -12,14 +12,16 @@ digraph dependencies{
 	edge[]
 	zest[label="org.eclipse.zest.*"]
 	graphviz[label="org.openarchitectureware.graphviz"]
+	ui[label="org.eclipse.ui, ..."]
 	subgraph cluster_0{
 		label="dot4zest"
-		import[label="org.eclipse.zest.dot.import (M1)"]
-		export[label="org.eclipse.zest.dot.export (M2)"]
-		ui[label="org.eclipse.zest.dot.ui (M3)"]
+		import[label="org.eclipse.zest.dot.import"]
+		export[label="org.eclipse.zest.dot.export"]
+		dotui[label="org.eclipse.zest.dot.ui"]
 	}
-	zest->export[label=" requires" dir=back]
+	zest->export[label=" requires" dir=back style=dashed]
 	export->import[label=" requires" dir=back constraint=false]
-	graphviz->import[label=" requires" dir=back]
-	import->ui[label=" requires" dir=back]
+	graphviz->import[label=" requires" dir=back style=dashed]
+	import->dotui[label=" requires" dir=back]
+	dotui->ui[label=" requires" style=dashed]
 }
