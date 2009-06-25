@@ -99,7 +99,6 @@ public class ZestProjectWizard extends JavaProjectWizard {
             for (int i = 0; i < classpath.length; i++) {
                 newClasspath[i] = classpath[i];
             }
-            /* FIXME: we don't even depend on PDE, but here we assume it: */
             newClasspath[newClasspath.length - 1] = JavaCore
                     .newContainerEntry(new Path(
                             "org.eclipse.pde.core.requiredPlugins"));
