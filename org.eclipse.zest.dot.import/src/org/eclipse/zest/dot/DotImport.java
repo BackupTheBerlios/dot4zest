@@ -15,11 +15,13 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -49,6 +51,20 @@ public final class DotImport {
     }
 
     /**
+     * @param file The DOT file to import
+     * @return The generated file, placed in the default output folder
+     */
+    public static File importDotFile(final IFile file) {
+        try {
+            return importDotFile(resolve(file.getLocationURI().toURL()),
+                    DEFAULT_OUTPUT_FOLDER);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
      * @param dotFile The DOT file to transform to a Zest representation
      * @param targetDirectory The directory to create the generated file in
      * @return The Java file containing the definition of a Zest graph subclass
@@ -68,14 +84,19 @@ public final class DotImport {
         return findResultFile(dotFile, targetDirectory);
     }
 
-    private static File findResultFile(final File dotFile,
-            final File targetDirectory) {
-        String name = DotAst.graphName(dotFile);
-        File resultFile = new File(targetDirectory, name + ".java");
-        if (!resultFile.exists()) {
-            throw new IllegalStateException(resultFile + " does not exist.");
+    /**
+     * @param file The DOT file to import
+     * @param dest The container to store the resulting Zest graph in
+     * @return The generated Zest graph Java source file
+     */
+    public static File importDotFile(final IFile file, final IContainer dest) {
+        try {
+            return importDotFile(resolve(file.getLocationURI().toURL()),
+                    resolve(dest.getLocationURI().toURL()));
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
         }
-        return resultFile;
+        return null;
     }
 
     /**
@@ -99,22 +120,6 @@ public final class DotImport {
         }
         System.err.println("Could not find result file in: " + targetDirectory);
         return null;
-    }
-
-    /**
-     * @param dotText The DOT graph representation
-     * @return The name of the DOT graph
-     */
-    public static String graphName(final String dotText) {
-        return DotAst.graphName(writeToTempFile(dotText));
-    }
-
-    /**
-     * @param dotFile The DOT file
-     * @return The name of the DOT graph defined in the given file
-     */
-    public static String graphName(final File dotFile) {
-        return DotAst.graphName(dotFile);
     }
 
     /**
@@ -144,9 +149,69 @@ public final class DotImport {
         return DotAst.errors(writeToTempFile(dotText));
     }
 
+    /**
+     * @param dotFile The DOT file
+     * @return The errors the parser reported when parsing the given DOT graph
+     */
+    public static List<String> errors(final File dotFile) {
+        return DotAst.errors(dotFile);
+    }
+
+    /**
+     * @param dotFile The DOT file
+     * @return The errors the parser reported when parsing the given DOT graph
+     */
+    public static List<String> errors(final IFile dotFile) {
+        try {
+            return DotAst.errors(resolve(dotFile.getLocationURI().toURL()));
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return Collections.emptyList();
+    }
+
+    /**
+     * @param dotText The DOT graph representation
+     * @return The name of the DOT graph
+     */
+    public static String graphName(final String dotText) {
+        return DotAst.graphName(writeToTempFile(dotText));
+    }
+
+    /**
+     * @param dotFile The DOT file
+     * @return The name of the DOT graph defined in the given file
+     */
+    public static String graphName(final File dotFile) {
+        return DotAst.graphName(dotFile);
+    }
+
+    /**
+     * @param dotFile The DOT file
+     * @return The name of the DOT graph defined in the given file
+     */
+    public static String graphName(final IFile dotFile) {
+        try {
+            return DotAst.graphName(resolve(dotFile.getLocationURI().toURL()));
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private static File findResultFile(final File dotFile,
+            final File targetDirectory) {
+        String name = DotAst.graphName(dotFile);
+        File resultFile = new File(targetDirectory, name + ".java");
+        if (!resultFile.exists()) {
+            throw new IllegalStateException(resultFile + " does not exist.");
+        }
+        return resultFile;
+    }
+
     private static File writeToTempFile(final String text) {
         try {
-            File input = File.createTempFile("zest-wizard", ".dot");
+            File input = File.createTempFile("zest-import", ".dot");
             FileWriter writer = new FileWriter(input);
             writer.write(text);
             writer.flush();

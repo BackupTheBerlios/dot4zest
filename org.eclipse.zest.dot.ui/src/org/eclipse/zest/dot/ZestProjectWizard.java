@@ -26,9 +26,12 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.core.ClasspathEntry;
@@ -40,9 +43,10 @@ import org.eclipse.jdt.internal.ui.wizards.JavaProjectWizard;
  */
 /* TODO use non-internal wizard and pages */
 @SuppressWarnings( "restriction" )
-public class ZestProjectWizard extends JavaProjectWizard {
+public final class ZestProjectWizard extends JavaProjectWizard {
 
-    private static final String LIB = "/libs/";
+    static final String PACKAGE = "org.eclipse.zest.dot";
+    static final String SRC_GEN = "src-gen";
     private static final String RESOURCES = "resources/project";
 
     /**
@@ -53,18 +57,19 @@ public class ZestProjectWizard extends JavaProjectWizard {
     public boolean performFinish() {
         boolean performFinish = super.performFinish();
         try {
-            URL find = FileLocator.find(Activator.getDefault().getBundle(),
-                    new Path(RESOURCES), Collections.EMPTY_MAP);
-            URL fileURL = FileLocator.toFileURL(find);
-            File resourcesDirectory = new File(fileURL.toURI());
             IJavaElement javaElement = getCreatedElement();
             IPath path = javaElement.getPath();
             IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
             IResource newProject = root.findMember(path);
             File outRoot = new File(newProject.getLocationURI());
-            copy(resourcesDirectory, outRoot);
-            newProject.refreshLocal(IResource.DEPTH_INFINITE, null);
+            /*
+             * We copy the required resources from this bundle to the new
+             * project and setup the project's classpath (which uses the copied
+             * resources):
+             */
+            copy(resourcesDirectory(), outRoot);
             setupProjectClasspath(javaElement, root, newProject);
+            newProject.refreshLocal(IResource.DEPTH_INFINITE, null);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (URISyntaxException e) {
@@ -75,34 +80,42 @@ public class ZestProjectWizard extends JavaProjectWizard {
         return performFinish;
     }
 
+    private File resourcesDirectory() throws IOException, URISyntaxException {
+        URL resourcesFolderUrl = FileLocator.find(Activator.getDefault()
+                .getBundle(), new Path(RESOURCES), Collections.EMPTY_MAP);
+        URL fileURL = FileLocator.toFileURL(resourcesFolderUrl);
+        File resourcesDirectory = new File(fileURL.toURI());
+        return resourcesDirectory;
+    }
+
     private void setupProjectClasspath(final IJavaElement javaElement,
             final IWorkspaceRoot root, final IResource newProject) {
         try {
-            /* TODO currently no Jars used - would it be better this way? */
             IClasspathEntry[] classpath = javaElement.getJavaProject()
                     .getRawClasspath();
-            Path jarFolderPath = new Path(newProject.getFullPath() + LIB);
-            IFolder libFolder = (IFolder) root.findMember(jarFolderPath);
-            IResource[] members;
-            members = libFolder.members();
-            IClasspathEntry[] newClasspath = new ClasspathEntry[classpath.length
-                    + 2 + members.length - 1];
-            for (int i = 0; i < members.length; i++) {
-                newClasspath[newClasspath.length - (i + 1)] = JavaCore
-                        .newLibraryEntry(members[i].getFullPath(), null, null);
-            }
-            IProject folder = (IProject) newProject;
-            IFolder gen = folder.getFolder("src-gen");
-            gen.create(true, true, null);
-            newClasspath[newClasspath.length - 2] = JavaCore.newSourceEntry(gen
-                    .getFullPath());
+            /*
+             * We will add two items to the classpath: a src-gen source folder
+             * and the Zest plugin dependencies (to get the required SWT and
+             * Zest dependencies into the newly created project).
+             */
+            IClasspathEntry[] newClasspath = new ClasspathEntry[classpath.length + 2];
+            IProject project = (IProject) newProject;
+            IFolder sourceGenFolder = project.getFolder(SRC_GEN);
+            sourceGenFolder.create(true, true, null);
+            createPackage(project, sourceGenFolder);
+            /* Copy over the existing classpath entries: */
             for (int i = 0; i < classpath.length; i++) {
                 newClasspath[i] = classpath[i];
             }
+            newClasspath[newClasspath.length - 2] = JavaCore
+                    .newSourceEntry(sourceGenFolder.getFullPath());
             newClasspath[newClasspath.length - 1] = JavaCore
                     .newContainerEntry(new Path(
                             "org.eclipse.pde.core.requiredPlugins"));
+            /* Set the updated classpath: */
             javaElement.getJavaProject().setRawClasspath(newClasspath, null);
+            /* Activate the Zest project nature: */
+            ToggleNatureAction.toggleNature(project);
         } catch (JavaModelException e) {
             e.printStackTrace();
         } catch (CoreException e) {
@@ -110,10 +123,23 @@ public class ZestProjectWizard extends JavaProjectWizard {
         }
     }
 
+    private void createPackage(final IProject project,
+            final IFolder sourceGenFolder) throws JavaModelException {
+        IJavaProject javaProject = JavaCore.create(project);
+        IPackageFragmentRoot newPackage = javaProject
+                .getPackageFragmentRoot(sourceGenFolder);
+        newPackage.createPackageFragment(PACKAGE, true,
+                new NullProgressMonitor());
+    }
+
     private void copy(final File sourceRootFolder,
             final File destinationRootFolder) throws IOException {
         for (String name : sourceRootFolder.list()) {
             File source = new File(sourceRootFolder, name);
+            /* The resources we copy over are versioned in this bundle. */
+            if (source.getName().equals("CVS")) {
+                continue;
+            }
             if (source.isDirectory()) {
                 // Recursively create sub-directories:
                 File destinationFolder = new File(destinationRootFolder, source
