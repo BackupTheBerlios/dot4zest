@@ -20,6 +20,7 @@ import org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.eclipse.jdt.internal.compiler.DefaultErrorHandlingPolicies;
 import org.eclipse.jdt.internal.compiler.ICompilerRequestor;
 import org.eclipse.jdt.internal.compiler.batch.FileSystem;
+import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 import org.eclipse.jdt.internal.compiler.env.INameEnvironment;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.eclipse.jdt.internal.core.builder.ProblemFactory;
@@ -67,7 +68,7 @@ final class GraphCreatorViaInternalJdtCompiler implements IGraphCreator {
                     public void acceptResult(final CompilationResult result) {
                         CategorizedProblem[] errors = result.getErrors();
                         for (CategorizedProblem categorizedProblem : errors) {
-                            System.err.println(String.format(
+                            System.out.println(String.format(
                                     "%s: '%s' (%s, line %s)",
                                     categorizedProblem.getMarkerType(),
                                     categorizedProblem.getMessage(),
@@ -79,21 +80,20 @@ final class GraphCreatorViaInternalJdtCompiler implements IGraphCreator {
                     }
                 }, ProblemFactory.getProblemFactory(Locale.getDefault()));
 
-        compiler
-                .compile(new org.eclipse.jdt.internal.compiler.env.ICompilationUnit[] { new org.eclipse.jdt.internal.compiler.env.ICompilationUnit() {
-                    public char[] getFileName() {
-                        return zestFile.getAbsolutePath().toCharArray();
-                    }
-                    public char[][] getPackageName() {
-                        return null;
-                    }
-                    public char[] getMainTypeName() {
-                        return graphName.toCharArray();
-                    }
-                    public char[] getContents() {
-                        return read(zestFile).toCharArray();
-                    }
-                } });
+        compiler.compile(new ICompilationUnit[] { new ICompilationUnit() {
+            public char[] getFileName() {
+                return zestFile.getAbsolutePath().toCharArray();
+            }
+            public char[][] getPackageName() {
+                return null;
+            }
+            public char[] getMainTypeName() {
+                return graphName.toCharArray();
+            }
+            public char[] getContents() {
+                return read(zestFile).toCharArray();
+            }
+        } });
         try {
             URL url = zestFile.getParentFile().toURI().toURL();
             return url;

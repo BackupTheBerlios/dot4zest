@@ -198,25 +198,20 @@ public final class ZestGraphWizard extends Wizard implements INewWizard {
 
     private void launchOpenFile(final IFile file, final IProgressMonitor monitor) {
         monitor.setTaskName(RUNNING_FILE);
-        try {
-            /*
-             * With JUnit 4.5, which is the default for Eclipse 3.5, we can't do
-             * it the easy way anymore, i.e. just launch the generated graph as
-             * a JUnit application, because the test class (which is our graph)
-             * must not have any other constructor but the no-args constructor
-             * for JUnit. For now, running the generated file is therefore
-             * disabled.
-             */
-            /*
-             * JUnitLaunchShortcut f = new JUnitLaunchShortcut(); f
-             * .launch(PlatformUI.getWorkbench()
-             * .getActiveWorkbenchWindow().getActivePage() .getActiveEditor(),
-             * ILaunchManager.RUN_MODE);
-             */
-            // TODO launch open file as Java application
-        } catch (Exception e1) {
-            e1.printStackTrace();
-        }
+        /*
+         * With JUnit 4.5, which is the default for Eclipse 3.5, we can't do it
+         * the easy way anymore, i.e. just launch the generated graph as a JUnit
+         * application, because the test class (which is our graph) must not
+         * have any other constructor but the no-args constructor for JUnit. For
+         * now, running the generated file is therefore disabled.
+         */
+        /*
+         * JUnitLaunchShortcut f = new JUnitLaunchShortcut(); f
+         * .launch(PlatformUI.getWorkbench()
+         * .getActiveWorkbenchWindow().getActivePage() .getActiveEditor(),
+         * ILaunchManager.RUN_MODE);
+         */
+        // TODO launch open file as Java application
         monitor.worked(1);
     }
 

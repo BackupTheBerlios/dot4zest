@@ -42,7 +42,7 @@ import org.eclipse.jdt.internal.ui.wizards.JavaProjectWizard;
 @SuppressWarnings( "restriction" )
 public class ZestProjectWizard extends JavaProjectWizard {
 
-    private static final String LIB = "/lib/";
+    private static final String LIB = "/libs/";
     private static final String RESOURCES = "resources/project";
 
     /**

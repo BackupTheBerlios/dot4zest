@@ -11,7 +11,6 @@ import org.eclipse.zest.core.widgets.ZestStyles;
 import org.eclipse.zest.layouts.LayoutStyles;
 import org.eclipse.zest.layouts.algorithms.*;
 import org.eclipse.zest.dot.DotExport;
-import org.junit.Test;
 /** Zest graph generated from Graphviz DOT graph 'LabeledGraph'. */
 public class LabeledGraph extends Graph {
 	public LabeledGraph(final Composite parent, final int style) {
@@ -54,7 +53,7 @@ public class LabeledGraph extends Graph {
 		return DotExport.exportZestGraph(this);
 	}
 
-	/* Support to run this graph as a Java application or a JUnit test: */
+	/* Support to run this graph as a Java application: */
 
 	public static void main(final String[] args) {
 		final Shell shell = createShell();
@@ -70,18 +69,6 @@ public class LabeledGraph extends Graph {
 		shell.setLayout(new FillLayout());
 		shell.setSize(200, 250);
 		return shell;
-	}
-
-	/** Default constructor for JUnit. Creates a new graph in a new shell, with no style. */
-	public LabeledGraph() { // for JUnit
-		this(createShell(), SWT.NONE);
-	}
-
-	@Test
-	public void test() {
-		String dot = this.toDot();
-		System.out.println("Graph as DOT:\n" + dot);
-		open(this.getShell());
 	}
 
 	private static void open(final Shell shell) {

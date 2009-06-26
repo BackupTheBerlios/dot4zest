@@ -8,6 +8,7 @@
  *******************************************************************************/
 package org.eclipse.zest;
 
+import org.eclipse.zest.dot.TestDotImport;
 import org.eclipse.zest.dot.TestZestGraphTemplate;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -20,5 +21,5 @@ import org.junit.runners.Suite;
 // TODO: add actual UI tests (open wizard, etc.)
 @Suite.SuiteClasses( { /* TestExperimentalDotImport.class, */// not passing and
 // experimental
-TestZestGraphTemplate.class } )
+TestZestGraphTemplate.class, TestDotImport.class } )
 public final class DotUiSuite {}
