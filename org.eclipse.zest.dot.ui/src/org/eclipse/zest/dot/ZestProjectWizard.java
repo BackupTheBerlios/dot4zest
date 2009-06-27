@@ -36,6 +36,8 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.core.ClasspathEntry;
 import org.eclipse.jdt.internal.ui.wizards.JavaProjectWizard;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.ui.IWorkbench;
 
 /**
  * Create a Java project, copy some resources and setup the classpath.
@@ -48,6 +50,18 @@ public final class ZestProjectWizard extends JavaProjectWizard {
     static final String PACKAGE = "org.eclipse.zest.dot";
     static final String SRC_GEN = "src-gen";
     private static final String RESOURCES = "resources/project";
+
+    /**
+     * {@inheritDoc}
+     * @see org.eclipse.jdt.internal.ui.wizards.NewElementWizard#init(org.eclipse.ui.IWorkbench,
+     *      org.eclipse.jface.viewers.IStructuredSelection)
+     */
+    @Override
+    public void init(final IWorkbench workbench,
+            final IStructuredSelection currentSelection) {
+        super.setWindowTitle("New Zest Project");
+        super.init(workbench, currentSelection);
+    }
 
     /**
      * {@inheritDoc}

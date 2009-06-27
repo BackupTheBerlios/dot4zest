@@ -191,6 +191,22 @@ public final class ZestGraphWizardPageTemplateSelection extends WizardPage {
         return ((ZestGraphWizard) getWizard()).getDotText();
     }
 
+    /**
+     * For testing purpose.
+     * @return The name of the graph to generate
+     */
+    String getGraphName() {
+        return combo.getItem(combo.getSelectionIndex());
+    }
+
+    /**
+     * For testing purpose.
+     * @param containerName The name of the container to use
+     */
+    void setContainerText(final String containerName) {
+        containerText.setText(containerName);
+    }
+
     private void createComboRow(final Composite composite) {
         Label label = new Label(composite, SWT.NULL);
         label.setText(TEMPLATE);
@@ -289,16 +305,19 @@ public final class ZestGraphWizardPageTemplateSelection extends WizardPage {
     }
 
     private void setContainerFromSelection() {
-        Object o = ((IStructuredSelection) selection).getFirstElement();
-        if (o instanceof IPackageFragmentRoot) {
-            containerText.setText(((IPackageFragmentRoot) o).getPath()
-                    .toString());
-        } else if (o instanceof IPackageFragment) {
-            containerText.setText(((IPackageFragment) o).getPath().toString());
-        } else if (o instanceof IResource) {
-            containerText.setText(((IResource) o).getFullPath().toString());
-        } else {
-            containerText.setText("");
+        if (selection != null) {
+            Object o = ((IStructuredSelection) selection).getFirstElement();
+            if (o instanceof IPackageFragmentRoot) {
+                containerText.setText(((IPackageFragmentRoot) o).getPath()
+                        .toString());
+            } else if (o instanceof IPackageFragment) {
+                containerText.setText(((IPackageFragment) o).getPath()
+                        .toString());
+            } else if (o instanceof IResource) {
+                containerText.setText(((IResource) o).getFullPath().toString());
+            } else {
+                containerText.setText("");
+            }
         }
     }
 

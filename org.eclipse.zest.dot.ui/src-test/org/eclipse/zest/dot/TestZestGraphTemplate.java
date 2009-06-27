@@ -19,7 +19,7 @@ import org.junit.Test;
  */
 public final class TestZestGraphTemplate {
     @Test
-    public void test() {
+    public void availableTemplates() {
         // FIXME: requires running platform
         if (Platform.isRunning()) {
             String[] contents = ZestGraphTemplate.availableTemplateContents();
