@@ -13,6 +13,7 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -21,6 +22,15 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.debug.core.DebugPlugin;
+import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.debug.core.ILaunchConfigurationType;
+import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
+import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.debug.ui.DebugUITools;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ISelection;
@@ -69,7 +79,7 @@ public final class ZestGraphWizard extends Wizard implements INewWizard {
     public void addPages() {
         customizationPage = new ZestGraphWizardPageCustomize();
         /*
-         * Logic is implemented: we pass the cpnverter to use to the page. The
+         * Logic is implemented: we pass the converter to use to the page. The
          * converter should compile the generated Java source file and load the
          * Graph using reflection. This does not work yet. We do get the
          * preview, however. Classes corresponding to the templates are exported
@@ -131,6 +141,52 @@ public final class ZestGraphWizard extends Wizard implements INewWizard {
         return dotText;
     }
 
+    /**
+     * @param file The Zest graph Java source file to run
+     * @param monitor The progress monitor
+     */
+    static void launchJavaApplication(final IFile file,
+            final IProgressMonitor monitor) {
+        monitor.setTaskName(RUNNING_FILE);
+        IProject project = file.getProject();
+        IJavaProject javaProject = JavaCore.create(project);
+        ILaunchManager mgr = DebugPlugin.getDefault().getLaunchManager();
+        ILaunchConfigurationType type = mgr
+                .getLaunchConfigurationType(IJavaLaunchConfigurationConstants.ID_JAVA_APPLICATION);
+        try {
+            ILaunchConfigurationWorkingCopy copy = type.newInstance(null,
+                    "ZestLaunch");
+            /* Un-comment to avoid adding to the launch history: */
+            // copy.setAttribute(IDebugUIConstants.ATTR_PRIVATE, true);
+            setClassToLaunch(file, copy);
+            copy.setAttribute(
+                    IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME,
+                    javaProject.getProject().getName());
+            ILaunchConfiguration configuration = copy.doSave();
+            DebugUITools.launch(configuration, ILaunchManager.RUN_MODE);
+        } catch (CoreException e) {
+            e.printStackTrace();
+        }
+        monitor.worked(1);
+    }
+
+    private static void setClassToLaunch(final IFile file,
+            final ILaunchConfigurationWorkingCopy copy) {
+        String location = file.getLocation().toString();
+        /*
+         * TODO there must be a cleaner way to get the fully qualified classname
+         * for a Java source file in a Java project...
+         */
+        if (!(location.contains("org") && location.contains(".java"))) {
+            return;
+        }
+        String className = location.substring(location.indexOf("org"),
+                location.indexOf(".java")).replaceAll("/", ".");
+        copy.setAttribute(
+                IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME,
+                className);
+    }
+
     private IRunnableWithProgress createRunnable(final String containerName,
             final String fileName) {
         IRunnableWithProgress op = new IRunnableWithProgress() {
@@ -187,31 +243,12 @@ public final class ZestGraphWizard extends Wizard implements INewWizard {
                         .getActiveWorkbenchWindow().getActivePage();
                 try {
                     IDE.openEditor(page, file, true);
-                    launchOpenFile(file, monitor);
+                    launchJavaApplication(file, monitor);
                 } catch (PartInitException e) {
                     e.printStackTrace();
                 }
             }
         });
-        monitor.worked(1);
-    }
-
-    private void launchOpenFile(final IFile file, final IProgressMonitor monitor) {
-        monitor.setTaskName(RUNNING_FILE);
-        /*
-         * With JUnit 4.5, which is the default for Eclipse 3.5, we can't do it
-         * the easy way anymore, i.e. just launch the generated graph as a JUnit
-         * application, because the test class (which is our graph) must not
-         * have any other constructor but the no-args constructor for JUnit. For
-         * now, running the generated file is therefore disabled.
-         */
-        /*
-         * JUnitLaunchShortcut f = new JUnitLaunchShortcut(); f
-         * .launch(PlatformUI.getWorkbench()
-         * .getActiveWorkbenchWindow().getActivePage() .getActiveEditor(),
-         * ILaunchManager.RUN_MODE);
-         */
-        // TODO launch open file as Java application
         monitor.worked(1);
     }
 

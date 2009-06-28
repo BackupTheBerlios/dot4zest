@@ -18,6 +18,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collections;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -38,6 +39,8 @@ import org.eclipse.jdt.internal.core.ClasspathEntry;
 import org.eclipse.jdt.internal.ui.wizards.JavaProjectWizard;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.ide.IDE;
 
 /**
  * Create a Java project, copy some resources and setup the classpath.
@@ -46,10 +49,16 @@ import org.eclipse.ui.IWorkbench;
 /* TODO use non-internal wizard and pages */
 @SuppressWarnings( "restriction" )
 public final class ZestProjectWizard extends JavaProjectWizard {
-
+    /*
+     * The name of the generated file depends on the DOT graph name of the
+     * sample graph that is copied from resources/project/templates to the new
+     * project.
+     */
+    private static final String SAMPLE_GRAPH_JAVA = "SampleGraph.java";
     static final String PACKAGE = "org.eclipse.zest.dot";
     static final String SRC_GEN = "src-gen";
     private static final String RESOURCES = "resources/project";
+    private static final String TEMPLATES = "templates";
 
     /**
      * {@inheritDoc}
@@ -84,6 +93,8 @@ public final class ZestProjectWizard extends JavaProjectWizard {
             copy(resourcesDirectory(), outRoot);
             setupProjectClasspath(javaElement, root, newProject);
             newProject.refreshLocal(IResource.DEPTH_INFINITE, null);
+            openDotFile(javaElement);
+            runGeneratedZestGraph(javaElement);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (URISyntaxException e) {
@@ -92,6 +103,48 @@ public final class ZestProjectWizard extends JavaProjectWizard {
             e.printStackTrace();
         }
         return performFinish;
+    }
+
+    /**
+     * @return The project-relative path to the sample Zest graph generated from
+     *         the sample DOT file copied into the new project.
+     */
+    static IPath pathToGeneratedGraph() {
+        return new Path(ZestProjectWizard.SRC_GEN + "/"
+                + ZestProjectWizard.PACKAGE.replaceAll("\\.", "/") + "/"
+                + SAMPLE_GRAPH_JAVA);
+    }
+
+    private void runGeneratedZestGraph(final IJavaElement javaElement)
+            throws JavaModelException {
+        IPath graph = pathToGeneratedGraph();
+        IProject project = (IProject) javaElement.getCorrespondingResource();
+        IFile member = (IFile) project.findMember(graph);
+        /* We give the builder some time to generate files, etc. */
+        /*
+         * FIXME: this could end up being a nasty little trap. Is there a more
+         * reliable way to wait for the builder to be done here?
+         */
+        while (member == null || !member.exists()) {
+            try {
+                Thread.sleep(100);
+                member = (IFile) project.findMember(graph);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        ZestGraphWizard
+                .launchJavaApplication(member, new NullProgressMonitor());
+    }
+
+    private void openDotFile(final IJavaElement javaElement)
+            throws CoreException {
+        IProject project = (IProject) javaElement.getCorrespondingResource();
+        IFolder templatesFolder = (IFolder) project.findMember(new Path(
+                TEMPLATES));
+        IFile file = (IFile) templatesFolder.members()[0];
+        IDE.openEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+                .getActivePage(), file);
     }
 
     private File resourcesDirectory() throws IOException, URISyntaxException {

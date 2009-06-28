@@ -12,7 +12,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.ui.wizards.NewJavaProjectWizardPageOne;
@@ -30,12 +30,6 @@ import org.junit.Test;
  * @author Fabian Steeg (fsteeg)
  */
 public final class TestZestProjectWizard {
-    /*
-     * The name of the generated file depends on the DOT graph name of the
-     * sample graph that is copied from resources/project/templates to the new
-     * project.
-     */
-    private static final String SAMPLE_GRAPH_JAVA = "SampleGraph.java";
     private IProject project;
 
     @Before
@@ -53,8 +47,6 @@ public final class TestZestProjectWizard {
     public void zestGraphCreation() {
         /* Run the wizard and return the name of the new project: */
         runWizard();
-        /* We give the builder some time to generate files, etc. */
-        delay(2000);
         /* Then we test the wizard results: */
         testProjectCreation();
         testBuilder();
@@ -62,9 +54,7 @@ public final class TestZestProjectWizard {
     }
 
     private void testBuilder() {
-        Path path = new Path(ZestProjectWizard.SRC_GEN + "/"
-                + ZestProjectWizard.PACKAGE.replaceAll("\\.", "/") + "/"
-                + SAMPLE_GRAPH_JAVA);
+        IPath path = ZestProjectWizard.pathToGeneratedGraph();
         IResource generatedZestFile = project.findMember(path);
         String shouldExist = "Zest graph created by project builder should exist: "
                 + path;
@@ -86,15 +76,6 @@ public final class TestZestProjectWizard {
                             "Zest nature should be present on new Zest project",
                             nature);
         } catch (CoreException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void delay(final int millis) {
-        // TODO: is there a more reliable way to do this?
-        try {
-            Thread.sleep(millis);
-        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }

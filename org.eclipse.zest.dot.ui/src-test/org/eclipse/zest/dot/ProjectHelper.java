@@ -59,6 +59,7 @@ public final class ProjectHelper {
             project.refreshLocal(-1, null);
             if (project.exists()) {
                 project.delete(true, null);
+                assertProjectDoesntExist(project.getLocation());
             }
             project.create(null);
             if (!project.isOpen()) {
