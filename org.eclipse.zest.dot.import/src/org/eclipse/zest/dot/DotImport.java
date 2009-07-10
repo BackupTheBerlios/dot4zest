@@ -10,6 +10,7 @@
 package org.eclipse.zest.dot;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -19,6 +20,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -34,6 +36,8 @@ import org.openarchitectureware.workflow.monitor.ProgressMonitor;
  * @author Fabian Steeg (fsteeg)
  */
 public final class DotImport {
+    private static final String ZEST_TEMPLATE = "Zest";// .xpt = filename
+    private static final String ZEST_ANIMATION_TEMPLATE = "ZestAnimation";// .xpt
     static final File DEFAULT_OUTPUT_FOLDER = new File(
             "src-gen/org/eclipse/zest/dot");
     private static final URL WORKFLOW = DotImport.class
@@ -224,7 +228,8 @@ public final class DotImport {
     }
 
     private enum Slot {
-        MODEL_FILE("modelFile"), TARGET_DIR("targetDir");
+        MODEL_FILE("modelFile"), TARGET_DIR("targetDir"), TEMPLATE_NAME(
+                "templateName");
         private String v;
 
         Slot(final String v) {
@@ -238,7 +243,23 @@ public final class DotImport {
         properties.put(Slot.MODEL_FILE.v, dotLocation);
         properties.put(Slot.TARGET_DIR.v, targetDirectory.toFile()
                 .getAbsolutePath());
+        properties.put(Slot.TEMPLATE_NAME.v, animated(dotLocation)
+                ? ZEST_ANIMATION_TEMPLATE : ZEST_TEMPLATE);
         return properties;
+    }
+
+    private static boolean animated(final String dotLocation) {
+        try {
+            StringBuilder builder = new StringBuilder();
+            Scanner s = new Scanner(new File(dotLocation));
+            while (s.hasNextLine()) {
+                builder.append(s.nextLine());
+            }
+            return builder.toString().contains("cluster_");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     private static File loadWorkflow() {

@@ -18,7 +18,7 @@ import static org.eclipse.zest.dot.DotImportTestUtils.*;
  * @author Fabian Steeg (fsteeg)
  */
 public final class TestBasicDotImport {
-
+    
     /**
      * Sample graph summarizing all that is currently supported in the DOT
      * input.
@@ -27,7 +27,15 @@ public final class TestBasicDotImport {
     public void sampleGraph() {
         importFrom(new File(RESOURCES_INPUT + "sample_input.dot"));
     }
-
+    
+    /**
+     * Basic directed graph.
+     */
+    @Test
+    public void basicGraph() {
+        importFrom(new File(RESOURCES_TESTS + "basic_directed_graph.dot"));
+    }
+    
     /**
      * Test execution of File-based DOT-to-Zest transformations for a simple
      * directed graph.

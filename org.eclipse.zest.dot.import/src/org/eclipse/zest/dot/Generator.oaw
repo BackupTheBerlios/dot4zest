@@ -18,7 +18,7 @@
   <beautifier
      class="org.openarchitectureware.xpand2.output.JavaBeautifier"/>
      <metaModel id='mm' class='org.eclipse.m2t.type.emf.EmfRegistryMetaModel'/>
-     <expand value='org::eclipse::zest::dot::Zest::main FOR theModel'/>
+     <expand value='org::eclipse::zest::dot::${templateName}::main FOR theModel'/>
      <genPath value='${targetDir}'/>
   </component>
 </workflow>
