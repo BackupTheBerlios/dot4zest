@@ -224,7 +224,7 @@ public final class ZestProjectWizard extends JavaProjectWizard {
                 // Recursively create sub-directories:
                 File destinationFolder = new File(destinationRootFolder, source
                         .getName());
-                if (!destinationFolder.mkdirs()) {
+                if (!destinationFolder.mkdirs() && !destinationFolder.exists()) {
                     throw new IllegalStateException("Could not create: "
                             + destinationFolder);
                 }

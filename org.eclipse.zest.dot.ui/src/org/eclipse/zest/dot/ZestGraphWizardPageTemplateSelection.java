@@ -58,6 +58,7 @@ public final class ZestGraphWizardPageTemplateSelection extends WizardPage {
     private static final String TEMPLATE = "&Template:";
     private static final String BROWSE = "Browse...";
     private static final String CONTAINER = "&Container:";
+    private static final String GRAPH_MUST_NOT_EXIST = "File already exists: ";
     private Text containerText;
     private ISelection selection;
     private Combo combo;
@@ -109,7 +110,10 @@ public final class ZestGraphWizardPageTemplateSelection extends WizardPage {
     @Override
     public void dispose() {
         super.dispose();
-        previewGraph.dispose();
+        /* If the classname is changed, the preview is null. */
+        if (previewGraph != null) {
+            previewGraph.dispose();
+        }
         composite.dispose();
         combo.dispose();
         containerText.dispose();
@@ -154,6 +158,8 @@ public final class ZestGraphWizardPageTemplateSelection extends WizardPage {
             updateStatus(CONTAINER_MUST_EXIST);
         } else if (!container.isAccessible()) {
             updateStatus(MUST_BE_WRITABLE);
+        } else if (((IContainer) container).findMember(fileName) != null) {
+            updateStatus(GRAPH_MUST_NOT_EXIST + fileName);
         } else if (fileName.length() == 0) {
             updateStatus(NAME_MUST_BE_SPECIFIED);
         } else if (fileName.replace('\\', '/').indexOf('/', 1) > 0) {

@@ -36,9 +36,9 @@ final class GraphCreatorViaJavaCompilerApi implements IGraphCreator {
      */
     public Graph create(final Composite parent, final int style,
             final String dot) {
-        File zestFile = DotImport.importDotString(dot);
+        File zestFile = new DotImport(dot).getZestFile();
         URL url = compileWithJavaCompiler(zestFile);
-        Graph graph = ExperimentalDotImport.loadGraph(DotImport.graphName(dot),
+        Graph graph = ExperimentalDotImport.loadGraph(new DotImport(dot).getName(),
                 url, parent, style);
         return graph;
     }
