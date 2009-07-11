@@ -18,7 +18,6 @@
 «DEFINE dotFile FOR graph»
 	«FILE name.toFirstUpper() + ".java"-»
 	package org.eclipse.zest.dot;
-	import java.util.List;
 	import org.eclipse.draw2d.Animation;
 	import org.eclipse.swt.SWT;
 	import org.eclipse.swt.events.SelectionEvent;
@@ -38,22 +37,26 @@
 	import org.eclipse.zest.layouts.algorithms.*;
 	/** Zest graph generated from Graphviz DOT graph '«name»'. */
 	public class «name.toFirstUpper()» extends Graph {
-		static String nodeLabel = null;
-	    static String edgeLabel = null;
-	    static int edgeStyle = SWT.LINE_SOLID;
+		private static String nodeLabel = null;
+	    private static String edgeLabel = null;
+	    private static int edgeStyle = SWT.LINE_SOLID;
+	    «IF !stmts.exists(e|e.metaType.name.contains("attribute")&&e.toString().contains("layout"))»
+		    private static AbstractLayoutAlgorithm layout = new TreeLayoutAlgorithm(
+	            	LayoutStyles.NO_LAYOUT_NODE_RESIZING);
+	    «ENDIF»
 	    public «name.toFirstUpper()» (final Composite parent, final int style) {
 	        super(parent, style);
 	        «IF type == graphtype::digraph» setConnectionStyle(ZestStyles.CONNECTIONS_DIRECTED); «ENDIF»
-	        «IF !stmts.exists(e|e.metaType.name.contains("attribute")&&e.toString().contains("layout"))»
-	        setLayoutAlgorithm(new TreeLayoutAlgorithm(
-            	LayoutStyles.NO_LAYOUT_NODE_RESIZING), true); «ENDIF»
+	        
+	        setLayoutAlgorithm(layout, true);
 	    }
 	    
-	    «EXPAND stmt FOREACH stmts SEPARATOR ""»
+	    private «EXPAND stmt FOREACH stmts SEPARATOR " private "»
 	    
-	    private static String tryGlobal(final String global, final String name) {
+	    private static String global(final String global, final String name) {
 	    	return global==null?name:global;
     	}
+    	
     	/** @return This graph as a DOT representation, to be rendered with Graphviz. */
 	    public String toDot() { 
 	        return DotExport.exportZestGraph(this);
@@ -61,10 +64,11 @@
 	    
 	    /* Support to run this graph as a Java application: */
 	    
-		public static void main(String[] args) {
+		public static void main(final String[] args) {
 	        final Shell shell = createShell();
 	        final «name.toFirstUpper()» g = new «name.toFirstUpper()»(shell, SWT.NONE);
 	        g.setLayoutData(new GridData(GridData.FILL_BOTH));
+	        System.out.println(g.toDot());
 	        Button b1 = new Button(shell, SWT.PUSH);
 	        b1.setText("Start");
 	        /* We start with the first listener */
@@ -92,41 +96,17 @@
 	        }
 	    }
 	    
-	    private static void removeListeners(Button b, int type) {
+	    private static void removeListeners(final Button b, final int type) {
 	        Listener[] listeners = b.getListeners(type);
-	        System.out.println(listeners.length);
 	        for (Listener listener : listeners) {
 	            b.removeListener(type, listener);
 	        }
 	    }
 	
-	    public static GraphNode node(Graph g, String label) {
-	        /* First we check if the node already exists: */
-	        GraphNode node = findSourceNode(g, label);
-	        if (node == null) {
-	            /* If not, we create a new node: */
-	            node = new GraphNode(g, SWT.NONE, label);
-	        }
-	        return node;
-	    }
-	
-	    private static GraphNode findSourceNode(Graph g, String label) {
-	        List<?> nodes = g.getNodes();
-	        GraphNode parent = null;
-	        for (Object object : nodes) {
-	            GraphNode node = (GraphNode) object;
-	            /* TODO IDs would be much cleaner here */
-	            if (node.getText().equals(label)) {
-	                parent = node;
-	            }
-	        }
-	        return parent;
-	    }
-	
 	    private static SelectionListener listenerFor(final Runnable runner) {
 	        return new SelectionListener() {
-	            public void widgetDefaultSelected(SelectionEvent e) {}
-	            public void widgetSelected(SelectionEvent e) {
+	            public void widgetDefaultSelected(final SelectionEvent e) {}
+	            public void widgetSelected(final SelectionEvent e) {
 	                runner.run();
 	            }
 	        };
@@ -139,8 +119,8 @@
 «DEFINE stmt FOR stmt»«ENDDEFINE»
 «DEFINE stmt FOR attribute»
 	 «IF name=="layout"»
-		setLayoutAlgorithm(new 
-		«value.toFirstUpper()»LayoutAlgorithm(LayoutStyles.NO_LAYOUT_NODE_RESIZING), true); «ENDIF»
+		static AbstractLayoutAlgorithm layout = new 
+		«value.toFirstUpper()»LayoutAlgorithm(LayoutStyles.NO_LAYOUT_NODE_RESIZING); «ENDIF»
 «ENDDEFINE»
 «DEFINE stmt FOR attr_stmt»
 	 «IF type==dot::attributetype::node && attributes.a_list.exists(e|e.name=="label")»
@@ -155,7 +135,7 @@
 «REM» Expansion of node declarations «ENDREM»
 «DEFINE stmt FOR node_stmt» GraphNode n«name» = new GraphNode(this, SWT.NONE, 
 	«IF attributes.a_list.exists(e|e.name=="label")» «attributes.a_list.select(e|e.name=="label").value.get(0)» 
-	«ELSE»tryGlobal(nodeLabel, "«name»")«ENDIF»); 
+	«ELSE»global(nodeLabel, "«name»")«ENDIF»); 
 «ENDDEFINE»
 «REM» Expansion of edges «ENDREM»
 «DEFINE stmt FOR edge_stmt_node» 
@@ -165,7 +145,7 @@
 		«EXPAND edge_target FOREACH edgeRHS» );
 	«IF attributes.a_list.exists(e|e.name=="label")» n«node_id.name»«EXPAND edge_target FOREACH edgeRHS»
 		.setText(«attributes.a_list.select(e|e.name=="label").value.get(0)»);
-		«ELSE» n«node_id.name»«EXPAND edge_target FOREACH edgeRHS».setText(tryGlobal(edgeLabel, "")); «ENDIF» 
+		«ELSE» n«node_id.name»«EXPAND edge_target FOREACH edgeRHS».setText(global(edgeLabel, "")); «ENDIF» 
 	n«node_id.name»«EXPAND edge_target FOREACH edgeRHS».setLineStyle(edgeStyle);
 	«IF attributes.a_list.exists(e|e.name=="style")»
 		n«node_id.name»«EXPAND edge_target FOREACH edgeRHS».setLineStyle(«EXPAND global_edge_attribute FOR attributes.a_list.select(e|e.name=="style").get(0)»); «ENDIF»
@@ -179,7 +159,7 @@
         private Graph g;
         private Button b;
 
-        public AnimationRunner«runner»(Graph g, Button b1) {
+        public AnimationRunner«runner»(final Graph g, final Button b1) {
             this.g = g;
             this.b = b1;
         }

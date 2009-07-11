@@ -16,22 +16,21 @@ import org.eclipse.zest.core.widgets.GraphNode;
 import org.eclipse.zest.core.widgets.ZestStyles;
 import org.eclipse.zest.layouts.LayoutStyles;
 import org.eclipse.zest.layouts.algorithms.*;
-/** Zest graph generated from Graphviz DOT graph 'ExperimentalAnimation'. */
-public class ExperimentalAnimation extends Graph {
+/** Zest graph generated from Graphviz DOT graph 'ExperimentalAnimationLayout'. */
+public class ExperimentalAnimationLayout extends Graph {
 	private static String nodeLabel = null;
 	private static String edgeLabel = null;
 	private static int edgeStyle = SWT.LINE_SOLID;
 
-	private static AbstractLayoutAlgorithm layout = new TreeLayoutAlgorithm(
-			LayoutStyles.NO_LAYOUT_NODE_RESIZING);
-
-	public ExperimentalAnimation(final Composite parent, final int style) {
+	public ExperimentalAnimationLayout(final Composite parent, final int style) {
 		super(parent, style);
 		setConnectionStyle(ZestStyles.CONNECTIONS_DIRECTED);
 
 		setLayoutAlgorithm(layout, true);
 	}
 
+	private static AbstractLayoutAlgorithm layout = new RadialLayoutAlgorithm(
+			LayoutStyles.NO_LAYOUT_NODE_RESIZING);
 	private GraphNode n1 = new GraphNode(this, SWT.NONE, global(nodeLabel, "1"));
 	private GraphNode n2 = new GraphNode(this, SWT.NONE, global(nodeLabel, "2"));
 	private GraphNode n3 = new GraphNode(this, SWT.NONE, global(nodeLabel, "3"));
@@ -145,8 +144,8 @@ public class ExperimentalAnimation extends Graph {
 
 	public static void main(final String[] args) {
 		final Shell shell = createShell();
-		final ExperimentalAnimation g = new ExperimentalAnimation(shell,
-				SWT.NONE);
+		final ExperimentalAnimationLayout g = new ExperimentalAnimationLayout(
+				shell, SWT.NONE);
 		g.setLayoutData(new GridData(GridData.FILL_BOTH));
 		System.out.println(g.toDot());
 		Button b1 = new Button(shell, SWT.PUSH);
@@ -161,7 +160,7 @@ public class ExperimentalAnimation extends Graph {
 	private static Shell createShell() {
 		final Display display = new Display();
 		final Shell shell = new Shell(display);
-		shell.setText(ExperimentalAnimation.class.getSimpleName());
+		shell.setText(ExperimentalAnimationLayout.class.getSimpleName());
 		shell.setLayout(new GridLayout(1, false));
 		shell.setSize(200, 200);
 		return shell;

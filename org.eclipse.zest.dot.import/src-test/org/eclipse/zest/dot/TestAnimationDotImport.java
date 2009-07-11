@@ -27,4 +27,12 @@ public final class TestAnimationDotImport {
         importFrom(new File(RESOURCES_TESTS + "experimental_animation.dot"));
     }
     
+    /**
+     * DOT graph to be transformed to a Zest animation with specified layout algorithm.
+     */
+    @Test
+    public void animatedGraphLayout() {
+        importFrom(new File(RESOURCES_TESTS + "experimental_animation_layout.dot"));
+    }
+    
 }
