@@ -1,6 +1,8 @@
 package org.eclipse.zest.dot;
 import org.eclipse.draw2d.Animation;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
@@ -148,14 +150,14 @@ public class ExperimentalAnimation extends Graph {
 		final ExperimentalAnimation g = new ExperimentalAnimation(shell,
 				SWT.NONE);
 		g.setLayoutData(new GridData(GridData.FILL_BOTH));
-		System.out.println(g.toDot());
+		System.out.println("Inital: \n" + g.toDot());
 		Button b1 = new Button(shell, SWT.PUSH);
 		b1.setText("Start");
 		/* We start with the first listener */
 		SelectionListener selectionListener = listenerFor(g.new AnimationRunner0(
 				g, b1));
 		b1.addSelectionListener(selectionListener);
-		open(shell);
+		open(shell, g);
 	}
 
 	private static Shell createShell() {
@@ -167,8 +169,13 @@ public class ExperimentalAnimation extends Graph {
 		return shell;
 	}
 
-	private static void open(final Shell shell) {
+	private static void open(final Shell shell, final ExperimentalAnimation g) {
 		shell.open();
+		shell.addDisposeListener(new DisposeListener() {
+			public void widgetDisposed(final DisposeEvent e) {
+				System.out.println("Final: \n" + g.toDot());
+			}
+		});
 		while (!shell.isDisposed()) {
 			while (!shell.getDisplay().readAndDispatch()) {
 				shell.getDisplay().sleep();

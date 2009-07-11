@@ -155,7 +155,7 @@ public final class ZestGraphWizard extends Wizard implements INewWizard {
                 .getLaunchConfigurationType(IJavaLaunchConfigurationConstants.ID_JAVA_APPLICATION);
         try {
             ILaunchConfigurationWorkingCopy copy = type.newInstance(null,
-                    "ZestLaunch");
+                    file.getName());
             /* Un-comment to avoid adding to the launch history: */
             // copy.setAttribute(IDebugUIConstants.ATTR_PRIVATE, true);
             setClassToLaunch(file, copy);

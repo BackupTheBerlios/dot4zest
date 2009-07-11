@@ -8,6 +8,8 @@
  *******************************************************************************/
 package org.eclipse.zest.dot;
 
+import java.util.List;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.resources.IResource;
@@ -54,12 +56,14 @@ public final class TestZestProjectWizard {
     }
 
     private void testBuilder() {
-        IPath path = ZestProjectWizard.pathToGeneratedGraph();
-        IResource generatedZestFile = project.findMember(path);
-        String shouldExist = "Zest graph created by project builder should exist: "
-                + path;
-        Assert.assertNotNull(shouldExist, generatedZestFile);
-        Assert.assertTrue(shouldExist, generatedZestFile.exists());
+        List<IPath> paths = ZestProjectWizard.pathsToGeneratedGraphs();
+        for (IPath path : paths) {
+            IResource generatedZestFile = project.findMember(path);
+            String shouldExist = "Zest graph created by project builder should exist: "
+                    + path;
+            Assert.assertNotNull(shouldExist, generatedZestFile);
+            Assert.assertTrue(shouldExist, generatedZestFile.exists());
+        }
     }
 
     private void testProjectCreation() {
