@@ -223,7 +223,7 @@ public final class ZestGraphWizard extends Wizard implements INewWizard {
         monitor.beginTask(CREATING + fileName, 4);
         getShell().getDisplay().asyncExec(new Runnable() {
             public void run() {
-                DotImport.importDotString(templatePage.getDotText(), container);
+                new DotImport(templatePage.getDotText()).getZestFile(container);
             }
         });
         monitor.worked(1);

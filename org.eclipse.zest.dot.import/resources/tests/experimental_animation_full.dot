@@ -16,6 +16,6 @@ digraph ExperimentalAnimationFull {
 	/* The single animation steps are marked by numbers: */
 	subgraph cluster_0{ 1 -> 2 [label="First"] }
 	subgraph cluster_1{ 1 -> 3 }
-	/* The final animation step needs to be marked with "END": */
-	subgraph cluster_2_END{ 3 -> 4; 3 -> 5}
+	/* The final animation step needs to be marked with "end": */
+	subgraph cluster_2_end{ 3 -> 4; 3 -> 5}
 }

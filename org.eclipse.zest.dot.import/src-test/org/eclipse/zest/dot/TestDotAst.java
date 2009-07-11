@@ -19,10 +19,16 @@ import org.junit.Test;
  * @author Fabian Steeg (fsteeg)
  */
 public class TestDotAst {
+    private static final DotAst DOT_AST = new DotAst(new File(
+            "resources/input/sample_input.dot"));
+
     @Test
     public void parseName() {
-        String name = DotAst.graphName(new File(
-                "resources/input/sample_input.dot"));
-        Assert.assertEquals("SampleGraph", name);
+        Assert.assertEquals("SampleGraph", DOT_AST.graphName());
+    }
+
+    @Test
+    public void parseErrors() {
+        Assert.assertEquals(0, DOT_AST.errors().size());
     }
 }

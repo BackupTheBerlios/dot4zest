@@ -45,8 +45,8 @@ final class GraphCreatorViaInternalJdtCompiler implements IGraphCreator {
      */
     public Graph create(final Composite parent, final int style,
             final String dot) {
-        String graphName = DotImport.graphName(dot);
-        File zestFile = DotImport.importDotString(dot);
+        String graphName = new DotImport(dot).getName();
+        File zestFile = new DotImport(dot).getZestFile();
         URL url = compileWithInternalJdtCompiler(zestFile, graphName);
         Graph graph = ExperimentalDotImport.loadGraph(graphName, url, parent,
                 style);

@@ -100,7 +100,7 @@ public final class ZestBuilder extends IncrementalProjectBuilder {
                 && resource.getFileExtension().equals("dot")) {
             IFile dotFile = (IFile) resource;
             deleteMarkers(dotFile);
-            List<String> errors = DotImport.errors(dotFile);
+            List<String> errors = new DotImport(dotFile).getErrors();
             /*
              * If parsing the current DOT file causes errors, we add warning
              * markers:
@@ -127,7 +127,7 @@ public final class ZestBuilder extends IncrementalProjectBuilder {
             IPackageFragment targetPackage = packageRoot
                     .getPackageFragment(ZestProjectWizard.PACKAGE);
             IResource targetFolder = targetPackage.getCorrespondingResource();
-            DotImport.importDotFile(dotFile, (IContainer) targetFolder);
+            new DotImport(dotFile).getZestFile((IContainer) targetFolder);
             targetFolder.refreshLocal(1, null);
         } catch (CoreException e) {
             e.printStackTrace();

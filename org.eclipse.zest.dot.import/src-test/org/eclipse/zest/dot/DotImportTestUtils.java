@@ -26,7 +26,7 @@ public final class DotImportTestUtils {
     static void importFrom(final File dotFile) {
         Assert.assertTrue("DOT input file must exist: " + dotFile, dotFile
                 .exists());
-        File zest = DotImport.importDotFile(dotFile);
+        File zest = new DotImport(dotFile).getZestFile();
         Assert.assertNotNull("Resulting file must not be null", zest);
         Assert.assertTrue("Resulting file must exist", zest.exists());
         /*
@@ -34,8 +34,8 @@ public final class DotImportTestUtils {
          * (part of the content of the DOT file, NOT the name of the file), plus
          * the ".java" extension:
          */
-        Assert.assertEquals(zest.getName().split("\\.")[0], DotAst
-                .graphName(dotFile));
+        Assert.assertEquals(zest.getName().split("\\.")[0], new DotAst(dotFile)
+                .graphName());
         System.out.println(String.format(
                 "Transformed DOT in '%s' to Zest in '%s'", dotFile, zest));
     }

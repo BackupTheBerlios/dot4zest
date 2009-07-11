@@ -162,11 +162,14 @@ public final class ZestGraphWizardPageTemplateSelection extends WizardPage {
                 && !fileName.substring(fileName.lastIndexOf('.') + 1)
                         .equalsIgnoreCase(JAVA)) {
             updateStatus(EXTENSION_MUST_BE_JAVA);
-        } else if (DotImport.errors(getDotText()).size() > 0) {
-            List<String> errors = DotImport.errors(getDotText());
-            updateStatus(errors.get(0));
         } else {
-            updateStatus(null);
+            DotImport dotImport = new DotImport(getDotText());
+            List<String> errors = dotImport.getErrors();
+            if (errors.size() > 0) {
+                updateStatus(errors.get(0));
+            } else {
+                updateStatus(null);
+            }
         }
     }
 
@@ -181,7 +184,7 @@ public final class ZestGraphWizardPageTemplateSelection extends WizardPage {
      * @return The name of the file to create
      */
     String getFileName() {
-        return DotImport.graphName(getDotText()) + "." + JAVA;
+        return new DotImport(getDotText()).getName() + "." + JAVA;
     }
 
     /**

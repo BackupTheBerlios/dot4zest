@@ -179,7 +179,7 @@
             removeListeners(b, SWT.Selection);
             removeListeners(b, SWT.DefaultSelection);
             //label=«label»
-            «IF name.contains("END")»
+            «IF name.contains("end")»
 	            b.setText("Done");
 	            b.setEnabled(false);
             «ELSE»

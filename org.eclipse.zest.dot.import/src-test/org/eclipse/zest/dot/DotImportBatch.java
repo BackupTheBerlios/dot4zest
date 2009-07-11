@@ -59,7 +59,7 @@ public final class DotImportBatch {
         for (String inputFileName : inputFiles) {
             File inputFile = new File(inputFolder, inputFileName);
             if (inputFile.getName().toLowerCase().endsWith(".dot")) {
-                DotImport.importDotFile(inputFile, outputFolder);
+                new DotImport(inputFile).getZestFile(outputFolder);
                 System.out.println(String.format("Imported %s from %s into %s",
                         inputFile.getAbsolutePath(), inputFolder
                                 .getAbsolutePath(), outputFolder

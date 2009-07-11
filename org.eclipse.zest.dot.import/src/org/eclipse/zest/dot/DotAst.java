@@ -38,13 +38,21 @@ import org.openarchitectureware.xtext.resource.IXtextResourceFactory;
  * @author Fabian Steeg (fsteeg)
  */
 final class DotAst {
-    private DotAst() {/* Enforce non-instantiability */}
+    private Resource resource;
+
+    /**
+     * @param dotFile The DOT file to parse
+     */
+    public DotAst(final File dotFile) {
+        this.resource = loadResource(dotFile);
+    }
+
     /**
      * @param dotFile The DOT file to parse
      * @return The name of the DOT graph described in the given file
      */
-    static String graphName(final File dotFile) {
-        EObject graph = graph(dotFile);
+    String graphName() {
+        EObject graph = graph();
         Iterator<EAttribute> graphAttributes = graph.eClass()
                 .getEAllAttributes().iterator();
         while (graphAttributes.hasNext()) {
@@ -59,33 +67,31 @@ final class DotAst {
     }
 
     /**
-     * @param dotFile The DOT file to parse
-     * @return The graph EObjects to walk or inspect
+     * @return The errors reported by the parser when parsing the given file
      */
-    static EObject graph(final File dotFile) {
-        /* We load the input DOT file: */
-        Resource res = loadResource(dotFile);
-        EList<EObject> contents = res.getContents();
-        EObject graphs = contents.iterator().next();
-        /* We assume one graph per file, i.e. we take the first only: */
-        EObject graph = graphs.eContents().iterator().next();
-        return graph;
+    List<String> errors() {
+        List<String> result = new ArrayList<String>();
+        EList<Diagnostic> errors = resource.getErrors();
+        Iterator<Diagnostic> i = errors.iterator();
+        while (i.hasNext()) {
+            Diagnostic next = i.next();
+            result.add(String.format("Error in line %s: %s ", next.getLine(),
+                    next.getMessage()));
+        }
+        return result;
     }
 
     /**
      * @param dotFile The DOT file to parse
-     * @return The errors reported by the parser when parsing the given file
+     * @return The graph EObjects to walk or inspect
      */
-    static List<String> errors(final File dotFile) {
-        List<String> result = new ArrayList<String>();
-        EList<Diagnostic> errors = loadResource(dotFile).getErrors();
-        Iterator<Diagnostic> i = errors.iterator();
-        while (i.hasNext()) {
-            Diagnostic next = i.next();
-            result.add(String.format("Error in line %s: %s ", next
-                    .getLine(), next.getMessage()));
-        }
-        return result;
+    EObject graph() {
+        /* We load the input DOT file: */
+        EList<EObject> contents = resource.getContents();
+        EObject graphs = contents.iterator().next();
+        /* We assume one graph per file, i.e. we take the first only: */
+        EObject graph = graphs.eContents().iterator().next();
+        return graph;
     }
 
     private static Resource loadResource(final File file) {
