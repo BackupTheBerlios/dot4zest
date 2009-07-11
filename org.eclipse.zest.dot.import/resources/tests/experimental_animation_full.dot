@@ -6,17 +6,15 @@
  * <p/>
  * Contributors: Fabian Steeg - initial API and implementation; see bug 277380
  *******************************************************************************/
-digraph SampleAnimation {
+digraph ExperimentalAnimationFull {
 	/* We can specify a Zest layout for the animation here: */
-	layout=tree // = TreeLayoutAlgorithm
-	/* Specify global attributes for nodes (label supported) and edges (label
-	   and style supported), override these in individual nodes or edges (see
-	   below): */
-   	node[label="Node"]
-   	edge[label="Edge", style=dotted]
+	layout=radial // = RadialLayoutAlgorithm
+	/* Global attributes for nodes and edges: */
+	node[label="Node"]
+	edge[label="Edge" style=dashed]
 	1;2;3;4;5
 	/* The single animation steps are marked by numbers: */
-	subgraph cluster_0{ 1 -> 2 [label="Dashed" style=dashed]}
+	subgraph cluster_0{ 1 -> 2 [label="First"] }
 	subgraph cluster_1{ 1 -> 3 }
 	/* The final animation step needs to be marked with "END": */
 	subgraph cluster_2_END{ 3 -> 4; 3 -> 5}

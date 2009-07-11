@@ -6,7 +6,7 @@
  * <p/>
  * Contributors: Fabian Steeg - initial API and implementation; see bug 277380
  *******************************************************************************/
-digraph ExperimentalAnimation {
+digraph ExperimentalAnimationSimple {
 	1;2;3;4;5
 	/* The single animation steps are marked by numbers: */
 	subgraph cluster_0{ 1 -> 2 }

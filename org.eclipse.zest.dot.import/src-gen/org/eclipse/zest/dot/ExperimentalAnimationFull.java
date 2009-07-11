@@ -18,28 +18,41 @@ import org.eclipse.zest.core.widgets.GraphNode;
 import org.eclipse.zest.core.widgets.ZestStyles;
 import org.eclipse.zest.layouts.LayoutStyles;
 import org.eclipse.zest.layouts.algorithms.*;
-/** Zest graph generated from Graphviz DOT graph 'ExperimentalAnimation'. */
-public class ExperimentalAnimation extends Graph {
+/** Zest graph generated from Graphviz DOT graph 'ExperimentalAnimationFull'. */
+public class ExperimentalAnimationFull extends Graph {
 	private static String nodeLabel = null;
 	private static String edgeLabel = null;
 	private static int edgeStyle = SWT.LINE_SOLID;
 
-	private static AbstractLayoutAlgorithm layout = new TreeLayoutAlgorithm(
-			LayoutStyles.NO_LAYOUT_NODE_RESIZING);
-
-	public ExperimentalAnimation(final Composite parent, final int style) {
+	public ExperimentalAnimationFull(final Composite parent, final int style) {
 		super(parent, style);
 		setConnectionStyle(ZestStyles.CONNECTIONS_DIRECTED);
 
 		setLayoutAlgorithm(layout, true);
 	}
 
-	private GraphNode n1 = new GraphNode(this, SWT.NONE, global(nodeLabel, "1"));
-	private GraphNode n2 = new GraphNode(this, SWT.NONE, global(nodeLabel, "2"));
-	private GraphNode n3 = new GraphNode(this, SWT.NONE, global(nodeLabel, "3"));
-	private GraphNode n4 = new GraphNode(this, SWT.NONE, global(nodeLabel, "4"));
-	private GraphNode n5 = new GraphNode(this, SWT.NONE, global(nodeLabel, "5"));
-	private class AnimationRunner0 implements Runnable {
+	static AbstractLayoutAlgorithm layout = new RadialLayoutAlgorithm(
+			LayoutStyles.NO_LAYOUT_NODE_RESIZING);
+
+	static {
+		nodeLabel = "Node";
+	}
+
+	static {
+		edgeLabel = "Edge";
+	}
+
+	static {
+		edgeStyle = SWT.LINE_DASH;
+	}
+
+	GraphNode n1 = new GraphNode(this, SWT.NONE, global(nodeLabel, "1"));
+	GraphNode n2 = new GraphNode(this, SWT.NONE, global(nodeLabel, "2"));
+	GraphNode n3 = new GraphNode(this, SWT.NONE, global(nodeLabel, "3"));
+	GraphNode n4 = new GraphNode(this, SWT.NONE, global(nodeLabel, "4"));
+	GraphNode n5 = new GraphNode(this, SWT.NONE, global(nodeLabel, "5"));
+
+	class AnimationRunner0 implements Runnable {
 		private Graph g;
 		private Button b;
 
@@ -53,7 +66,8 @@ public class ExperimentalAnimation extends Graph {
 
 			/* Connection from n1 to n2: */
 			GraphConnection n1n2 = new GraphConnection(g, SWT.NONE, n1, n2);
-			n1n2.setText(global(edgeLabel, ""));
+			n1n2.setText("First");
+
 			n1n2.setLineStyle(edgeStyle);
 
 			g.applyLayout();
@@ -69,7 +83,7 @@ public class ExperimentalAnimation extends Graph {
 		}
 	}
 
-	private class AnimationRunner1 implements Runnable {
+	class AnimationRunner1 implements Runnable {
 		private Graph g;
 		private Button b;
 
@@ -99,7 +113,7 @@ public class ExperimentalAnimation extends Graph {
 		}
 	}
 
-	private class AnimationRunner2 implements Runnable {
+	class AnimationRunner2 implements Runnable {
 		private Graph g;
 		private Button b;
 
@@ -147,8 +161,8 @@ public class ExperimentalAnimation extends Graph {
 
 	public static void main(final String[] args) {
 		final Shell shell = createShell();
-		final ExperimentalAnimation g = new ExperimentalAnimation(shell,
-				SWT.NONE);
+		final ExperimentalAnimationFull g = new ExperimentalAnimationFull(
+				shell, SWT.NONE);
 		g.setLayoutData(new GridData(GridData.FILL_BOTH));
 		System.out.println("Inital: \n" + g.toDot());
 		Button b1 = new Button(shell, SWT.PUSH);
@@ -163,13 +177,14 @@ public class ExperimentalAnimation extends Graph {
 	private static Shell createShell() {
 		final Display display = new Display();
 		final Shell shell = new Shell(display);
-		shell.setText(ExperimentalAnimation.class.getSimpleName());
+		shell.setText(ExperimentalAnimationFull.class.getSimpleName());
 		shell.setLayout(new GridLayout(1, false));
-		shell.setSize(200, 200);
+		shell.setSize(300, 300);
 		return shell;
 	}
 
-	private static void open(final Shell shell, final ExperimentalAnimation g) {
+	private static void open(final Shell shell,
+			final ExperimentalAnimationFull g) {
 		shell.open();
 		shell.addDisposeListener(new DisposeListener() {
 			public void widgetDisposed(final DisposeEvent e) {

@@ -23,16 +23,28 @@ public final class TestAnimationDotImport {
      * Minimal DOT graph to be transformed to a Zest animation.
      */
     @Test
-    public void animatedGraph() {
-        importFrom(new File(RESOURCES_TESTS + "experimental_animation.dot"));
+    public void simple() {
+        importFrom(new File(RESOURCES_TESTS
+                + "experimental_animation_simple.dot"));
     }
-    
+
     /**
-     * DOT graph to be transformed to a Zest animation with specified layout algorithm.
+     * DOT graph to be transformed to a Zest animation with specified layout
+     * algorithm.
      */
     @Test
-    public void animatedGraphLayout() {
-        importFrom(new File(RESOURCES_TESTS + "experimental_animation_layout.dot"));
+    public void layout() {
+        importFrom(new File(RESOURCES_TESTS
+                + "experimental_animation_layout.dot"));
     }
-    
+
+    /**
+     * DOT graph to be transformed to a Zest animation with all supported
+     * settings.
+     */
+    @Test
+    public void full() {
+        importFrom(new File(RESOURCES_TESTS + "experimental_animation_full.dot"));
+    }
+
 }

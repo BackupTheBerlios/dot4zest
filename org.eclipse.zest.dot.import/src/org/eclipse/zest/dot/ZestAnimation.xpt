@@ -52,9 +52,7 @@
 	        
 	        setLayoutAlgorithm(layout, true);
 	    }
-	    
-	    private «EXPAND stmt FOREACH stmts SEPARATOR " private "»
-	    
+	    «EXPAND stmt FOREACH stmts SEPARATOR " "»
 	    private static String global(final String global, final String name) {
 	    	return global==null?name:global;
     	}
@@ -84,9 +82,9 @@
 	    private static Shell createShell() {
 	        final Display display = new Display();
 	        final Shell shell = new Shell(display);
-	        shell.setText(ExperimentalAnimation.class.getSimpleName());
+	        shell.setText(«name.toFirstUpper()».class.getSimpleName());
 	        shell.setLayout(new GridLayout(1, false));
-	        shell.setSize(200, 200);
+	        shell.setSize(300, 300);
 	        return shell;
 	    }
 	
@@ -132,12 +130,12 @@
 «ENDDEFINE»
 «DEFINE stmt FOR attr_stmt»
 	 «IF type==dot::attributetype::node && attributes.a_list.exists(e|e.name=="label")»
-			nodeLabel = «attributes.a_list.select(e|e.name=="label").get(0).value»;
+			static{nodeLabel = «attributes.a_list.select(e|e.name=="label").get(0).value»;}
 	«ELSEIF type==dot::attributetype::edge»
 		«IF attributes.a_list.exists(e|e.name=="label")»
-			edgeLabel = «attributes.a_list.select(e|e.name=="label").get(0).value»; «ENDIF»
+			static{edgeLabel = «attributes.a_list.select(e|e.name=="label").get(0).value»;} «ENDIF»
 		«IF attributes.a_list.exists(e|e.name=="style")»
-			edgeStyle = «EXPAND global_edge_attribute FOR attributes.a_list.select(e|e.name=="style").get(0)»; «ENDIF»
+			static{edgeStyle = «EXPAND global_edge_attribute FOR attributes.a_list.select(e|e.name=="style").get(0)»;} «ENDIF»
 	«ENDIF»
 «ENDDEFINE»
 «REM» Expansion of node declarations «ENDREM»
