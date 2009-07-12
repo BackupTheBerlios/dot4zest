@@ -8,6 +8,14 @@
  * Contributors: Fabian Steeg - initial API and implementation; see bug 277380
  *******************************************************************************/ 
 «ENDREM»
+«REM»
+Experimental template for animation support, interpreting DOT subgraphs as animation 
+steps. This templates duplicates lots of stuff from the standard template, but also
+does some things in a quite different way, so having a single template does not seem 
+good. TODO: It would be nice, however, to factor common things out, into a template 
+that has DEFINES used by both templates. Not sure if that is possible, at least with 
+the oAW 4.3 Xpand currently used.
+«ENDREM»
 «IMPORT dot»
 «EXTENSION dotlib»
 «EXTENSION org::openarchitectureware::util::stdlib::io»
@@ -42,15 +50,15 @@
 		private static String nodeLabel = null;
 	    private static String edgeLabel = null;
 	    private static int edgeStyle = SWT.LINE_SOLID;
-	    «IF !stmts.exists(e|e.metaType.name.contains("attribute")&&e.toString().contains("layout"))»
-		    private static AbstractLayoutAlgorithm layout = new TreeLayoutAlgorithm(
-	            	LayoutStyles.NO_LAYOUT_NODE_RESIZING);
-	    «ENDIF»
+	   
 	    public «name.toFirstUpper()» (final Composite parent, final int style) {
 	        super(parent, style);
 	        «IF type == graphtype::digraph» setConnectionStyle(ZestStyles.CONNECTIONS_DIRECTED); «ENDIF»
-	        
-	        setLayoutAlgorithm(layout, true);
+	        setLayoutAlgorithm( «IF !stmts.exists(e|e.metaType.name.contains("attribute")&&e.toString().contains("layout"))»
+		    new TreeLayoutAlgorithm(
+	            	LayoutStyles.NO_LAYOUT_NODE_RESIZING)
+	            	«ELSE» new «((attribute)(stmts.select(e|e.metaType.name.contains("attribute")&&e.toString().contains("layout")).get(0))).value.toFirstUpper()»LayoutAlgorithm(
+	            	LayoutStyles.NO_LAYOUT_NODE_RESIZING) «ENDIF», true);
 	    }
 	    «EXPAND stmt FOREACH stmts SEPARATOR " "»
 	    private static String global(final String global, final String name) {
@@ -124,9 +132,10 @@
 «REM» Expansion of the different DOT statement types: «ENDREM»
 «DEFINE stmt FOR stmt»«ENDDEFINE»
 «DEFINE stmt FOR attribute»
-	 «IF name=="layout"»
+	 «REM»«IF name=="layout"»
 		static AbstractLayoutAlgorithm layout = new 
 		«value.toFirstUpper()»LayoutAlgorithm(LayoutStyles.NO_LAYOUT_NODE_RESIZING); «ENDIF»
+	«ENDREM»
 «ENDDEFINE»
 «DEFINE stmt FOR attr_stmt»
 	 «IF type==dot::attributetype::node && attributes.a_list.exists(e|e.name=="label")»

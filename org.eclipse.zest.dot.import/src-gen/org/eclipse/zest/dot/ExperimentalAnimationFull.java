@@ -27,12 +27,9 @@ public class ExperimentalAnimationFull extends Graph {
 	public ExperimentalAnimationFull(final Composite parent, final int style) {
 		super(parent, style);
 		setConnectionStyle(ZestStyles.CONNECTIONS_DIRECTED);
-
-		setLayoutAlgorithm(layout, true);
+		setLayoutAlgorithm(new RadialLayoutAlgorithm(
+				LayoutStyles.NO_LAYOUT_NODE_RESIZING), true);
 	}
-
-	static AbstractLayoutAlgorithm layout = new RadialLayoutAlgorithm(
-			LayoutStyles.NO_LAYOUT_NODE_RESIZING);
 
 	static {
 		nodeLabel = "Node";

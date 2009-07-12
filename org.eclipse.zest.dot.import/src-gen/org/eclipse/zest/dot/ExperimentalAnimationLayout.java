@@ -27,12 +27,10 @@ public class ExperimentalAnimationLayout extends Graph {
 	public ExperimentalAnimationLayout(final Composite parent, final int style) {
 		super(parent, style);
 		setConnectionStyle(ZestStyles.CONNECTIONS_DIRECTED);
-
-		setLayoutAlgorithm(layout, true);
+		setLayoutAlgorithm(new RadialLayoutAlgorithm(
+				LayoutStyles.NO_LAYOUT_NODE_RESIZING), true);
 	}
 
-	static AbstractLayoutAlgorithm layout = new RadialLayoutAlgorithm(
-			LayoutStyles.NO_LAYOUT_NODE_RESIZING);
 	GraphNode n1 = new GraphNode(this, SWT.NONE, global(nodeLabel, "1"));
 	GraphNode n2 = new GraphNode(this, SWT.NONE, global(nodeLabel, "2"));
 	GraphNode n3 = new GraphNode(this, SWT.NONE, global(nodeLabel, "3"));

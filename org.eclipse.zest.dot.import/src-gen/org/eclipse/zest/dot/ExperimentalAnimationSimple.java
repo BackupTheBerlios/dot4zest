@@ -24,14 +24,11 @@ public class ExperimentalAnimationSimple extends Graph {
 	private static String edgeLabel = null;
 	private static int edgeStyle = SWT.LINE_SOLID;
 
-	private static AbstractLayoutAlgorithm layout = new TreeLayoutAlgorithm(
-			LayoutStyles.NO_LAYOUT_NODE_RESIZING);
-
 	public ExperimentalAnimationSimple(final Composite parent, final int style) {
 		super(parent, style);
 		setConnectionStyle(ZestStyles.CONNECTIONS_DIRECTED);
-
-		setLayoutAlgorithm(layout, true);
+		setLayoutAlgorithm(new TreeLayoutAlgorithm(
+				LayoutStyles.NO_LAYOUT_NODE_RESIZING), true);
 	}
 	GraphNode n1 = new GraphNode(this, SWT.NONE, global(nodeLabel, "1"));
 	GraphNode n2 = new GraphNode(this, SWT.NONE, global(nodeLabel, "2"));
