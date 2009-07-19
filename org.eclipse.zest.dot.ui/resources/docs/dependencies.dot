@@ -11,7 +11,7 @@ digraph dependencies{
 	node[shape=box width=3]
 	edge[]
 	zest[label="org.eclipse.zest.*"]
-	graphviz[label="org.openarchitectureware.graphviz"]
+	graphviz[label="org.openarchitectureware.vis.graphviz"]
 	ui[label="org.eclipse.ui, ..."]
 	subgraph cluster_0{
 		label="dot4zest"
