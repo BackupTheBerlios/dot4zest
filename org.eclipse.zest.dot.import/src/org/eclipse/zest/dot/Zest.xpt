@@ -96,6 +96,7 @@
 			«IF attributes.a_list.exists(e|e.name=="label")»
 				nodeLabel = «attributes.a_list.select(e|e.name=="label").get(0).value»;
 			 «ENDIF»
+	«ELSEIF type==dot::attributetype::graph»
 			«IF attributes.a_list.exists(e|e.name=="layout")»
 				setLayoutAlgorithm(new 
 		«attributes.a_list.select(e|e.name=="layout").get(0).value.toFirstUpper()»LayoutAlgorithm(LayoutStyles.NO_LAYOUT_NODE_RESIZING), true);

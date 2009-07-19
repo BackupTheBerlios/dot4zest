@@ -8,9 +8,10 @@
  *******************************************************************************/
 digraph ExperimentalAnimationFull {
 	/* Global attributes for nodes and edges: */
-	/* We can specify a Zest layout for the animation here: */
-	node[label="Node" layout=radial] // = RadialLayoutAlgorithm
+	node[label="Node"] 
 	edge[label="Edge" style=dashed]
+	/* We can specify a Zest layout for the animation here: */
+	graph[layout=radial] // = RadialLayoutAlgorithm
 	1;2;3;4;5
 	/* The single animation steps are marked by numbers: */
 	subgraph cluster_0{ 1 -> 2 [label="First"] }

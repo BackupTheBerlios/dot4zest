@@ -10,9 +10,10 @@ digraph SampleAnimation {
 	/* Specify global attributes for nodes (label supported) and edges (label
 	   and style supported), override these in individual nodes or edges (see
 	   below): */
-	   /* We can specify a Zest layout for the animation here: */
-   	node[label="Node" layout=tree] // = TreeLayoutAlgorithm
+   	node[label="Node"]
    	edge[label="Edge", style=dotted]
+   	/* We can specify a Zest layout for the animation here: */
+   	graph[layout=tree] // = TreeLayoutAlgorithm
 	1;2;3;4;5
 	/* The single animation steps are marked by numbers: */
 	subgraph cluster_0{ 1 -> 2 [label="Dashed" style=dashed]}
