@@ -38,7 +38,11 @@
 	    	String edgeLabel = null;
 	    	int edgeStyle = SWT.LINE_SOLID;
 	        «IF type == graphtype::digraph» setConnectionStyle(ZestStyles.CONNECTIONS_DIRECTED); «ENDIF»
-	        «IF !stmts.exists(e|e.metaType.name.contains("attribute")&&e.toString().contains("layout"))»
+	         «REM» Check for a node[layout=grid]-like attribute: (we do it here because we need
+	        it at the top level when setting up the graph, not when expanding the individual 
+	        statements. Perhaps a restructuring of the target file could help avoid this...) «ENDREM»
+	        «IF !stmts.exists(e|e.metaType.name.contains("attr_stmt")
+	        	&&((attr_stmt)e).attributes.a_list.toString().contains("layout"))»
 	        setLayoutAlgorithm(new TreeLayoutAlgorithm(
             	LayoutStyles.NO_LAYOUT_NODE_RESIZING), true); «ENDIF»
 	        «EXPAND stmt FOREACH stmts SEPARATOR ""»
@@ -88,8 +92,14 @@
 		«value.toFirstUpper()»LayoutAlgorithm(LayoutStyles.NO_LAYOUT_NODE_RESIZING), true); «ENDIF»
 «ENDDEFINE»
 «DEFINE stmt FOR attr_stmt»
-	 «IF type==dot::attributetype::node && attributes.a_list.exists(e|e.name=="label")»
-			nodeLabel = «attributes.a_list.select(e|e.name=="label").get(0).value»;
+	 «IF type==dot::attributetype::node»
+			«IF attributes.a_list.exists(e|e.name=="label")»
+				nodeLabel = «attributes.a_list.select(e|e.name=="label").get(0).value»;
+			 «ENDIF»
+			«IF attributes.a_list.exists(e|e.name=="layout")»
+				setLayoutAlgorithm(new 
+		«attributes.a_list.select(e|e.name=="layout").get(0).value.toFirstUpper()»LayoutAlgorithm(LayoutStyles.NO_LAYOUT_NODE_RESIZING), true);
+			 «ENDIF»
 	«ELSEIF type==dot::attributetype::edge»
 		«IF attributes.a_list.exists(e|e.name=="label")»
 			edgeLabel = «attributes.a_list.select(e|e.name=="label").get(0).value»; «ENDIF»

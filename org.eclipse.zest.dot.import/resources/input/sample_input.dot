@@ -16,13 +16,13 @@ digraph SampleGraph {
 	/* Specify global attributes for nodes (label supported) and edges (label
 	   and style supported), override these in individual nodes or edges (see
 	   below): */
-   	node[label="node"]
+   	node[label="node2", layout=grid]
    	edge[label="edge", style=dashed]
   	/*-------------------------------------------------------------------------*/
 	/* Specify the Zest layout algorithm to use, e.g. tree, spring, radial, 
 	   grid, or any x to use the xLayoutAlgorithm class (this is ignored by 
 	   Graphviz). */
-	layout=spring
+	//layout=spring
 	/*-------------------------------------------------------------------------*/
 	/* Nodes can have specified labels: */
 	1[label="one"]

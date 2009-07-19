@@ -7,12 +7,11 @@
  * Contributors: Fabian Steeg - initial API and implementation; see bug 277380
  *******************************************************************************/
 digraph SampleAnimation {
-	/* We can specify a Zest layout for the animation here: */
-	layout=tree // = TreeLayoutAlgorithm
 	/* Specify global attributes for nodes (label supported) and edges (label
 	   and style supported), override these in individual nodes or edges (see
 	   below): */
-   	node[label="Node"]
+	   /* We can specify a Zest layout for the animation here: */
+   	node[label="Node" layout=tree] // = TreeLayoutAlgorithm
    	edge[label="Edge", style=dotted]
 	1;2;3;4;5
 	/* The single animation steps are marked by numbers: */

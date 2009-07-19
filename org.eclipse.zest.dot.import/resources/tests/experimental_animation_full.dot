@@ -7,10 +7,9 @@
  * Contributors: Fabian Steeg - initial API and implementation; see bug 277380
  *******************************************************************************/
 digraph ExperimentalAnimationFull {
-	/* We can specify a Zest layout for the animation here: */
-	layout=radial // = RadialLayoutAlgorithm
 	/* Global attributes for nodes and edges: */
-	node[label="Node"]
+	/* We can specify a Zest layout for the animation here: */
+	node[label="Node" layout=radial] // = RadialLayoutAlgorithm
 	edge[label="Edge" style=dashed]
 	1;2;3;4;5
 	/* The single animation steps are marked by numbers: */

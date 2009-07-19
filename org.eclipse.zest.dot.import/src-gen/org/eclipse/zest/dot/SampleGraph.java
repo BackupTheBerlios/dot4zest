@@ -20,14 +20,14 @@ public class SampleGraph extends Graph {
 		int edgeStyle = SWT.LINE_SOLID;
 		setConnectionStyle(ZestStyles.CONNECTIONS_DIRECTED);
 
-		setLayoutAlgorithm(new GridLayoutAlgorithm(
-				LayoutStyles.NO_LAYOUT_NODE_RESIZING), true);
-
 		edgeLabel = "Edge";
 
 		edgeStyle = SWT.LINE_DASH;
 
 		nodeLabel = "Node";
+
+		setLayoutAlgorithm(new GridLayoutAlgorithm(
+				LayoutStyles.NO_LAYOUT_NODE_RESIZING), true);
 
 		GraphNode n1 = new GraphNode(this, SWT.NONE, tryGlobal(nodeLabel, "1"));
 		GraphNode n2 = new GraphNode(this, SWT.NONE, tryGlobal(nodeLabel, "2"));

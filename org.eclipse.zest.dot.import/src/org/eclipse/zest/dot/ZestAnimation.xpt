@@ -54,10 +54,16 @@ the oAW 4.3 Xpand currently used.
 	    public «name.toFirstUpper()» (final Composite parent, final int style) {
 	        super(parent, style);
 	        «IF type == graphtype::digraph» setConnectionStyle(ZestStyles.CONNECTIONS_DIRECTED); «ENDIF»
-	        setLayoutAlgorithm( «IF !stmts.exists(e|e.metaType.name.contains("attribute")&&e.toString().contains("layout"))»
+	        «REM» Check for a node[layout=grid]-like attribute: (we do it here because we need
+	        it at the top level when setting up the graph, not when expanding the individual 
+	        statements. Perhaps a restructuring of the target file could help avoid this...) «ENDREM»
+	       setLayoutAlgorithm( «IF !stmts.exists(e|e.metaType.name.contains("attr_stmt")
+	       						&&((attr_stmt)e).attributes.a_list.toString().contains("layout"))»
 		    new TreeLayoutAlgorithm(
 	            	LayoutStyles.NO_LAYOUT_NODE_RESIZING)
-	            	«ELSE» new «((attribute)(stmts.select(e|e.metaType.name.contains("attribute")&&e.toString().contains("layout")).get(0))).value.toFirstUpper()»LayoutAlgorithm(
+	            	«ELSE» new «((attr_stmt)(stmts.select(e|e.metaType.name.contains("attr_stmt")
+	            		&&((attr_stmt)e).attributes.a_list.toString().contains("layout")).get(0)))
+	            		.attributes.a_list.select(e|e.name=="layout").get(0).value.toFirstUpper()»LayoutAlgorithm(
 	            	LayoutStyles.NO_LAYOUT_NODE_RESIZING) «ENDIF», true);
 	    }
 	    «EXPAND stmt FOREACH stmts SEPARATOR " "»
@@ -138,8 +144,15 @@ the oAW 4.3 Xpand currently used.
 	«ENDREM»
 «ENDDEFINE»
 «DEFINE stmt FOR attr_stmt»
-	 «IF type==dot::attributetype::node && attributes.a_list.exists(e|e.name=="label")»
+	 «IF type==dot::attributetype::node »
+		«IF attributes.a_list.exists(e|e.name=="label")»
 			static{nodeLabel = «attributes.a_list.select(e|e.name=="label").get(0).value»;}
+			 «ENDIF»
+			 «REM»«IF attributes.a_list.exists(e|e.name=="layout")»
+			«attributes.a_list.toString()»
+			static{layout = «attributes.a_list.select(e|e.name=="layout").get(0).value»;}
+			 «ENDIF»«ENDREM»
+		
 	«ELSEIF type==dot::attributetype::edge»
 		«IF attributes.a_list.exists(e|e.name=="label")»
 			static{edgeLabel = «attributes.a_list.select(e|e.name=="label").get(0).value»;} «ENDIF»
@@ -168,8 +181,8 @@ the oAW 4.3 Xpand currently used.
 
 «DEFINE stmt FOR subgraph»
 	«LET name.split("_").get(1) AS runner»
-	«LET getProperty("label") AS e» «REM»getProperty("label")«ENDREM»
-	«LET e != null ? e : "Step" AS label» «REM»FIXME not working, always null«ENDREM»
+	«REM»«LET getProperty("label") AS e» getProperty("label")«ENDREM»
+	 «REM»«LET e != null ? e : "Step" AS label»FIXME not working, always null«ENDREM»
 	class AnimationRunner«runner» implements Runnable {
         private Graph g;
         private Button b;
@@ -187,17 +200,17 @@ the oAW 4.3 Xpand currently used.
             /* For animations with further steps: */
             removeListeners(b, SWT.Selection);
             removeListeners(b, SWT.DefaultSelection);
-            //label=«label»
+            
             «IF name.contains("end")»
 	            b.setText("Done");
 	            b.setEnabled(false);
             «ELSE»
 	            b.addSelectionListener(listenerFor(new AnimationRunner«runner.asInteger()+1»(g, b)));
-	            b.setText("«label»");
+	           «REM» b.setText("«label»");«ENDREM»
             «ENDIF»
         }
     }
-	«ENDLET» «ENDLET» «ENDLET»
+	«ENDLET» «REM»«ENDLET» «ENDLET»«ENDREM»
 «ENDDEFINE»
 
 «DEFINE edge_target FOR edgeRHS»«ENDDEFINE»

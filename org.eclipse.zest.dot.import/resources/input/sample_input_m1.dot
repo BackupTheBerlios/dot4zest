@@ -8,11 +8,10 @@
  *******************************************************************************/
 /* Test input. */
 digraph SampleGraph{
-	/* Specify the Zest layout algorithm to use: */
-	layout=grid
 	/* Global attributes can be defined for edges and nodes: */
 	edge[label="Edge" style=dashed]
-	node[label="Node"]
+	/* Specify the Zest layout algorithm to use: */
+	node[label="Node" layout=grid]
 	1; 2
 	/* Override node attributes from above: */
 	3[label="Leaf1"] 

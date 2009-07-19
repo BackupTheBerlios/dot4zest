@@ -10,7 +10,6 @@ package org.eclipse.zest.dot;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -23,14 +22,9 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.Resource.Diagnostic;
-import org.eclipse.emf.ecore.resource.impl.ResourceFactoryImpl;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.mwe.emf.StandaloneSetup;
-import org.openarchitectureware.graphviz.parser.XtextParser;
-import org.openarchitectureware.workflow.util.ResourceLoaderImpl;
-import org.openarchitectureware.xtext.parser.IXtextParser;
-import org.openarchitectureware.xtext.resource.AbstractXtextResource;
-import org.openarchitectureware.xtext.resource.IXtextResourceFactory;
+import org.eclipse.emf.mwe.utils.StandaloneSetup;
+import org.openarchitectureware.vis.graphviz.DotStandaloneSetup;
 
 /**
  * Walks the AST of a DOT graph, e.g. to extract the name (used to name and
@@ -44,7 +38,7 @@ final class DotAst {
      * @param dotFile The DOT file to parse
      */
     public DotAst(final File dotFile) {
-        this.resource = loadResource(dotFile);
+        this.resource = loadResource(DotImport.fix(dotFile));
     }
 
     /**
@@ -53,8 +47,7 @@ final class DotAst {
      */
     String graphName() {
         EObject graph = graph();
-        Iterator<EAttribute> graphAttributes = graph.eClass()
-                .getEAllAttributes().iterator();
+        Iterator<EAttribute> graphAttributes = graph.eClass().getEAllAttributes().iterator();
         while (graphAttributes.hasNext()) {
             EAttribute a = graphAttributes.next();
             /* We return the name attribute of the graph: */
@@ -75,8 +68,7 @@ final class DotAst {
         Iterator<Diagnostic> i = errors.iterator();
         while (i.hasNext()) {
             Diagnostic next = i.next();
-            result.add(String.format("Error in line %s: %s ", next.getLine(),
-                    next.getMessage()));
+            result.add(String.format("Error in line %s: %s ", next.getLine(), next.getMessage()));
         }
         return result;
     }
@@ -96,10 +88,9 @@ final class DotAst {
 
     private static Resource loadResource(final File file) {
         new StandaloneSetup().setPlatformUri("..");
-        DotResourceFactory.register();
+        DotStandaloneSetup.doSetup();
         ResourceSet set = new ResourceSetImpl();
-        Resource res = set.getResource(URI.createURI(file.toURI().toString()),
-                true);
+        Resource res = set.getResource(URI.createURI(file.toURI().toString()), true);
         if (!res.isLoaded()) {
             try {
                 res.load(Collections.EMPTY_MAP);
@@ -108,33 +99,5 @@ final class DotAst {
             }
         }
         return res;
-    }
-
-    private static class DotResource extends AbstractXtextResource {
-        public DotResource(final URI uri) {
-            super(uri);
-            setFormattingExtension("org::openarchitectureware::graphviz::Formatting");
-            setResourceLoader(new ResourceLoaderImpl(XtextParser.class
-                    .getClassLoader()));
-        }
-
-        @Override
-        protected IXtextParser createParser(final InputStream inputStream) {
-            return new XtextParser(inputStream);
-        }
-
-    }
-
-    private static class DotResourceFactory extends ResourceFactoryImpl
-            implements IXtextResourceFactory {
-        @Override
-        public Resource createResource(final URI uri) {
-            return new DotResource(uri);
-        }
-
-        public static void register() {
-            Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put(
-                    "dot", new DotResourceFactory());
-        }
     }
 }

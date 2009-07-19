@@ -27,6 +27,7 @@ public class ExperimentalAnimationSimple extends Graph {
 	public ExperimentalAnimationSimple(final Composite parent, final int style) {
 		super(parent, style);
 		setConnectionStyle(ZestStyles.CONNECTIONS_DIRECTED);
+
 		setLayoutAlgorithm(new TreeLayoutAlgorithm(
 				LayoutStyles.NO_LAYOUT_NODE_RESIZING), true);
 	}
@@ -58,10 +59,8 @@ public class ExperimentalAnimationSimple extends Graph {
 			/* For animations with further steps: */
 			removeListeners(b, SWT.Selection);
 			removeListeners(b, SWT.DefaultSelection);
-			//label=Step
 
 			b.addSelectionListener(listenerFor(new AnimationRunner1(g, b)));
-			b.setText("Step");
 
 		}
 	}
@@ -88,10 +87,8 @@ public class ExperimentalAnimationSimple extends Graph {
 			/* For animations with further steps: */
 			removeListeners(b, SWT.Selection);
 			removeListeners(b, SWT.DefaultSelection);
-			//label=Step
 
 			b.addSelectionListener(listenerFor(new AnimationRunner2(g, b)));
-			b.setText("Step");
 
 		}
 	}
@@ -123,7 +120,6 @@ public class ExperimentalAnimationSimple extends Graph {
 			/* For animations with further steps: */
 			removeListeners(b, SWT.Selection);
 			removeListeners(b, SWT.DefaultSelection);
-			//label=Step
 
 			b.setText("Done");
 			b.setEnabled(false);

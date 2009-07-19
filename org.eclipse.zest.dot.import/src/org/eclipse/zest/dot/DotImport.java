@@ -26,9 +26,9 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.openarchitectureware.workflow.WorkflowRunner;
-import org.openarchitectureware.workflow.monitor.NullProgressMonitor;
-import org.openarchitectureware.workflow.monitor.ProgressMonitor;
+import org.eclipse.emf.mwe.core.WorkflowRunner;
+import org.eclipse.emf.mwe.core.monitor.NullProgressMonitor;
+import org.eclipse.emf.mwe.core.monitor.ProgressMonitor;
 
 /**
  * Transformation of DOT files or strings to Zest Graph subclasses.
@@ -37,10 +37,8 @@ import org.openarchitectureware.workflow.monitor.ProgressMonitor;
 public final class DotImport {
     private static final String ZEST_TEMPLATE = "Zest";// .xpt = filename
     private static final String ZEST_ANIMATION_TEMPLATE = "ZestAnimation";// .xpt
-    static final File DEFAULT_OUTPUT_FOLDER = new File(
-            "src-gen/org/eclipse/zest/dot");
-    private static final URL WORKFLOW = DotImport.class
-            .getResource("Generator.oaw");
+    static final File DEFAULT_OUTPUT_FOLDER = new File("src-gen/org/eclipse/zest/dot");
+    private static final URL WORKFLOW = DotImport.class.getResource("Generator.mwe");
     static final File DEFAULT_INPUT_FOLDER = new File("resources/input");
     private File dotFile;
     private DotAst dotAst;
@@ -72,7 +70,7 @@ public final class DotImport {
         this.dotFile = writeToTempFile(dotString);
         load();
     }
-    
+
     private void load() {
         this.dotAst = new DotAst(this.dotFile);
     }
@@ -116,8 +114,7 @@ public final class DotImport {
      */
     public File getZestFile(final IContainer outputDirectory) {
         try {
-            return importDotFile(dotFile, resolve(outputDirectory
-                    .getLocationURI().toURL()));
+            return importDotFile(dotFile, resolve(outputDirectory.getLocationURI().toURL()));
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -130,22 +127,45 @@ public final class DotImport {
      * @return The Java file containing the definition of a Zest graph subclass
      *         generated from the given DOT file
      */
-    private File importDotFile(final File dotFile,
-            final File targetDirectory) {
-        String dotLocation = dotFile.getAbsolutePath();
+    private File importDotFile(final File dotFile, final File targetDirectory) {
+        File fixedDotFile = fix(dotFile);
+        String dotLocation = fixedDotFile.getAbsolutePath();
         File oawFile = loadWorkflow();
         String oawLocation = oawFile.getAbsolutePath();
-        Map<String, String> properties = setupProps(dotLocation, new Path(
-                targetDirectory.getAbsolutePath()));
+        Map<String, String> properties =
+                setupProps(dotLocation, new Path(targetDirectory.getAbsolutePath()));
         WorkflowRunner workflowRunner = new WorkflowRunner();
         ProgressMonitor monitor = new NullProgressMonitor();
-        workflowRunner.run(oawLocation, monitor, properties,
-                new HashMap<String, String>());
-        return findResultFile(dotFile, targetDirectory);
+        workflowRunner.run(oawLocation, monitor, properties, new HashMap<String, String>());
+        return findResultFile(fixedDotFile, targetDirectory);
     }
 
-    private File findResultFile(final File dotFile,
-            final File targetDirectory) {
+    /**
+     * Workaround for the current DOT-Parser.
+     * @param dotFile The DOT file to fix
+     * @return A file with the content of the given file, surrounded with
+     *         "graphs{ graph ... }"
+     */
+    static File fix(final File dotFile) {
+        String content = read(dotFile);
+        File file = writeToTempFile("graphs { graph " + content + "}");
+        return file;
+    }
+
+    private static String read(final File dotFile) {
+        StringBuilder builder = new StringBuilder();
+        try {
+            Scanner s = new Scanner(dotFile);
+            while (s.hasNextLine()) {
+                builder.append(s.nextLine()).append("\n");
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return builder.toString();
+    }
+
+    private File findResultFile(final File dotFile, final File targetDirectory) {
         String name = dotAst.graphName();
         File resultFile = new File(targetDirectory, name + ".java");
         if (!resultFile.exists()) {
@@ -169,8 +189,7 @@ public final class DotImport {
     }
 
     private enum Slot {
-        MODEL_FILE("modelFile"), TARGET_DIR("targetDir"), TEMPLATE_NAME(
-                "templateName");
+        MODEL_FILE("modelFile"), TARGET_DIR("targetDir"), TEMPLATE_NAME("templateName");
         private String v;
 
         Slot(final String v) {
@@ -181,11 +200,14 @@ public final class DotImport {
     private static Map<String, String> setupProps(final String dotLocation,
             final IPath targetDirectory) {
         Map<String, String> properties = new HashMap<String, String>();
-        properties.put(Slot.MODEL_FILE.v, dotLocation);
-        properties.put(Slot.TARGET_DIR.v, targetDirectory.toFile()
-                .getAbsolutePath());
-        properties.put(Slot.TEMPLATE_NAME.v, animated(dotLocation)
-                ? ZEST_ANIMATION_TEMPLATE : ZEST_TEMPLATE);
+        try {
+            properties.put(Slot.MODEL_FILE.v, new File(dotLocation).toURI().toURL().toString());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        properties.put(Slot.TARGET_DIR.v, targetDirectory.toFile().getAbsolutePath());
+        properties.put(Slot.TEMPLATE_NAME.v, animated(dotLocation) ? ZEST_ANIMATION_TEMPLATE
+                : ZEST_TEMPLATE);
         return properties;
     }
 
