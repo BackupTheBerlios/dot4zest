@@ -11,7 +11,6 @@ package org.eclipse.zest.dot;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -41,29 +40,17 @@ final class ExperimentalDotImport {
      * <p/>
      * Load a graph instance using a URLClassLoader
      */
-    static Graph loadGraph(final String graphName, final URL outputDirUrl,
-            final Composite parent, final int style) {
+    static Graph loadGraph(final String graphName, final URL outputDirUrl, final Composite parent,
+            final int style) {
         try {
-            /*
-             * The Java 6 compiler API outputs to the appropriate package below
-             * the given output folder, so this gets a little weird. Not sure
-             * where the JDT compiler would output (doesn't work yet).
-             */
-            URL dirUrl = new URL(outputDirUrl.toString()
-                    + "org/eclipse/zest/dot/");
-            URLClassLoader ucl = getUrlClassLoader(dirUrl);
-            /*
-             * FIXME if I break here and keep going after a moment it works with
-             * the Java 6 compiler API. Theread.sleep has no effect.
-             */
-            Class<?> clazz = ucl.loadClass("org.eclipse.zest.dot." + graphName);
+            URLClassLoader ucl = getUrlClassLoader(outputDirUrl);
+            Class<?> clazz = Class.forName("org.eclipse.zest.dot." + graphName, true, ucl);
             for (Constructor<?> c : clazz.getConstructors()) {
-				if (c.getParameterTypes().length == 2) {
-					Object object = c.newInstance(parent,
-							(Integer) style);
-					return (Graph) object;
-				}
-			}
+                if (c.getParameterTypes().length == 2) {
+                    Object object = c.newInstance(parent, (Integer) style);
+                    return (Graph) object;
+                }
+            }
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         } catch (IllegalArgumentException e) {
@@ -73,8 +60,6 @@ final class ExperimentalDotImport {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (MalformedURLException e) {
             e.printStackTrace();
         }
         return null;

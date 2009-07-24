@@ -34,27 +34,30 @@ final class GraphCreatorViaJavaCompilerApi implements IGraphCreator {
      * @see org.eclipse.zest.dot.IGraphCreator#create(org.eclipse.swt.widgets.Composite,
      *      int)
      */
-    public Graph create(final Composite parent, final int style,
-            final String dot) {
-        File zestFile = new DotImport(dot).getZestFile();
-        URL url = compileWithJavaCompiler(zestFile);
-        Graph graph = ExperimentalDotImport.loadGraph(new DotImport(dot).getName(),
-                url, parent, style);
+    public Graph create(final Composite parent, final int style, final String dot) {
+        /*
+         * The trick we use to avoid nasty classloader trouble when reloading
+         * newer versions of the same class: we give each generated class a
+         * unique name:
+         */
+        DotImport dotImport = new DotImport(dot, System.currentTimeMillis() + "");
+        File zestFile = dotImport.getZestFile();
+        URL outputDirUrl = compileWithJavaCompiler(zestFile, dotImport.getName());
+        Graph graph =
+                ExperimentalDotImport.loadGraph(dotImport.getName(), outputDirUrl, parent, style);
         return graph;
     }
 
-    private URL compileWithJavaCompiler(final File zestFile) {
+    private URL compileWithJavaCompiler(final File zestFile, final String name) {
         /* Create and set up the compiler: */
         JavaCompiler jc = ToolProvider.getSystemJavaCompiler();
-        StandardJavaFileManager manager = jc.getStandardFileManager(null, null,
-                null);
+        StandardJavaFileManager manager = jc.getStandardFileManager(null, null, null);
         File outputDir = zestFile.getParentFile();
         List<String> options = new ArrayList<String>();
         options.add("-d");
         options.add(outputDir.getAbsolutePath());
         /* Compile the generated Zest graph: */
-        jc.getTask(null, manager, null, options, null,
-                manager.getJavaFileObjects(zestFile)).call();
+        jc.getTask(null, manager, null, options, null, manager.getJavaFileObjects(zestFile)).call();
         try {
             manager.close();
             /* Return the URL of the folder where the compiled class file is: */

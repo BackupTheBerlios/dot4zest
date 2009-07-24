@@ -28,11 +28,10 @@ public final class TestExperimentalDotImport {
     @Test
     public void viaJavaCompilerApi() {
         /*
-         * Implementation using Java compiler API is excluded to depend on Java
-         * 5 only, so this test cannot run.
+         * Implementation using Java compiler API requires Java 6.
          */
-        Assert.fail("Java 6 dependency deactivated");
-        // test(new GraphCreatorViaJavaCompilerApi());
+        // Assert.fail("Java 6 dependency deactivated");
+        test(new GraphCreatorViaJavaCompilerApi());
     }
 
     /**
@@ -63,33 +62,33 @@ public final class TestExperimentalDotImport {
         Assert.assertNotNull("Created graph must exist!", graph);
         Assert.assertEquals(4, graph.getNodes().size());
         Assert.assertEquals(3, graph.getConnections().size());
-        System.out.println(String.format(
-                "Imported '%s' to Graph '%s' of type '%s'", dot1, graph, graph
-                        .getClass().getSimpleName()));
-
+        System.out.println(String.format("Imported '%s' to Graph '%s' of type '%s'", dot1, graph,
+                graph.getClass().getSimpleName()));
+        
         /*
-         * TODO this shows that compiling the result class is not really working
-         * yet: If we use a changing name, it won't work:
+         * Check a unique name works, i.e. no existing classes on the classpath
+         * could be used instead of the new one:
          */
-        String dot2 = "digraph TestingGraph" + System.currentTimeMillis()
-                + "{1;2;3;4; 1->2;2->3;2->4}";
+        String dot2 =
+                "digraph TestingGraph" + System.currentTimeMillis() + "{1;2;3;4; 1->2;2->3;2->4}";
         graph = converter.create(shell, SWT.NONE, dot2);
         Assert.assertNotNull("Created graph must exist!", graph);
         Assert.assertEquals(4, graph.getNodes().size());
         Assert.assertEquals(3, graph.getConnections().size());
-        System.out.println(String.format(
-                "Imported '%s' to Graph '%s' of type '%s'", dot2, graph, graph
-                        .getClass().getSimpleName()));
-
-        /* TODO: support changing an existing graph (= name exists) */
+        System.out.println(String.format("Imported '%s' to Graph '%s' of type '%s'", dot2, graph,
+                graph.getClass().getSimpleName()));
+        
+        /*
+         * Check if a DOT graph with the same name is changed when the generated
+         * class is loaded:
+         */
         String dot3 = "digraph TestingGraph{1;2;3 1->2;2->3}";
         graph = converter.create(shell, SWT.NONE, dot3);
         Assert.assertNotNull("Created graph must exist!", graph);
         Assert.assertEquals(3, graph.getNodes().size());
         Assert.assertEquals(2, graph.getConnections().size());
-        System.out.println(String.format(
-                "Imported '%s' to Graph '%s' of type '%s'", dot3, graph, graph
-                        .getClass().getSimpleName()));
+        System.out.println(String.format("Imported '%s' to Graph '%s' of type '%s'", dot3, graph,
+                graph.getClass().getSimpleName()));
         // open(shell); // blocks UI when running tests
     }
 

@@ -67,6 +67,20 @@ public final class DotImport {
      * @param dotString The DOT graph to import
      */
     public DotImport(final String dotString) {
+        init(dotString);
+    }
+
+    /**
+     * @param dotString The DOT graph to import
+     * @param id The ID to use to make the graph name unique
+     */
+    public DotImport(final String dotString, final String id) {
+        init(dotString);
+        /* Re-initialize with the unique name: */
+        init(dotString.replace(dotAst.graphName(), dotAst.graphName() + id));
+    }
+
+    private void init(final String dotString) {
         this.dotFile = writeToTempFile(dotString);
         load();
     }
@@ -171,6 +185,7 @@ public final class DotImport {
         if (!resultFile.exists()) {
             throw new IllegalStateException(resultFile + " does not exist.");
         }
+        System.out.println("Zest file: " + resultFile.getAbsolutePath());
         return resultFile;
     }
 
