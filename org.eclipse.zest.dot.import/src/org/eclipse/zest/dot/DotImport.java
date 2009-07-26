@@ -267,4 +267,11 @@ public final class DotImport {
         }
         return oawFile;
     }
+
+    /**
+     * @return The DOT AST parsed from the DOT source
+     */
+    DotAst getDotAst() {
+        return this.dotAst;
+    }
 }

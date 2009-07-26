@@ -14,7 +14,10 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.tools.ForwardingJavaFileManager;
 import javax.tools.JavaCompiler;
+import javax.tools.JavaFileManager;
+import javax.tools.JavaFileObject;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
 
@@ -22,7 +25,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.zest.core.widgets.Graph;
 
 /**
- * EXPERIMENTAL - NOT REALLY WORKING YET
+ * EXPERIMENTAL - This works only when running as a plain Java application, not
+ * when running as a Plug-in (see comments below). Even if this was working, it
+ * would be restricted as it depends on Java 6 (and is therefore currently
+ * excluded).
  * <p/>
  * Import DOT to a Zest Graph instance via the Java compiler API.
  * @author Fabian Steeg (fsteeg)
@@ -51,9 +57,19 @@ final class GraphCreatorViaJavaCompilerApi implements IGraphCreator {
     private URL compileWithJavaCompiler(final File zestFile, final String name) {
         /* Create and set up the compiler: */
         JavaCompiler jc = ToolProvider.getSystemJavaCompiler();
-        StandardJavaFileManager manager = jc.getStandardFileManager(null, null, null);
+        ClassloadingFileManager manager =
+                new ClassloadingFileManager(jc.getStandardFileManager(null, null, null));
         File outputDir = zestFile.getParentFile();
         List<String> options = new ArrayList<String>();
+        /*
+         * TODO: A possible approach to solve the problems when running as a
+         * plug-in would be to provide the complete classpath here, as an option
+         * for the compiler. However, I don't see a proper way to get the
+         * complete classpath of the running plug-in. It seems to always involve
+         * internal API, which would be no real solution (see also the JDT
+         * compiler variant and comments there), and in particular would also
+         * require Java 6.
+         */
         options.add("-d");
         options.add(outputDir.getAbsolutePath());
         /* Compile the generated Zest graph: */
@@ -66,5 +82,32 @@ final class GraphCreatorViaJavaCompilerApi implements IGraphCreator {
             e.printStackTrace();
         }
         return null;
+    }
+
+    static final class ClassloadingFileManager extends ForwardingJavaFileManager<JavaFileManager> {
+
+        private StandardJavaFileManager m;
+
+        public ClassloadingFileManager(final StandardJavaFileManager fileManager) {
+            super(fileManager);
+            this.m = fileManager;
+        }
+
+        @Override
+        public ClassLoader getClassLoader(final JavaFileManager.Location location) {
+            /*
+             * I was hoping this would do the trick, but it doesn't. Doing this
+             * here was as far as I got consulting sources like
+             * http://stackoverflow.com/questions/274474/ and
+             * http://www.ibm.com/developerworks/java/library/j-jcomp/index.html
+             */
+            return Thread.currentThread().getContextClassLoader();
+
+        }
+
+        public Iterable<? extends JavaFileObject> getJavaFileObjects(final File... files) {
+            return m.getJavaFileObjects(files);
+        }
+
     }
 }

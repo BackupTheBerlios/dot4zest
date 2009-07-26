@@ -34,51 +34,54 @@ import org.eclipse.zest.core.widgets.Graph;
  * @author Fabian Steeg (fsteeg)
  */
 @SuppressWarnings( "restriction" )
-// The downside of this solution is it uses internal API; upside is it works
-// with Java 5 (contrary to the other solution, based on the Java compiler API)
-final class GraphCreatorViaInternalJdtCompiler implements IGraphCreator {
+/*
+ * The downside of this solution is it uses internal API; upside is it works
+ * with Java 5 (contrary to the other solution, based on the Java compiler API);
+ * as I have recently learned using internal API is not allowed for projects
+ * taking part in the release train, so this is not really an option either.
+ */
+// TODO currently public for usage from UI bundle; should this be public?
+public final class GraphCreatorViaInternalJdtCompiler implements IGraphCreator {
 
     /**
      * {@inheritDoc}
      * @see org.eclipse.zest.dot.IGraphCreator#create(org.eclipse.swt.widgets.Composite,
      *      int)
      */
-    public Graph create(final Composite parent, final int style,
-            final String dot) {
+    public Graph create(final Composite parent, final int style, final String dot) {
         String graphName = new DotImport(dot).getName();
         File zestFile = new DotImport(dot).getZestFile();
         URL url = compileWithInternalJdtCompiler(zestFile, graphName);
-        Graph graph = ExperimentalDotImport.loadGraph(graphName, url, parent,
-                style);
+        Graph graph = ExperimentalDotImport.loadGraph(graphName, url, parent, style);
         return graph;
     }
 
-    private URL compileWithInternalJdtCompiler(final File zestFile,
-            final String graphName) {
-        /* TODO we need to set up the environment here */
-        INameEnvironment nameEnvironment = new FileSystem(new String[0],
-                new String[0], "UTF-8");
+    private URL compileWithInternalJdtCompiler(final File zestFile, final String graphName) {
+        /*
+         * TODO we need to set up the environment here. Here, we basically hit
+         * the same issue as when running with the Java compiler API: we need
+         * the classpath
+         */
+        INameEnvironment nameEnvironment = new FileSystem(new String[0], new String[0], "UTF-8");
         CompilerOptions compilerOptions = new CompilerOptions();
         compilerOptions.generateClassFiles = true;
         compilerOptions.verbose = true;
-        org.eclipse.jdt.internal.compiler.Compiler compiler = new org.eclipse.jdt.internal.compiler.Compiler(
-                nameEnvironment, DefaultErrorHandlingPolicies
-                        .proceedWithAllProblems(), compilerOptions,
-                new ICompilerRequestor() {
-                    public void acceptResult(final CompilationResult result) {
-                        CategorizedProblem[] errors = result.getErrors();
-                        for (CategorizedProblem categorizedProblem : errors) {
-                            System.out.println(String.format(
-                                    "%s: '%s' (%s, line %s)",
-                                    categorizedProblem.getMarkerType(),
-                                    categorizedProblem.getMessage(),
-                                    new String(categorizedProblem
-                                            .getOriginatingFileName()),
-                                    categorizedProblem.getSourceLineNumber()));
-                        }
+        org.eclipse.jdt.internal.compiler.Compiler compiler =
+                new org.eclipse.jdt.internal.compiler.Compiler(nameEnvironment,
+                        DefaultErrorHandlingPolicies.proceedWithAllProblems(), compilerOptions,
+                        new ICompilerRequestor() {
+                            public void acceptResult(final CompilationResult result) {
+                                CategorizedProblem[] errors = result.getErrors();
+                                for (CategorizedProblem categorizedProblem : errors) {
+                                    System.out.println(String.format("%s: '%s' (%s, line %s)",
+                                            categorizedProblem.getMarkerType(), categorizedProblem
+                                                    .getMessage(), new String(categorizedProblem
+                                                    .getOriginatingFileName()), categorizedProblem
+                                                    .getSourceLineNumber()));
+                                }
 
-                    }
-                }, ProblemFactory.getProblemFactory(Locale.getDefault()));
+                            }
+                        }, ProblemFactory.getProblemFactory(Locale.getDefault()));
 
         compiler.compile(new ICompilationUnit[] { new ICompilationUnit() {
             public char[] getFileName() {

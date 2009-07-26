@@ -31,6 +31,7 @@ public final class TestDotImport {
          * corresponding to a template (as long as the template is one of the
          * generated files from the import bundle).
          */
+        // TODO add API that does only what actually works, and use that
         IGraphCreator converter = new GraphCreatorViaInternalJdtCompiler();
         Shell shell = new Shell();
         String dot = "digraph SampleGraph {1;2;3;4; 1->2;2->3;2->4}";
@@ -38,9 +39,8 @@ public final class TestDotImport {
         Assert.assertNotNull("Created graph must exist!", graph);
         Assert.assertEquals(4, graph.getNodes().size());
         Assert.assertEquals(3, graph.getConnections().size());
-        System.out.println(String.format(
-                "Imported '%s' to Graph '%s' of type '%s'", dot, graph, graph
-                        .getClass().getSimpleName()));
+        System.out.println(String.format("Imported '%s' to Graph '%s' of type '%s'", dot, graph,
+                graph.getClass().getSimpleName()));
         // open(shell);
     }
 

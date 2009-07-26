@@ -17,28 +17,39 @@ import org.eclipse.zest.core.widgets.Graph;
 import org.junit.Test;
 
 /**
- * Tests for the {@link ExperimentalDotImport} class.
+ * Tests for dynamic import of DOT to a Zest graph instance.
  * @author Fabian Steeg (fsteeg)
  */
-public final class TestExperimentalDotImport {
+public final class TestGraphInstanceDotImport {
+
     /**
-     * Import instance by compiling the generated Zest graph using the Java
-     * Compiler API (downside: requires Java 6)
+     * Import instance by interpreting the parsed AST.
      */
     @Test
+    public void viaInterpreter() {
+        test(new GraphCreatorInterpreter());
+
+    }
+
+    /**
+     * EXPERIMENTAL - NOT WORKING Import instance by compiling the generated
+     * Zest graph using the Java Compiler API (downside: requires Java 6)
+     */
+    // @Test
     public void viaJavaCompilerApi() {
         /*
          * Implementation using Java compiler API requires Java 6.
          */
-        // Assert.fail("Java 6 dependency deactivated");
-        test(new GraphCreatorViaJavaCompilerApi());
+        Assert.fail("Java 6 dependency deactivated");
+        // test(new GraphCreatorViaJavaCompilerApi());
     }
 
     /**
-     * Import instance by compiling the generated Zest graph using the Eclipse
-     * JDT compiler (downside: API is internal)
+     * EXPERIMENTAL - NOT WORKING Import instance by compiling the generated
+     * Zest graph using the Eclipse JDT compiler (API is internal, probably
+     * makes no sense to use this)
      */
-    @Test
+    // @Test
     public void viaInternalJdtCompiler() {
         test(new GraphCreatorViaInternalJdtCompiler());
 
@@ -48,7 +59,7 @@ public final class TestExperimentalDotImport {
      * Test importing a DOT graph to a Zest graph instance directly. Internally,
      * this compiles the generated Zest class and loads it using Reflection.
      */
-    private void test(final IGraphCreator converter) {
+    static void test(final IGraphCreator converter) {
 
         /*
          * This is not really working, it only appears to be, as the generated
@@ -60,11 +71,12 @@ public final class TestExperimentalDotImport {
         String dot1 = "digraph TestingGraph {1;2;3;4; 1->2;2->3;2->4}";
         Graph graph = converter.create(shell, SWT.NONE, dot1);
         Assert.assertNotNull("Created graph must exist!", graph);
+        // open(shell); // blocks UI when running tests
         Assert.assertEquals(4, graph.getNodes().size());
         Assert.assertEquals(3, graph.getConnections().size());
         System.out.println(String.format("Imported '%s' to Graph '%s' of type '%s'", dot1, graph,
                 graph.getClass().getSimpleName()));
-        
+
         /*
          * Check a unique name works, i.e. no existing classes on the classpath
          * could be used instead of the new one:
@@ -73,11 +85,12 @@ public final class TestExperimentalDotImport {
                 "digraph TestingGraph" + System.currentTimeMillis() + "{1;2;3;4; 1->2;2->3;2->4}";
         graph = converter.create(shell, SWT.NONE, dot2);
         Assert.assertNotNull("Created graph must exist!", graph);
+        // open(shell); // blocks UI when running tests
         Assert.assertEquals(4, graph.getNodes().size());
         Assert.assertEquals(3, graph.getConnections().size());
         System.out.println(String.format("Imported '%s' to Graph '%s' of type '%s'", dot2, graph,
                 graph.getClass().getSimpleName()));
-        
+
         /*
          * Check if a DOT graph with the same name is changed when the generated
          * class is loaded:

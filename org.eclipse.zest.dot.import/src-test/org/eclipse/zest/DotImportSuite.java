@@ -14,6 +14,7 @@ import org.eclipse.zest.dot.TestAnimationDotImport;
 import org.eclipse.zest.dot.TestBasicDotImport;
 import org.eclipse.zest.dot.TestBatchDotImport;
 import org.eclipse.zest.dot.TestDotAst;
+import org.eclipse.zest.dot.TestGraphInstanceDotImport;
 import org.eclipse.zest.dot.TestLayoutDotImport;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
@@ -25,7 +26,7 @@ import org.junit.runners.Suite;
  */
 @RunWith( Suite.class )
 @Suite.SuiteClasses( { TestBasicDotImport.class, TestLayoutDotImport.class,
-        TestAnimationDotImport.class, TestBatchDotImport.class,
+        TestAnimationDotImport.class, TestGraphInstanceDotImport.class, TestBatchDotImport.class,
         TestDotAst.class } )
 public final class DotImportSuite {
     private DotImportSuite() { /* Enforce non-instantiability */}
