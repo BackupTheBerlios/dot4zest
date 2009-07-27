@@ -14,6 +14,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.zest.core.widgets.Graph;
+import org.eclipse.zest.core.widgets.GraphConnection;
+import org.eclipse.zest.core.widgets.GraphNode;
+import org.eclipse.zest.core.widgets.ZestStyles;
 import org.junit.Test;
 
 /**
@@ -21,6 +24,72 @@ import org.junit.Test;
  * @author Fabian Steeg (fsteeg)
  */
 public final class TestGraphInstanceDotImport {
+    private final GraphCreatorInterpreter interpreter = new GraphCreatorInterpreter();
+
+    @Test
+    public void digraphType() {
+        Graph graph = interpreter.create(new Shell(), SWT.NONE, "digraph Sample{1}");
+        Assert.assertNotNull("Created graph must not be null", graph);
+        Assert.assertEquals(ZestStyles.CONNECTIONS_DIRECTED, graph.getConnectionStyle());
+    }
+
+    @Test
+    public void graphType() {
+        Graph graph = interpreter.create(new Shell(), SWT.NONE, "graph Sample{1}");
+        Assert.assertNotNull("Created graph must not be null", graph);
+        Assert.assertNotSame(ZestStyles.CONNECTIONS_DIRECTED, graph.getConnectionStyle());
+
+    }
+
+    @Test
+    public void nodeDefaultLabel() {
+        Graph graph = interpreter.create(new Shell(), SWT.NONE, "graph Sample{1}");
+        Assert.assertNotNull("Created graph must not be null", graph);
+        Assert.assertEquals("1", ((GraphNode) graph.getNodes().get(0)).getText());
+    }
+
+    @Test
+    public void nodeCount() {
+        Graph graph = interpreter.create(new Shell(), SWT.NONE, "graph Sample{1;2}");
+        Assert.assertNotNull("Created graph must not be null", graph);
+        Assert.assertEquals(2, graph.getNodes().size());
+    }
+
+    @Test
+    public void edgeCount() {
+        Graph graph =
+                interpreter.create(new Shell(), SWT.NONE,
+                        "graph Sample{1;2;1->2;2->2;1->1[label=\"Edge1\"]}");
+        Assert.assertNotNull("Created graph must not be null", graph);
+        Assert.assertEquals(3, graph.getConnections().size());
+    }
+
+    @Test
+    public void nodeLabel() {
+        Graph graph =
+                interpreter.create(new Shell(), SWT.NONE, "graph Sample{1[label=\"Node1\"];}");
+        Assert.assertNotNull("Created graph must not be null", graph);
+        Assert.assertEquals("Node1", ((GraphNode) graph.getNodes().get(0)).getText());
+    }
+
+    @Test
+    public void edgeLabel() {
+        Graph graph =
+                interpreter
+                        .create(new Shell(), SWT.NONE, "graph Sample{1;2;1->2[label=\"Edge1\"]}");
+        Assert.assertNotNull("Created graph must not be null", graph);
+        Assert.assertEquals("Edge1", ((GraphConnection) graph.getConnections().get(0)).getText());
+    }
+
+    @Test
+    public void edgeStyle() {
+        Shell parent = new Shell();
+        Graph graph = interpreter.create(parent, SWT.NONE, "graph Sample{1;2;1->2[style=dashed]}");
+        Assert.assertNotNull("Created graph must not be null", graph);
+        Assert.assertEquals(SWT.LINE_DASH, ((GraphConnection) graph.getConnections().get(0))
+                .getLineStyle());
+        // open(parent);
+    }
 
     /**
      * Import instance by interpreting the parsed AST.
