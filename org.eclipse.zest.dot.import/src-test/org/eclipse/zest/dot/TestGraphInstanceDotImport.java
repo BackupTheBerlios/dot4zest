@@ -28,16 +28,20 @@ public final class TestGraphInstanceDotImport {
 
     @Test
     public void digraphType() {
-        Graph graph = interpreter.create(new Shell(), SWT.NONE, "digraph Sample{1}");
+        Shell shell = new Shell();
+        Graph graph = interpreter.create(shell, SWT.NONE, "digraph Sample{1;2;1->2}");
         Assert.assertNotNull("Created graph must not be null", graph);
         Assert.assertEquals(ZestStyles.CONNECTIONS_DIRECTED, graph.getConnectionStyle());
+        // open(shell);
     }
 
     @Test
     public void graphType() {
-        Graph graph = interpreter.create(new Shell(), SWT.NONE, "graph Sample{1}");
+        Shell shell = new Shell();
+        Graph graph = interpreter.create(shell, SWT.NONE, "graph Sample{1;2;1--2}");
         Assert.assertNotNull("Created graph must not be null", graph);
         Assert.assertNotSame(ZestStyles.CONNECTIONS_DIRECTED, graph.getConnectionStyle());
+        // open(shell);
 
     }
 
@@ -59,7 +63,7 @@ public final class TestGraphInstanceDotImport {
     public void edgeCount() {
         Graph graph =
                 interpreter.create(new Shell(), SWT.NONE,
-                        "graph Sample{1;2;1->2;2->2;1->1[label=\"Edge1\"]}");
+                        "graph Sample{1;2;1->2;2->2;1->1}");
         Assert.assertNotNull("Created graph must not be null", graph);
         Assert.assertEquals(3, graph.getConnections().size());
     }
