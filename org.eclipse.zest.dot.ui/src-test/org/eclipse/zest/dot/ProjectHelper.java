@@ -76,13 +76,11 @@ public final class ProjectHelper {
      * @param project The project to delete
      */
     static void deleteProject(final IProject project) {
-        IPath location = project.getLocation();
         try {
             project.refreshLocal(-1, null);
             project.delete(true, true, null);
         } catch (CoreException e) {
             e.printStackTrace();
         }
-        assertProjectDoesntExist(location);
     }
 }

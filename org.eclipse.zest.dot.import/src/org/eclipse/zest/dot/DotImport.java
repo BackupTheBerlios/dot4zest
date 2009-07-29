@@ -29,6 +29,8 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.mwe.core.WorkflowRunner;
 import org.eclipse.emf.mwe.core.monitor.NullProgressMonitor;
 import org.eclipse.emf.mwe.core.monitor.ProgressMonitor;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.zest.core.widgets.Graph;
 
 /**
  * Transformation of DOT files or strings to Zest Graph subclasses.
@@ -70,16 +72,6 @@ public final class DotImport {
         init(dotString);
     }
 
-    /**
-     * @param dotString The DOT graph to import
-     * @param id The ID to use to make the graph name unique
-     */
-    public DotImport(final String dotString, final String id) {
-        init(dotString);
-        /* Re-initialize with the unique name: */
-        init(dotString.replace(dotAst.graphName(), dotAst.graphName() + id));
-    }
-
     private void init(final String dotString) {
         this.dotFile = writeToTempFile(dotString);
         load();
@@ -104,9 +96,18 @@ public final class DotImport {
     }
 
     /**
-     * @return The Java file containing the definition of a Zest graph subclass
-     *         generated from the given DOT graph, placed in the default output
-     *         folder
+     * @param parent The parent to create the Zest graph in
+     * @param style The style bits for the Zest graph
+     * @return The Zest graph instantiated from the imported DOT
+     */
+    public Graph getZestGraph(final Composite parent, final int style) {
+        // TODO switch to a string as the member holding the DOT to avoid read-write here
+        return new GraphCreatorInterpreter().create(parent, style, read(dotFile));
+    }
+
+    /**
+     * @return The Java file containing the definition of a Zest graph subclass generated from the given DOT
+     *         graph, placed in the default output folder
      */
     public File getZestFile() {
         return importDotFile(dotFile, DEFAULT_OUTPUT_FOLDER);
@@ -114,8 +115,8 @@ public final class DotImport {
 
     /**
      * @param outputDirectory The directory to place the generated file in
-     * @return The Java file containing the definition of a Zest graph subclass
-     *         generated from the given DOT graph
+     * @return The Java file containing the definition of a Zest graph subclass generated from the given DOT
+     *         graph
      */
     public File getZestFile(final File outputDirectory) {
         return importDotFile(dotFile, outputDirectory);
@@ -123,8 +124,8 @@ public final class DotImport {
 
     /**
      * @param outputDirectory The directory to place the generated file in
-     * @return The Java file containing the definition of a Zest graph subclass
-     *         generated from the given DOT graph
+     * @return The Java file containing the definition of a Zest graph subclass generated from the given DOT
+     *         graph
      */
     public File getZestFile(final IContainer outputDirectory) {
         try {
@@ -138,16 +139,15 @@ public final class DotImport {
     /**
      * @param dotFile The DOT file to transform to a Zest representation
      * @param targetDirectory The directory to create the generated file in
-     * @return The Java file containing the definition of a Zest graph subclass
-     *         generated from the given DOT file
+     * @return The Java file containing the definition of a Zest graph subclass generated from the given DOT
+     *         file
      */
     private File importDotFile(final File dotFile, final File targetDirectory) {
         File fixedDotFile = fix(dotFile);
         String dotLocation = fixedDotFile.getAbsolutePath();
         File oawFile = loadWorkflow();
         String oawLocation = oawFile.getAbsolutePath();
-        Map<String, String> properties =
-                setupProps(dotLocation, new Path(targetDirectory.getAbsolutePath()));
+        Map<String, String> properties = setupProps(dotLocation, new Path(targetDirectory.getAbsolutePath()));
         WorkflowRunner workflowRunner = new WorkflowRunner();
         ProgressMonitor monitor = new NullProgressMonitor();
         workflowRunner.run(oawLocation, monitor, properties, new HashMap<String, String>());
@@ -157,13 +157,19 @@ public final class DotImport {
     /**
      * Workaround for the current DOT-Parser.
      * @param dotFile The DOT file to fix
-     * @return A file with the content of the given file, surrounded with
-     *         "graphs{ graph ... }"
+     * @return A file with the content of the given file, surrounded with "graphs{ graph ... }"
      */
     static File fix(final File dotFile) {
         String content = read(dotFile);
         File file = writeToTempFile("graphs { graph " + content + "}");
         return file;
+    }
+    
+    /**
+     * @return The DOT AST parsed from the DOT source
+     */
+    DotAst getDotAst() {
+        return this.dotAst;
     }
 
     private static String read(final File dotFile) {
@@ -212,8 +218,7 @@ public final class DotImport {
         }
     }
 
-    private static Map<String, String> setupProps(final String dotLocation,
-            final IPath targetDirectory) {
+    private static Map<String, String> setupProps(final String dotLocation, final IPath targetDirectory) {
         Map<String, String> properties = new HashMap<String, String>();
         try {
             properties.put(Slot.MODEL_FILE.v, new File(dotLocation).toURI().toURL().toString());
@@ -221,8 +226,7 @@ public final class DotImport {
             e.printStackTrace();
         }
         properties.put(Slot.TARGET_DIR.v, targetDirectory.toFile().getAbsolutePath());
-        properties.put(Slot.TEMPLATE_NAME.v, animated(dotLocation) ? ZEST_ANIMATION_TEMPLATE
-                : ZEST_TEMPLATE);
+        properties.put(Slot.TEMPLATE_NAME.v, animated(dotLocation) ? ZEST_ANIMATION_TEMPLATE : ZEST_TEMPLATE);
         return properties;
     }
 
@@ -250,8 +254,8 @@ public final class DotImport {
         File oawFile = null;
         URL resolved = url;
         /*
-         * If we don't check the protocol here, the FileLocator throws a
-         * NullPointerException if the WORKFLOW URL is a normal file URL.
+         * If we don't check the protocol here, the FileLocator throws a NullPointerException if the WORKFLOW
+         * URL is a normal file URL.
          */
         if (!url.getProtocol().equals("file")) {
             try {
@@ -268,10 +272,4 @@ public final class DotImport {
         return oawFile;
     }
 
-    /**
-     * @return The DOT AST parsed from the DOT source
-     */
-    DotAst getDotAst() {
-        return this.dotAst;
-    }
 }

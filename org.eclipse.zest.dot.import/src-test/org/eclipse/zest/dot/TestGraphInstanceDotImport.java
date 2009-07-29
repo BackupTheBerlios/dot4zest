@@ -27,6 +27,16 @@ public final class TestGraphInstanceDotImport {
     private final GraphCreatorInterpreter interpreter = new GraphCreatorInterpreter();
 
     @Test
+    public void dotImport() {
+        Shell shell = new Shell();
+        DotImport importer = new DotImport("digraph Sample{1;2;1->2}");
+        Graph graph = importer.getZestGraph(shell, SWT.NONE);
+        Assert.assertNotNull("Created graph must not be null", graph);
+        Assert.assertEquals(ZestStyles.CONNECTIONS_DIRECTED, graph.getConnectionStyle());
+        // open(shell);
+    }
+
+    @Test
     public void digraphType() {
         Shell shell = new Shell();
         Graph graph = interpreter.create(shell, SWT.NONE, "digraph Sample{1;2;1->2}");
@@ -61,26 +71,21 @@ public final class TestGraphInstanceDotImport {
 
     @Test
     public void edgeCount() {
-        Graph graph =
-                interpreter.create(new Shell(), SWT.NONE,
-                        "graph Sample{1;2;1->2;2->2;1->1}");
+        Graph graph = interpreter.create(new Shell(), SWT.NONE, "graph Sample{1;2;1->2;2->2;1->1}");
         Assert.assertNotNull("Created graph must not be null", graph);
         Assert.assertEquals(3, graph.getConnections().size());
     }
 
     @Test
     public void nodeLabel() {
-        Graph graph =
-                interpreter.create(new Shell(), SWT.NONE, "graph Sample{1[label=\"Node1\"];}");
+        Graph graph = interpreter.create(new Shell(), SWT.NONE, "graph Sample{1[label=\"Node1\"];}");
         Assert.assertNotNull("Created graph must not be null", graph);
         Assert.assertEquals("Node1", ((GraphNode) graph.getNodes().get(0)).getText());
     }
 
     @Test
     public void edgeLabel() {
-        Graph graph =
-                interpreter
-                        .create(new Shell(), SWT.NONE, "graph Sample{1;2;1->2[label=\"Edge1\"]}");
+        Graph graph = interpreter.create(new Shell(), SWT.NONE, "graph Sample{1;2;1->2[label=\"Edge1\"]}");
         Assert.assertNotNull("Created graph must not be null", graph);
         Assert.assertEquals("Edge1", ((GraphConnection) graph.getConnections().get(0)).getText());
     }
@@ -90,9 +95,13 @@ public final class TestGraphInstanceDotImport {
         Shell parent = new Shell();
         Graph graph = interpreter.create(parent, SWT.NONE, "graph Sample{1;2;1->2[style=dashed]}");
         Assert.assertNotNull("Created graph must not be null", graph);
-        Assert.assertEquals(SWT.LINE_DASH, ((GraphConnection) graph.getConnections().get(0))
-                .getLineStyle());
+        Assert.assertEquals(SWT.LINE_DASH, ((GraphConnection) graph.getConnections().get(0)).getLineStyle());
         // open(parent);
+    }
+
+    @Test( expected = IllegalArgumentException.class )
+    public void faultyStyle() {
+        interpreter.create(new Shell(), SWT.NONE, "graph Sample{1;2;1->2[style=\"dashed++\"]}");
     }
 
     /**
@@ -105,8 +114,8 @@ public final class TestGraphInstanceDotImport {
     }
 
     /**
-     * EXPERIMENTAL - NOT WORKING Import instance by compiling the generated
-     * Zest graph using the Java Compiler API (downside: requires Java 6)
+     * EXPERIMENTAL - NOT WORKING Import instance by compiling the generated Zest graph using the Java
+     * Compiler API (downside: requires Java 6)
      */
     // @Test
     public void viaJavaCompilerApi() {
@@ -118,9 +127,8 @@ public final class TestGraphInstanceDotImport {
     }
 
     /**
-     * EXPERIMENTAL - NOT WORKING Import instance by compiling the generated
-     * Zest graph using the Eclipse JDT compiler (API is internal, probably
-     * makes no sense to use this)
+     * EXPERIMENTAL - NOT WORKING Import instance by compiling the generated Zest graph using the Eclipse JDT
+     * compiler (API is internal, probably makes no sense to use this)
      */
     // @Test
     public void viaInternalJdtCompiler() {
@@ -129,16 +137,15 @@ public final class TestGraphInstanceDotImport {
     }
 
     /**
-     * Test importing a DOT graph to a Zest graph instance directly. Internally,
-     * this compiles the generated Zest class and loads it using Reflection.
+     * Test importing a DOT graph to a Zest graph instance directly. Internally, this compiles the generated
+     * Zest class and loads it using Reflection.
      */
     static void test(final IGraphCreator converter) {
 
         /*
-         * This is not really working, it only appears to be, as the generated
-         * file will be compiled by the IDE and will then be available to the
-         * classloader. A symptom of this is that it will only work starting
-         * with the second run.
+         * This is not really working, it only appears to be, as the generated file will be compiled by the
+         * IDE and will then be available to the classloader. A symptom of this is that it will only work
+         * starting with the second run.
          */
         Shell shell = new Shell();
         String dot1 = "digraph TestingGraph {1;2;3;4; 1->2;2->3;2->4}";
@@ -147,34 +154,32 @@ public final class TestGraphInstanceDotImport {
         // open(shell); // blocks UI when running tests
         Assert.assertEquals(4, graph.getNodes().size());
         Assert.assertEquals(3, graph.getConnections().size());
-        System.out.println(String.format("Imported '%s' to Graph '%s' of type '%s'", dot1, graph,
-                graph.getClass().getSimpleName()));
+        System.out.println(String.format("Imported '%s' to Graph '%s' of type '%s'", dot1, graph, graph
+                .getClass().getSimpleName()));
 
         /*
-         * Check a unique name works, i.e. no existing classes on the classpath
-         * could be used instead of the new one:
+         * Check a unique name works, i.e. no existing classes on the classpath could be used instead of the
+         * new one:
          */
-        String dot2 =
-                "digraph TestingGraph" + System.currentTimeMillis() + "{1;2;3;4; 1->2;2->3;2->4}";
+        String dot2 = "digraph TestingGraph" + System.currentTimeMillis() + "{1;2;3;4; 1->2;2->3;2->4}";
         graph = converter.create(shell, SWT.NONE, dot2);
         Assert.assertNotNull("Created graph must exist!", graph);
         // open(shell); // blocks UI when running tests
         Assert.assertEquals(4, graph.getNodes().size());
         Assert.assertEquals(3, graph.getConnections().size());
-        System.out.println(String.format("Imported '%s' to Graph '%s' of type '%s'", dot2, graph,
-                graph.getClass().getSimpleName()));
+        System.out.println(String.format("Imported '%s' to Graph '%s' of type '%s'", dot2, graph, graph
+                .getClass().getSimpleName()));
 
         /*
-         * Check if a DOT graph with the same name is changed when the generated
-         * class is loaded:
+         * Check if a DOT graph with the same name is changed when the generated class is loaded:
          */
         String dot3 = "digraph TestingGraph{1;2;3 1->2;2->3}";
         graph = converter.create(shell, SWT.NONE, dot3);
         Assert.assertNotNull("Created graph must exist!", graph);
         Assert.assertEquals(3, graph.getNodes().size());
         Assert.assertEquals(2, graph.getConnections().size());
-        System.out.println(String.format("Imported '%s' to Graph '%s' of type '%s'", dot3, graph,
-                graph.getClass().getSimpleName()));
+        System.out.println(String.format("Imported '%s' to Graph '%s' of type '%s'", dot3, graph, graph
+                .getClass().getSimpleName()));
         // open(shell); // blocks UI when running tests
     }
 

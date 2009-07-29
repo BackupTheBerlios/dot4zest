@@ -15,8 +15,7 @@ import org.eclipse.zest.core.widgets.Graph;
  * Common interface for different ways to create a Zest Graph instance from DOT.
  * @author Fabian Steeg (fsteeg)
  */
-// TODO currently public for usage from UI bundle; should this be public?
-public interface IGraphCreator {
+interface IGraphCreator {
 
     /**
      * @param parent The parent for the graph

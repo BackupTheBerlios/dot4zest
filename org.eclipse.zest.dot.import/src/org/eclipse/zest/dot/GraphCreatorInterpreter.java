@@ -17,8 +17,7 @@ import org.eclipse.zest.layouts.LayoutStyles;
 import org.eclipse.zest.layouts.algorithms.TreeLayoutAlgorithm;
 
 /**
- * Create a Zest graph instance from a DOT string by interpreting the AST of the
- * parsed DOT.
+ * Create a Zest graph instance from a DOT string by interpreting the AST of the parsed DOT.
  * @author Fabian Steeg (fsteeg)
  */
 final class GraphCreatorInterpreter implements IGraphCreator {
@@ -27,15 +26,14 @@ final class GraphCreatorInterpreter implements IGraphCreator {
 
     /**
      * {@inheritDoc}
-     * @see org.eclipse.zest.dot.IGraphCreator#create(org.eclipse.swt.widgets.Composite,
-     *      int, java.lang.String)
+     * @see org.eclipse.zest.dot.IGraphCreator#create(org.eclipse.swt.widgets.Composite, int,
+     *      java.lang.String)
      */
     public Graph create(final Composite parent, final int style, final String dot) {
         DotImport importer = new DotImport(dot);
         graph = new Graph(parent, style);
         // TODO: vary Zest layout
-        graph.setLayoutAlgorithm(new TreeLayoutAlgorithm(LayoutStyles.NO_LAYOUT_NODE_RESIZING),
-                true);
+        graph.setLayoutAlgorithm(new TreeLayoutAlgorithm(LayoutStyles.NO_LAYOUT_NODE_RESIZING), true);
         EObject eGraph = importer.getDotAst().graph();
         String graphType = getAttribute(eGraph, "type");
         graph.setConnectionStyle(graphType.equals("digraph") ? ZestStyles.CONNECTIONS_DIRECTED
@@ -80,7 +78,11 @@ final class GraphCreatorInterpreter implements IGraphCreator {
     }
 
     private enum Style {
-        DASHED(SWT.LINE_DASH), DOTTED(SWT.LINE_DOT), SOLID(SWT.LINE_SOLID);
+        DASHED(SWT.LINE_DASH),
+        DOTTED(SWT.LINE_DOT),
+        SOLID(SWT.LINE_SOLID),
+        DASHDOT(SWT.LINE_DASHDOT),
+        DASHDOTDOT(SWT.LINE_DASHDOTDOT);
         private int style;
 
         Style(final int style) {
@@ -107,7 +109,7 @@ final class GraphCreatorInterpreter implements IGraphCreator {
                     }
                     /* Set the optional style, if set in the DOT input: */
                     if (styleValue != null) {
-                        Style v = Style.valueOf(styleValue.toUpperCase());
+                        Style v = Style.valueOf(Style.class, styleValue.toUpperCase());
                         graphConnection.setLineStyle(v.style);
                     }
                 }
@@ -136,8 +138,7 @@ final class GraphCreatorInterpreter implements IGraphCreator {
                     EObject attributeElement = attributeContents.next();
                     if (attributeElement.eClass().getName().equals("a_list")) {
                         if (getAttribute(attributeElement, "name").equals(attributeName)) {
-                            String label =
-                                    getAttribute(attributeElement, "value").replaceAll("\"", "");
+                            String label = getAttribute(attributeElement, "value").replaceAll("\"", "");
                             System.out.println(label);
                             return label;
                         }

@@ -36,16 +36,14 @@ import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 import org.eclipse.zest.core.widgets.Graph;
 
 /**
- * This wizard page allows setting the container for the new Zest graph and the
- * DOT input. The page will only accept file name without the extension OR with
- * the extension that matches the expected one (java).
+ * This wizard page allows setting the container for the new Zest graph and the DOT input.
  * @author Fabian Steeg (fsteeg)
  */
 public final class ZestGraphWizardPageTemplateSelection extends WizardPage {
-
-    private static final String WIZARD_DESCRIPTION = "This wizard creates a new Zest graph, "
-            + "based on a template. "
-            + "The DOT representation of the selected template can be customized on the next page.";
+    // TODO externalize
+    private static final String WIZARD_DESCRIPTION =
+            "This wizard creates a new Zest graph, " + "based on a template. "
+                    + "The DOT representation of the selected template can be customized on the next page.";
     private static final String NEW_ZEST_GRAPH = "New Zest Graph";
     private static final String EXTENSION_MUST_BE_JAVA = "File extension must be \"java\"";
     private static final String NAME_MUST_BE_VALID = "File name must be valid";
@@ -64,25 +62,17 @@ public final class ZestGraphWizardPageTemplateSelection extends WizardPage {
     private Combo combo;
     private Composite composite;
     private Graph previewGraph;
-    /*
-     * TODO: The importer is not actually importing the DOT here, but uses the
-     * exported Zest graphs from the import bundle, which are generated from the
-     * same template files used in the wizard.
-     */
-    private IGraphCreator importer;
 
     /**
      * Constructor for ZestGraphWizardPage.
      * @param selection The current selection
      * @param previewPage
      */
-    public ZestGraphWizardPageTemplateSelection(final ISelection selection,
-            final IGraphCreator importer) {
+    public ZestGraphWizardPageTemplateSelection(final ISelection selection) {
         super("wizardPage");
         setTitle(NEW_ZEST_GRAPH);
         setDescription(WIZARD_DESCRIPTION);
         this.selection = selection;
-        this.importer = importer;
     }
 
     /**
@@ -110,10 +100,6 @@ public final class ZestGraphWizardPageTemplateSelection extends WizardPage {
     @Override
     public void dispose() {
         super.dispose();
-        /* If the classname is changed, the preview is null. */
-        if (previewGraph != null) {
-            previewGraph.dispose();
-        }
         composite.dispose();
         combo.dispose();
         containerText.dispose();
@@ -136,25 +122,23 @@ public final class ZestGraphWizardPageTemplateSelection extends WizardPage {
             previewGraph.dispose();
         }
         if (composite != null) {
-            // FIXME instance is not actually loaded from generated file
-            previewGraph = importer.create(composite, SWT.BORDER, getDotText());
+            previewGraph = new DotImport(getDotText()).getZestGraph(composite, SWT.BORDER);
             setupLayout();
             composite.layout();
         }
     }
 
     /**
-     * Validates the page's container selection and the selected DOT template,
-     * displays errors happening during parsing of the DOT representation.
+     * Validates the page's container selection and the selected DOT template, displays errors happening
+     * during parsing of the DOT representation.
      */
     void validateContent() {
-        IResource container = ResourcesPlugin.getWorkspace().getRoot()
-                .findMember(new Path(getContainerName()));
+        IResource container =
+                ResourcesPlugin.getWorkspace().getRoot().findMember(new Path(getContainerName()));
         String fileName = getFileName();
         if (getContainerName().length() == 0) {
             updateStatus(CONTAINER_MUST_BE_SPECIFIED);
-        } else if (container == null
-                || (container.getType() & (IResource.PROJECT | IResource.FOLDER)) == 0) {
+        } else if (container == null || (container.getType() & (IResource.PROJECT | IResource.FOLDER)) == 0) {
             updateStatus(CONTAINER_MUST_EXIST);
         } else if (!container.isAccessible()) {
             updateStatus(MUST_BE_WRITABLE);
@@ -165,8 +149,7 @@ public final class ZestGraphWizardPageTemplateSelection extends WizardPage {
         } else if (fileName.replace('\\', '/').indexOf('/', 1) > 0) {
             updateStatus(NAME_MUST_BE_VALID);
         } else if (fileName.contains(".")
-                && !fileName.substring(fileName.lastIndexOf('.') + 1)
-                        .equalsIgnoreCase(JAVA)) {
+                && !fileName.substring(fileName.lastIndexOf('.') + 1).equalsIgnoreCase(JAVA)) {
             updateStatus(EXTENSION_MUST_BE_JAVA);
         } else {
             DotImport dotImport = new DotImport(getDotText());
@@ -240,9 +223,7 @@ public final class ZestGraphWizardPageTemplateSelection extends WizardPage {
             private void updateWizard(final Combo combo) {
                 ZestGraphWizard wizard = (ZestGraphWizard) getWizard();
                 wizard
-                        .setDotText((ZestGraphTemplate
-                                .availableTemplateContents()[(combo
-                                .getSelectionIndex())]));
+                        .setDotText((ZestGraphTemplate.availableTemplateContents()[(combo.getSelectionIndex())]));
             }
         });
         combo.select(0);
@@ -274,8 +255,7 @@ public final class ZestGraphWizardPageTemplateSelection extends WizardPage {
     private void createPreviewRow(final Composite composite) {
         Label label = new Label(composite, SWT.NULL);
         label.setText("&Preview:");
-        // FIXME instance is not actually loaded from generated file
-        previewGraph = importer.create(composite, SWT.BORDER, getDotText());
+        previewGraph = new DotImport(getDotText()).getZestGraph(composite, SWT.BORDER);
         setupLayout();
     }
 
@@ -288,8 +268,8 @@ public final class ZestGraphWizardPageTemplateSelection extends WizardPage {
     }
 
     private ZestGraphWizardPageCustomize getDotPage() {
-        ZestGraphWizardPageCustomize previewPage = (ZestGraphWizardPageCustomize) getWizard()
-                .getNextPage(this);
+        ZestGraphWizardPageCustomize previewPage =
+                (ZestGraphWizardPageCustomize) getWizard().getNextPage(this);
         return previewPage;
     }
 
@@ -297,8 +277,7 @@ public final class ZestGraphWizardPageTemplateSelection extends WizardPage {
      * Tests if the current workbench selection is a suitable container to use.
      */
     private void validateSelection() {
-        if (selection != null && !selection.isEmpty()
-                && selection instanceof IStructuredSelection) {
+        if (selection != null && !selection.isEmpty() && selection instanceof IStructuredSelection) {
             IStructuredSelection ssel = (IStructuredSelection) selection;
             if (ssel.size() > 1) {
                 return;
@@ -306,8 +285,7 @@ public final class ZestGraphWizardPageTemplateSelection extends WizardPage {
             Object obj = ssel.getFirstElement();
             if (obj instanceof IResource) {
                 IContainer container;
-                container = (obj instanceof IContainer)
-                        ? (IContainer) obj : ((IResource) obj).getParent();
+                container = (obj instanceof IContainer) ? (IContainer) obj : ((IResource) obj).getParent();
                 containerText.setText(container.getFullPath().toString());
             }
         }
@@ -317,11 +295,9 @@ public final class ZestGraphWizardPageTemplateSelection extends WizardPage {
         if (selection != null) {
             Object o = ((IStructuredSelection) selection).getFirstElement();
             if (o instanceof IPackageFragmentRoot) {
-                containerText.setText(((IPackageFragmentRoot) o).getPath()
-                        .toString());
+                containerText.setText(((IPackageFragmentRoot) o).getPath().toString());
             } else if (o instanceof IPackageFragment) {
-                containerText.setText(((IPackageFragment) o).getPath()
-                        .toString());
+                containerText.setText(((IPackageFragment) o).getPath().toString());
             } else if (o instanceof IResource) {
                 containerText.setText(((IResource) o).getFullPath().toString());
             } else {
@@ -331,13 +307,12 @@ public final class ZestGraphWizardPageTemplateSelection extends WizardPage {
     }
 
     /**
-     * Uses the standard container selection dialog to choose the new value for
-     * the container field.
+     * Uses the standard container selection dialog to choose the new value for the container field.
      */
     private void handleBrowse() {
-        ContainerSelectionDialog dialog = new ContainerSelectionDialog(
-                getShell(), ResourcesPlugin.getWorkspace().getRoot(), false,
-                FILE_CONTAINER);
+        ContainerSelectionDialog dialog =
+                new ContainerSelectionDialog(getShell(), ResourcesPlugin.getWorkspace().getRoot(), false,
+                        FILE_CONTAINER);
         if (dialog.open() == ContainerSelectionDialog.OK) {
             Object[] result = dialog.getResult();
             if (result.length == 1) {
