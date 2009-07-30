@@ -17,6 +17,10 @@ import org.eclipse.zest.core.widgets.Graph;
 import org.eclipse.zest.core.widgets.GraphConnection;
 import org.eclipse.zest.core.widgets.GraphNode;
 import org.eclipse.zest.core.widgets.ZestStyles;
+import org.eclipse.zest.layouts.algorithms.GridLayoutAlgorithm;
+import org.eclipse.zest.layouts.algorithms.RadialLayoutAlgorithm;
+import org.eclipse.zest.layouts.algorithms.SpringLayoutAlgorithm;
+import org.eclipse.zest.layouts.algorithms.TreeLayoutAlgorithm;
 import org.junit.Test;
 
 /**
@@ -97,6 +101,63 @@ public final class TestGraphInstanceDotImport {
         Assert.assertNotNull("Created graph must not be null", graph);
         Assert.assertEquals(SWT.LINE_DASH, ((GraphConnection) graph.getConnections().get(0)).getLineStyle());
         // open(parent);
+    }
+
+    @Test
+    public void globalEdgeStyle() {
+        Shell parent = new Shell();
+        Graph graph = interpreter.create(parent, SWT.NONE, "graph Sample{edge[style=dashed];1;2;1->2}");
+        Assert.assertNotNull("Created graph must not be null", graph);
+        Assert.assertEquals(SWT.LINE_DASH, ((GraphConnection) graph.getConnections().get(0)).getLineStyle());
+        // open(parent);
+    }
+
+    @Test
+    public void globalEdgeLabel() {
+        Graph graph =
+                interpreter.create(new Shell(), SWT.NONE, "graph Sample{edge[label=\"Edge1\"];1;2;1->2}");
+        Assert.assertNotNull("Created graph must not be null", graph);
+        Assert.assertEquals("Edge1", ((GraphConnection) graph.getConnections().get(0)).getText());
+    }
+
+    @Test
+    public void globalNodeLabel() {
+        Graph graph = interpreter.create(new Shell(), SWT.NONE, "graph Sample{node[label=\"Node1\"];1;}");
+        Assert.assertNotNull("Created graph must not be null", graph);
+        Assert.assertEquals("Node1", ((GraphNode) graph.getNodes().get(0)).getText());
+    }
+
+    @Test
+    public void layoutSpring() {
+        Graph graph = interpreter.create(new Shell(), SWT.NONE, "graph Sample{graph[layout=spring];1;}");
+        Assert.assertNotNull("Created graph must not be null", graph);
+        Assert.assertEquals(SpringLayoutAlgorithm.class, graph.getLayoutAlgorithm().getClass());
+    }
+
+    @Test
+    public void layoutGrid() {
+        Graph graph = interpreter.create(new Shell(), SWT.NONE, "graph Sample{graph[layout=grid];1;}");
+        Assert.assertNotNull("Created graph must not be null", graph);
+        Assert.assertEquals(GridLayoutAlgorithm.class, graph.getLayoutAlgorithm().getClass());
+    }
+
+    @Test
+    public void layoutRadial() {
+        Graph graph = interpreter.create(new Shell(), SWT.NONE, "graph Sample{graph[layout=radial];1;}");
+        Assert.assertNotNull("Created graph must not be null", graph);
+        Assert.assertEquals(RadialLayoutAlgorithm.class, graph.getLayoutAlgorithm().getClass());
+    }
+
+    @Test
+    public void layoutTree() {
+        Graph graph = interpreter.create(new Shell(), SWT.NONE, "graph Sample{graph[layout=tree];1;}");
+        Assert.assertNotNull("Created graph must not be null", graph);
+        Assert.assertEquals(TreeLayoutAlgorithm.class, graph.getLayoutAlgorithm().getClass());
+    }
+
+    @Test( expected = IllegalArgumentException.class )
+    public void faultyLayout() {
+        interpreter.create(new Shell(), SWT.NONE, "graph Sample{graph[layout=cool];1;}");
     }
 
     @Test( expected = IllegalArgumentException.class )

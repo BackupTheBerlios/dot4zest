@@ -66,7 +66,12 @@ final class ZestGraphTemplate {
         try {
             rootFolder = new File(FileLocator.resolve(root).toURI());
             for (String file : rootFolder.list()) {
-                if (file.endsWith(".dot")) {
+                /*
+                 * Custom layout not supported in interpreter (which is in the compiler), where available
+                 * layout algorithms are hard-coded (more robust than dynamic Class.forName instantiation of
+                 * the layout algorithm for the name).
+                 */
+                if (file.endsWith(".dot") && !file.contains("custom")) {
                     String name = formatName(file);
                     availableTemplates.add(new ZestGraphTemplate(name.trim(),
                             read(new File(rootFolder, file))));
@@ -88,8 +93,7 @@ final class ZestGraphTemplate {
         String name = "";
         String[] tokens = file.split("\\.")[0].split("_");
         for (String string : tokens) {
-            String upper = Character.toUpperCase(string.charAt(0))
-                    + string.substring(1).toLowerCase();
+            String upper = Character.toUpperCase(string.charAt(0)) + string.substring(1).toLowerCase();
             name += " " + upper;
         }
         return name;
@@ -107,8 +111,7 @@ final class ZestGraphTemplate {
             while (scanner.hasNextLine()) {
                 String nextLine = scanner.nextLine();
                 /* We trim the header, if any: */
-                if (!nextLine.trim().startsWith("/***")
-                        && !nextLine.trim().startsWith("*")) {
+                if (!nextLine.trim().startsWith("/***") && !nextLine.trim().startsWith("*")) {
                     builder.append(nextLine + "\n");
                 }
             }
