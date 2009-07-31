@@ -44,10 +44,10 @@ final class GraphCreatorViaJavaCompilerApi implements IGraphCreator {
         /*
          * The trick we use to avoid nasty classloader trouble when reloading
          * newer versions of the same class: we give each generated class a
-         * unique name:
+         * unique name (as this is unused, it has been removed from the API):
          */
         DotImport dotImport = new DotImport(dot, System.currentTimeMillis() + "");
-        File zestFile = dotImport.getZestFile();
+        File zestFile = dotImport.newGraphSubclass();
         URL outputDirUrl = compileWithJavaCompiler(zestFile, dotImport.getName());
         Graph graph =
                 ExperimentalDotImport.loadGraph(dotImport.getName(), outputDirUrl, parent, style);

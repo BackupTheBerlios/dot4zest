@@ -31,10 +31,21 @@ public final class TestGraphInstanceDotImport {
     private final GraphCreatorInterpreter interpreter = new GraphCreatorInterpreter();
 
     @Test
+    public void minimalUsage() {
+        Shell shell = new Shell();
+        /* The DOT input, can be given as a String, File or IFile: */
+        DotImport dotImport = new DotImport("digraph Simple { 1;2; 1->2 }");
+        /* Create a Zest graph instance in a parent, with a style: */
+        Graph graph = dotImport.newGraphInstance(shell, SWT.NONE);
+        // open(shell); // sets title, layout, and size, opens the shell
+        System.out.println(graph);
+    }
+
+    @Test
     public void dotImport() {
         Shell shell = new Shell();
         DotImport importer = new DotImport("digraph Sample{1;2;1->2}");
-        Graph graph = importer.getZestGraph(shell, SWT.NONE);
+        Graph graph = importer.newGraphInstance(shell, SWT.NONE);
         Assert.assertNotNull("Created graph must not be null", graph);
         Assert.assertEquals(ZestStyles.CONNECTIONS_DIRECTED, graph.getConnectionStyle());
         // open(shell);

@@ -100,7 +100,7 @@ public final class DotImport {
      * @param style The style bits for the Zest graph
      * @return The Zest graph instantiated from the imported DOT
      */
-    public Graph getZestGraph(final Composite parent, final int style) {
+    public Graph newGraphInstance(final Composite parent, final int style) {
         // TODO switch to a string as the member holding the DOT to avoid read-write here
         return new GraphCreatorInterpreter().create(parent, style, read(dotFile));
     }
@@ -109,7 +109,7 @@ public final class DotImport {
      * @return The Java file containing the definition of a Zest graph subclass generated from the given DOT
      *         graph, placed in the default output folder
      */
-    public File getZestFile() {
+    public File newGraphSubclass() {
         return importDotFile(dotFile, DEFAULT_OUTPUT_FOLDER);
     }
 
@@ -118,7 +118,7 @@ public final class DotImport {
      * @return The Java file containing the definition of a Zest graph subclass generated from the given DOT
      *         graph
      */
-    public File getZestFile(final File outputDirectory) {
+    public File newGraphSubclass(final File outputDirectory) {
         return importDotFile(dotFile, outputDirectory);
     }
 
@@ -127,7 +127,7 @@ public final class DotImport {
      * @return The Java file containing the definition of a Zest graph subclass generated from the given DOT
      *         graph
      */
-    public File getZestFile(final IContainer outputDirectory) {
+    public File newGraphSubclass(final IContainer outputDirectory) {
         try {
             return importDotFile(dotFile, resolve(outputDirectory.getLocationURI().toURL()));
         } catch (MalformedURLException e) {

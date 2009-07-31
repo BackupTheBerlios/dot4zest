@@ -26,7 +26,7 @@ public final class DotImportTestUtils {
     static void importFrom(final File dotFile) {
         Assert.assertTrue("DOT input file must exist: " + dotFile, dotFile
                 .exists());
-        File zest = new DotImport(dotFile).getZestFile();
+        File zest = new DotImport(dotFile).newGraphSubclass();
         Assert.assertNotNull("Resulting file must not be null", zest);
         Assert.assertTrue("Resulting file must exist", zest.exists());
         /*

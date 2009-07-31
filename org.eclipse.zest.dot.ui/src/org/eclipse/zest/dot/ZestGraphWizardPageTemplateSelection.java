@@ -122,7 +122,7 @@ public final class ZestGraphWizardPageTemplateSelection extends WizardPage {
             previewGraph.dispose();
         }
         if (composite != null) {
-            previewGraph = new DotImport(getDotText()).getZestGraph(composite, SWT.BORDER);
+            previewGraph = new DotImport(getDotText()).newGraphInstance(composite, SWT.BORDER);
             setupLayout();
             composite.layout();
         }
@@ -255,7 +255,7 @@ public final class ZestGraphWizardPageTemplateSelection extends WizardPage {
     private void createPreviewRow(final Composite composite) {
         Label label = new Label(composite, SWT.NULL);
         label.setText("&Preview:");
-        previewGraph = new DotImport(getDotText()).getZestGraph(composite, SWT.BORDER);
+        previewGraph = new DotImport(getDotText()).newGraphInstance(composite, SWT.BORDER);
         setupLayout();
     }
 

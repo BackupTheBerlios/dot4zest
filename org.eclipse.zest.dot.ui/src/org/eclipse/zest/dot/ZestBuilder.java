@@ -127,7 +127,7 @@ public final class ZestBuilder extends IncrementalProjectBuilder {
             IPackageFragment targetPackage = packageRoot
                     .getPackageFragment(ZestProjectWizard.PACKAGE);
             IResource targetFolder = targetPackage.getCorrespondingResource();
-            new DotImport(dotFile).getZestFile((IContainer) targetFolder);
+            new DotImport(dotFile).newGraphSubclass((IContainer) targetFolder);
             targetFolder.refreshLocal(1, null);
         } catch (CoreException e) {
             e.printStackTrace();
