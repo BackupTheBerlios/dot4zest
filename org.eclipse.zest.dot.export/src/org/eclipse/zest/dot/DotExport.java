@@ -42,15 +42,31 @@ public final class DotExport {
     }
 
     /**
+     * @param graph The Zest graph to export to an image file
+     * @param dotDir The directory containing the 'dot' executable of the local Graphviz installation
+     * @param format The image format to export the graph to (e.g. 'pdf' or 'png')
+     * @return The image file exported via DOT for the given Zest graph, or null
+     */
+    public static File exportZestGraph(final Graph graph, final File dotDir, final String format) {
+        try {
+            File dotFile = File.createTempFile("zest-dot-export", ".dot");
+            write(exportZestGraph(graph), dotFile);
+            File image = DotDrawer.renderImage(dotDir, dotFile, format);
+            return image;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
      * @param graph The graph to get a name for
-     * @return A name for the given graph, that can be used as a filename and as
-     *         a valid name for a DOT graph
+     * @return A name for the given graph, that can be used as a filename and as a valid name for a DOT graph
      */
     static String name(final Graph graph) {
         String simpleClassName = graph.getClass().getSimpleName();
         /* The exact name 'Graph' is not valid for rendering with Graphviz: */
-        return simpleClassName.equals("Graph")
-                ? "Zest" + simpleClassName : simpleClassName;
+        return simpleClassName.equals("Graph") ? "Zest" + simpleClassName : simpleClassName;
     }
 
     private static String graphToDot(final Graph graph) {
