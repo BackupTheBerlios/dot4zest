@@ -161,7 +161,7 @@ public final class ZestProjectWizard extends JavaProjectWizard {
     }
 
     private File resourcesDirectory() throws IOException, URISyntaxException {
-        URL resourcesFolderUrl = FileLocator.find(Activator.getDefault()
+        URL resourcesFolderUrl = FileLocator.find(DotUiActivator.getDefault()
                 .getBundle(), new Path(RESOURCES), Collections.EMPTY_MAP);
         URL fileURL = FileLocator.toFileURL(resourcesFolderUrl);
         File resourcesDirectory = new File(fileURL.toURI());

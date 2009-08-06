@@ -16,15 +16,15 @@ import org.osgi.framework.BundleContext;
  * The activator class controls the plug-in life cycle.
  * @author Fabian Steeg (fsteeg)
  */
-public final class Activator extends AbstractUIPlugin {
+public final class DotUiActivator extends AbstractUIPlugin {
 
     /** The plug-in ID */
     public static final String PLUGIN_ID = "org.eclipse.zest.dot.ui";
 
-    private static Activator plugin;
+    private static DotUiActivator plugin;
 
     /** Create a new Activator. */
-    public Activator() {}
+    public DotUiActivator() {}
 
     /**
      * {@inheritDoc}
@@ -47,7 +47,7 @@ public final class Activator extends AbstractUIPlugin {
     /**
      * @return The shared instance
      */
-    public static Activator getDefault() {
+    public static DotUiActivator getDefault() {
         return plugin;
     }
 

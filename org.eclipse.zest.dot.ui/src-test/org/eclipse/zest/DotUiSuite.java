@@ -8,9 +8,14 @@
  *******************************************************************************/
 package org.eclipse.zest;
 
+import junit.framework.Assert;
+
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.zest.dot.TestDotDirStore;
 import org.eclipse.zest.dot.TestZestGraphTemplate;
 import org.eclipse.zest.dot.TestZestGraphWizard;
 import org.eclipse.zest.dot.TestZestProjectWizard;
+import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -20,5 +25,13 @@ import org.junit.runners.Suite;
  */
 @RunWith( Suite.class )
 @Suite.SuiteClasses( { /* TestExperimentalDotImport.class, //not passing and experimental */
-TestZestGraphTemplate.class, TestZestGraphWizard.class, TestZestProjectWizard.class } )
-public final class DotUiSuite {}
+TestZestGraphTemplate.class, TestZestGraphWizard.class, TestZestProjectWizard.class,
+        TestDotDirStore.class } )
+public final class DotUiSuite {
+    @Before
+    public void setup() {
+        if (!Platform.isRunning()) {
+            Assert.fail("Please run as JUnit Plug-in test");
+        }
+    }
+}
