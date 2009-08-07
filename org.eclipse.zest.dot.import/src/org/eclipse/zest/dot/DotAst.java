@@ -117,7 +117,6 @@ final class DotAst {
                     if (attributeElement.eClass().getName().equals("a_list")) {
                         if (getValue(attributeElement, "name").equals(attributeName)) {
                             String label = getValue(attributeElement, "value").replaceAll("\"", "");
-                            System.out.println(label);
                             return label;
                         }
                     }

@@ -52,9 +52,8 @@ import org.eclipse.ui.ide.IDE;
 @SuppressWarnings( "restriction" )
 public final class ZestProjectWizard extends JavaProjectWizard {
     /*
-     * The name of the generated files depends on the DOT graph names of the
-     * sample graphs that are copied from resources/project/templates to the new
-     * project.
+     * The name of the generated files depends on the DOT graph names of the sample graphs that are copied
+     * from resources/project/templates to the new project.
      */
     private static final String SAMPLE_GRAPH_JAVA = "SampleGraph.java";
     private static final String SAMPLE_ANIMATION_JAVA = "SampleAnimation.java";
@@ -69,8 +68,7 @@ public final class ZestProjectWizard extends JavaProjectWizard {
      *      org.eclipse.jface.viewers.IStructuredSelection)
      */
     @Override
-    public void init(final IWorkbench workbench,
-            final IStructuredSelection currentSelection) {
+    public void init(final IWorkbench workbench, final IStructuredSelection currentSelection) {
         super.setWindowTitle("New Zest Project");
         super.init(workbench, currentSelection);
     }
@@ -89,9 +87,8 @@ public final class ZestProjectWizard extends JavaProjectWizard {
             IResource newProject = root.findMember(path);
             File outRoot = new File(newProject.getLocationURI());
             /*
-             * We copy the required resources from this bundle to the new
-             * project and setup the project's classpath (which uses the copied
-             * resources):
+             * We copy the required resources from this bundle to the new project and setup the project's
+             * classpath (which uses the copied resources):
              */
             copy(resourcesDirectory(), outRoot);
             setupProjectClasspath(javaElement, root, newProject);
@@ -109,25 +106,22 @@ public final class ZestProjectWizard extends JavaProjectWizard {
     }
 
     /**
-     * @return The project-relative path to the sample Zest graph generated from
-     *         the sample DOT file copied into the new project.
+     * @return The project-relative path to the sample Zest graph generated from the sample DOT file copied
+     *         into the new project.
      */
     static List<IPath> pathsToGeneratedGraphs() {
-        return Arrays.asList(pathTo(SAMPLE_GRAPH_JAVA),
-                pathTo(SAMPLE_ANIMATION_JAVA));
+        return Arrays.asList(pathTo(SAMPLE_GRAPH_JAVA), pathTo(SAMPLE_ANIMATION_JAVA));
     }
 
     private static IPath pathTo(final String name) {
-        return new Path(ZestProjectWizard.SRC_GEN + "/"
-                + ZestProjectWizard.PACKAGE.replaceAll("\\.", "/") + "/" + name);
+        return new Path(ZestProjectWizard.SRC_GEN + "/" + ZestProjectWizard.PACKAGE.replaceAll("\\.", "/")
+                + "/" + name);
     }
 
-    private void runGeneratedZestGraphs(final IJavaElement javaElement)
-            throws JavaModelException {
+    private void runGeneratedZestGraphs(final IJavaElement javaElement) throws JavaModelException {
         List<IPath> graphs = pathsToGeneratedGraphs();
         for (IPath graph : graphs) {
-            IProject project = (IProject) javaElement
-                    .getCorrespondingResource();
+            IProject project = (IProject) javaElement.getCorrespondingResource();
             IFile member = (IFile) project.findMember(graph);
             /* We give the builder some time to generate files, etc. */
             long waited = 0;
@@ -142,41 +136,36 @@ public final class ZestProjectWizard extends JavaProjectWizard {
                     e.printStackTrace();
                 }
             }
-            ZestGraphWizard.launchJavaApplication(member,
-                    new NullProgressMonitor());
+            ZestGraphWizard.launchJavaApplication(member, new NullProgressMonitor());
         }
     }
 
-    private void openDotFiles(final IJavaElement javaElement)
-            throws CoreException {
+    private void openDotFiles(final IJavaElement javaElement) throws CoreException {
         IProject project = (IProject) javaElement.getCorrespondingResource();
-        IFolder templatesFolder = (IFolder) project.findMember(new Path(
-                TEMPLATES));
+        IFolder templatesFolder = (IFolder) project.findMember(new Path(TEMPLATES));
         IResource[] members = templatesFolder.members();
         for (IResource r : members) {
             IFile file = (IFile) r;
-            IDE.openEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-                    .getActivePage(), file);
+            IDE.openEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(), file);
         }
     }
 
     private File resourcesDirectory() throws IOException, URISyntaxException {
-        URL resourcesFolderUrl = FileLocator.find(DotUiActivator.getDefault()
-                .getBundle(), new Path(RESOURCES), Collections.EMPTY_MAP);
+        URL resourcesFolderUrl =
+                FileLocator.find(DotUiActivator.getDefault().getBundle(), new Path(RESOURCES),
+                        Collections.EMPTY_MAP);
         URL fileURL = FileLocator.toFileURL(resourcesFolderUrl);
         File resourcesDirectory = new File(fileURL.toURI());
         return resourcesDirectory;
     }
 
-    private void setupProjectClasspath(final IJavaElement javaElement,
-            final IWorkspaceRoot root, final IResource newProject) {
+    private void setupProjectClasspath(final IJavaElement javaElement, final IWorkspaceRoot root,
+            final IResource newProject) {
         try {
-            IClasspathEntry[] classpath = javaElement.getJavaProject()
-                    .getRawClasspath();
+            IClasspathEntry[] classpath = javaElement.getJavaProject().getRawClasspath();
             /*
-             * We will add two items to the classpath: a src-gen source folder
-             * and the Zest plugin dependencies (to get the required SWT and
-             * Zest dependencies into the newly created project).
+             * We will add two items to the classpath: a src-gen source folder and the Zest plugin
+             * dependencies (to get the required SWT and Zest dependencies into the newly created project).
              */
             IClasspathEntry[] newClasspath = new ClasspathEntry[classpath.length + 2];
             IProject project = (IProject) newProject;
@@ -187,11 +176,9 @@ public final class ZestProjectWizard extends JavaProjectWizard {
             for (int i = 0; i < classpath.length; i++) {
                 newClasspath[i] = classpath[i];
             }
-            newClasspath[newClasspath.length - 2] = JavaCore
-                    .newSourceEntry(sourceGenFolder.getFullPath());
-            newClasspath[newClasspath.length - 1] = JavaCore
-                    .newContainerEntry(new Path(
-                            "org.eclipse.pde.core.requiredPlugins"));
+            newClasspath[newClasspath.length - 2] = JavaCore.newSourceEntry(sourceGenFolder.getFullPath());
+            newClasspath[newClasspath.length - 1] =
+                    JavaCore.newContainerEntry(new Path("org.eclipse.pde.core.requiredPlugins"));
             /* Set the updated classpath: */
             javaElement.getJavaProject().setRawClasspath(newClasspath, null);
             /* Activate the Zest project nature: */
@@ -203,17 +190,14 @@ public final class ZestProjectWizard extends JavaProjectWizard {
         }
     }
 
-    private void createPackage(final IProject project,
-            final IFolder sourceGenFolder) throws JavaModelException {
+    private void createPackage(final IProject project, final IFolder sourceGenFolder)
+            throws JavaModelException {
         IJavaProject javaProject = JavaCore.create(project);
-        IPackageFragmentRoot newPackage = javaProject
-                .getPackageFragmentRoot(sourceGenFolder);
-        newPackage.createPackageFragment(PACKAGE, true,
-                new NullProgressMonitor());
+        IPackageFragmentRoot newPackage = javaProject.getPackageFragmentRoot(sourceGenFolder);
+        newPackage.createPackageFragment(PACKAGE, true, new NullProgressMonitor());
     }
 
-    private void copy(final File sourceRootFolder,
-            final File destinationRootFolder) throws IOException {
+    private void copy(final File sourceRootFolder, final File destinationRootFolder) throws IOException {
         for (String name : sourceRootFolder.list()) {
             File source = new File(sourceRootFolder, name);
             /* The resources we copy over are versioned in this bundle. */
@@ -222,35 +206,38 @@ public final class ZestProjectWizard extends JavaProjectWizard {
             }
             if (source.isDirectory()) {
                 // Recursively create sub-directories:
-                File destinationFolder = new File(destinationRootFolder, source
-                        .getName());
+                File destinationFolder = new File(destinationRootFolder, source.getName());
                 if (!destinationFolder.mkdirs() && !destinationFolder.exists()) {
-                    throw new IllegalStateException("Could not create: "
-                            + destinationFolder);
+                    throw new IllegalStateException("Could not create: " + destinationFolder);
                 }
                 copy(source, destinationFolder);
             } else {
                 // Copy individual files:
-                File destinationFile = new File(destinationRootFolder, name);
-                InputStream sourceStream = null;
-                FileOutputStream destinationStream = null;
-                try {
-                    sourceStream = source.toURI().toURL().openStream();
-                    destinationStream = new FileOutputStream(destinationFile);
-                    byte[] buffer = new byte[4096];
-                    int bytesRead;
-                    while ((bytesRead = sourceStream.read(buffer)) != -1) {
-                        destinationStream.write(buffer, 0, bytesRead);
-                    }
-                } finally {
-                    close(sourceStream);
-                    close(destinationStream);
-                }
+                copySingleFile(destinationRootFolder, name, source);
             }
         }
     }
 
-    private void close(final Closeable closeable) {
+    static void copySingleFile(final File destinationRootFolder, final String name, final File source)
+            throws IOException {
+        File destinationFile = new File(destinationRootFolder, name);
+        InputStream sourceStream = null;
+        FileOutputStream destinationStream = null;
+        try {
+            sourceStream = source.toURI().toURL().openStream();
+            destinationStream = new FileOutputStream(destinationFile);
+            byte[] buffer = new byte[4096];
+            int bytesRead;
+            while ((bytesRead = sourceStream.read(buffer)) != -1) {
+                destinationStream.write(buffer, 0, bytesRead);
+            }
+        } finally {
+            close(sourceStream);
+            close(destinationStream);
+        }
+    }
+
+    private static void close(final Closeable closeable) {
         if (closeable != null) {
             try {
                 closeable.close();

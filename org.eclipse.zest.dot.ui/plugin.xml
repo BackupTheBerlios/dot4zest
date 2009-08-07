@@ -96,4 +96,18 @@
       </objectContribution>
    </extension>
    -->
+   <extension
+         point="org.eclipse.ui.views">
+         <category
+            id="org.eclipse.zest"
+            name="Visualization">
+      </category>
+	   <view
+	            name="Zest Graph"
+	            icon="resources/icons/graph.gif"
+	            category="org.eclipse.zest"
+	            class="org.eclipse.zest.dot.ZestGraphView"
+	            id="org.eclipse.zest.dot.ZestView">
+		</view>
+	</extension>
 </plugin>

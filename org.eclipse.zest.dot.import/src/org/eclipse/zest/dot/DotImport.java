@@ -250,7 +250,8 @@ public final class DotImport {
         return oawFile;
     }
 
-    private static File resolve(final URL url) {
+    //TODO move to helper class
+    public static File resolve(final URL url) {
         File oawFile = null;
         URL resolved = url;
         /*
