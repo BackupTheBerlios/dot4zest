@@ -26,24 +26,22 @@ public class TestDotExport extends TestDotTemplate {
     @Override
     protected void testDotGeneration(final Graph graph) {
         /*
-         * The DotExport class wraps the simple DotTemplate class, so when we
-         * test DotExport, we also run the test in the test superclass:
+         * The DotExport class wraps the simple DotTemplate class, so when we test DotExport, we also run the
+         * test in the test superclass:
          */
         super.testDotGeneration(graph);
         /* DotExport adds stripping of blank lines and file output: */
-        String dot = DotExport.exportZestGraph(graph);
+        DotExport dotExport = new DotExport(graph);
+        String dot = dotExport.toDotString();
         assertNoBlankLines(dot);
         System.out.println(dot);
-        File file = new File(OUTPUT, DotExport.name(graph) + ".dot");
-        DotExport.exportZestGraph(graph, file);
+        File file = new File(OUTPUT, new DotExport(graph).name() + ".dot");
+        dotExport.toDotFile(file);
         Assert.assertTrue("Generated file must exist!", file.exists());
         String dotRead = read(file);
-        Assert
-                .assertTrue(
-                        "DOT file output representation must contain simple class name of Zest input!",
-                        dotRead.contains(graph.getClass().getSimpleName()));
-        Assert.assertEquals("File output and String output should be equal;",
-                dot, dotRead);
+        Assert.assertTrue("DOT file output representation must contain simple class name of Zest input!",
+                dotRead.contains(graph.getClass().getSimpleName()));
+        Assert.assertEquals("File output and String output should be equal;", dot, dotRead);
 
     }
 

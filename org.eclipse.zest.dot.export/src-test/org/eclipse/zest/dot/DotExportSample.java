@@ -44,8 +44,9 @@ public final class DotExportSample {
         edge.setText("A dotted edge");
         edge.setLineStyle(SWT.LINE_DOT);
         /* Export the Zest graph to a DOT string or a DOT file: */
-        System.out.println(DotExport.exportZestGraph(graph));
-        DotExport.exportZestGraph(graph, new File("src-gen/DirectSample.dot"));
+        DotExport dotExport = new DotExport(graph);
+        System.out.println(dotExport.toDotString());
+        dotExport.toDotFile(new File("src-gen/DirectSample.dot"));
         /* Show the Zest graph: */
         graph.setLayoutAlgorithm(new TreeLayoutAlgorithm(
                 LayoutStyles.NO_LAYOUT_NODE_RESIZING), true);

@@ -52,7 +52,7 @@
     	}
     	/** @return This graph as a DOT representation, to be rendered with Graphviz. */
 	    public String toDot() { 
-	        return DotExport.exportZestGraph(this);
+	        return new DotExport(this).toDotString();
 	    }
 	    
 	    /* Support to run this graph as a Java application: */

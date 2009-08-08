@@ -62,12 +62,25 @@ public final class DotFileUtils {
      */
     public static File write(final String text) {
         try {
-            File input = File.createTempFile("zest-import", ".dot");
-            FileWriter writer = new FileWriter(input);
+            return write(text, File.createTempFile("zest", ".dot"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
+    /**
+     * @param text The string to write out to a file
+     * @param destination The file to write the string to
+     * @return The file containing the given string
+     */
+    public static File write(final String text, final File destination) {
+        try {
+            FileWriter writer = new FileWriter(destination);
             writer.write(text);
             writer.flush();
             writer.close();
-            return input;
+            return destination;
         } catch (IOException e) {
             e.printStackTrace();
         }
