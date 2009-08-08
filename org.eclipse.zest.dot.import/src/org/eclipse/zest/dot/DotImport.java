@@ -11,10 +11,7 @@ package org.eclipse.zest.dot;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +20,6 @@ import java.util.Scanner;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.mwe.core.WorkflowRunner;
@@ -58,7 +54,7 @@ public final class DotImport {
      */
     public DotImport(final IFile dotFile) {
         try {
-            this.dotFile = resolve(dotFile.getLocationURI().toURL());
+            this.dotFile = DotFileUtils.resolve(dotFile.getLocationURI().toURL());
             load();
         } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -73,7 +69,7 @@ public final class DotImport {
     }
 
     private void init(final String dotString) {
-        this.dotFile = writeToTempFile(dotString);
+        this.dotFile = DotFileUtils.write(dotString);
         load();
     }
 
@@ -102,7 +98,7 @@ public final class DotImport {
      */
     public Graph newGraphInstance(final Composite parent, final int style) {
         // TODO switch to a string as the member holding the DOT to avoid read-write here
-        return new GraphCreatorInterpreter().create(parent, style, read(dotFile));
+        return new GraphCreatorInterpreter().create(parent, style, DotFileUtils.read(dotFile));
     }
 
     /**
@@ -129,7 +125,7 @@ public final class DotImport {
      */
     public File newGraphSubclass(final IContainer outputDirectory) {
         try {
-            return importDotFile(dotFile, resolve(outputDirectory.getLocationURI().toURL()));
+            return importDotFile(dotFile, DotFileUtils.resolve(outputDirectory.getLocationURI().toURL()));
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -160,8 +156,8 @@ public final class DotImport {
      * @return A file with the content of the given file, surrounded with "graphs{ graph ... }"
      */
     static File fix(final File dotFile) {
-        String content = read(dotFile);
-        File file = writeToTempFile("graphs { graph " + content + "}");
+        String content = DotFileUtils.read(dotFile);
+        File file = DotFileUtils.write("graphs { graph " + content + "}");
         return file;
     }
     
@@ -172,19 +168,6 @@ public final class DotImport {
         return this.dotAst;
     }
 
-    private static String read(final File dotFile) {
-        StringBuilder builder = new StringBuilder();
-        try {
-            Scanner s = new Scanner(dotFile);
-            while (s.hasNextLine()) {
-                builder.append(s.nextLine()).append("\n");
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        return builder.toString();
-    }
-
     private File findResultFile(final File dotFile, final File targetDirectory) {
         String name = dotAst.graphName();
         File resultFile = new File(targetDirectory, name + ".java");
@@ -193,20 +176,6 @@ public final class DotImport {
         }
         System.out.println("Zest file: " + resultFile.getAbsolutePath());
         return resultFile;
-    }
-
-    private static File writeToTempFile(final String text) {
-        try {
-            File input = File.createTempFile("zest-import", ".dot");
-            FileWriter writer = new FileWriter(input);
-            writer.write(text);
-            writer.flush();
-            writer.close();
-            return input;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     private enum Slot {
@@ -246,30 +215,7 @@ public final class DotImport {
 
     private static File loadWorkflow() {
         File oawFile = null;
-        oawFile = resolve(WORKFLOW);
-        return oawFile;
-    }
-
-    //TODO move to helper class
-    public static File resolve(final URL url) {
-        File oawFile = null;
-        URL resolved = url;
-        /*
-         * If we don't check the protocol here, the FileLocator throws a NullPointerException if the WORKFLOW
-         * URL is a normal file URL.
-         */
-        if (!url.getProtocol().equals("file")) {
-            try {
-                resolved = FileLocator.resolve(resolved);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        try {
-            oawFile = new File(resolved.toURI());
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
+        oawFile = DotFileUtils.resolve(WORKFLOW);
         return oawFile;
     }
 

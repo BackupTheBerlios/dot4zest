@@ -74,7 +74,7 @@ final class ZestGraphTemplate {
                 if (file.endsWith(".dot") && !file.contains("custom")) {
                     String name = formatName(file);
                     availableTemplates.add(new ZestGraphTemplate(name.trim(),
-                            read(new File(rootFolder, file))));
+                            readTrimmingHeader(new File(rootFolder, file))));
                 }
             }
         } catch (URISyntaxException e) {
@@ -104,7 +104,7 @@ final class ZestGraphTemplate {
         this.content = content;
     }
 
-    private static String read(final File file) {
+    private static String readTrimmingHeader(final File file) {
         StringBuilder builder = new StringBuilder();
         try {
             Scanner scanner = new Scanner(file);

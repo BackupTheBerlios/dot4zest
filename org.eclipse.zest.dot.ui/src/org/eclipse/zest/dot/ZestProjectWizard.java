@@ -9,11 +9,8 @@
 
 package org.eclipse.zest.dot;
 
-import java.io.Closeable;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
@@ -90,7 +87,7 @@ public final class ZestProjectWizard extends JavaProjectWizard {
              * We copy the required resources from this bundle to the new project and setup the project's
              * classpath (which uses the copied resources):
              */
-            copy(resourcesDirectory(), outRoot);
+            DotFileUtils.copyAllFiles(resourcesDirectory(), outRoot);
             setupProjectClasspath(javaElement, root, newProject);
             newProject.refreshLocal(IResource.DEPTH_INFINITE, null);
             openDotFiles(javaElement);
@@ -195,55 +192,5 @@ public final class ZestProjectWizard extends JavaProjectWizard {
         IJavaProject javaProject = JavaCore.create(project);
         IPackageFragmentRoot newPackage = javaProject.getPackageFragmentRoot(sourceGenFolder);
         newPackage.createPackageFragment(PACKAGE, true, new NullProgressMonitor());
-    }
-
-    private void copy(final File sourceRootFolder, final File destinationRootFolder) throws IOException {
-        for (String name : sourceRootFolder.list()) {
-            File source = new File(sourceRootFolder, name);
-            /* The resources we copy over are versioned in this bundle. */
-            if (source.getName().equals("CVS")) {
-                continue;
-            }
-            if (source.isDirectory()) {
-                // Recursively create sub-directories:
-                File destinationFolder = new File(destinationRootFolder, source.getName());
-                if (!destinationFolder.mkdirs() && !destinationFolder.exists()) {
-                    throw new IllegalStateException("Could not create: " + destinationFolder);
-                }
-                copy(source, destinationFolder);
-            } else {
-                // Copy individual files:
-                copySingleFile(destinationRootFolder, name, source);
-            }
-        }
-    }
-
-    static void copySingleFile(final File destinationRootFolder, final String name, final File source)
-            throws IOException {
-        File destinationFile = new File(destinationRootFolder, name);
-        InputStream sourceStream = null;
-        FileOutputStream destinationStream = null;
-        try {
-            sourceStream = source.toURI().toURL().openStream();
-            destinationStream = new FileOutputStream(destinationFile);
-            byte[] buffer = new byte[4096];
-            int bytesRead;
-            while ((bytesRead = sourceStream.read(buffer)) != -1) {
-                destinationStream.write(buffer, 0, bytesRead);
-            }
-        } finally {
-            close(sourceStream);
-            close(destinationStream);
-        }
-    }
-
-    private static void close(final Closeable closeable) {
-        if (closeable != null) {
-            try {
-                closeable.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
     }
 }

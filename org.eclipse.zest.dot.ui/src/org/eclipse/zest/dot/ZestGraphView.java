@@ -9,8 +9,8 @@
 package org.eclipse.zest.dot;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URL;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
@@ -208,12 +208,9 @@ public final class ZestGraphView extends ViewPart {
     private void generateImageFromGraph(final boolean refresh, final String format) {
         File image = DotExport.exportZestGraph(graph, new File(DotDirStore.getDotDirPath()), FORMAT_PDF);
         try {
-            // TODO move these static helpers to a IO helper class
-            ZestProjectWizard.copySingleFile(DotImport.resolve(file.getParent().getLocationURI().toURL()),
-                    file.getName() + "." + format, image);
+            URL url = file.getParent().getLocationURI().toURL();
+            DotFileUtils.copySingleFile(DotFileUtils.resolve(url), file.getName() + "." + format, image);
         } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
             e.printStackTrace();
         }
         if (refresh) {
@@ -224,7 +221,7 @@ public final class ZestGraphView extends ViewPart {
             }
         }
     }
-    
+
     /**
      * {@inheritDoc}
      * @see org.eclipse.ui.part.WorkbenchPart#dispose()
