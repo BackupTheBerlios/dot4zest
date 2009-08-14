@@ -40,6 +40,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
+import org.osgi.framework.Bundle;
 
 /**
  * Create a Java project, copy some resources and setup the classpath.
@@ -148,10 +149,15 @@ public final class ZestProjectWizard extends JavaProjectWizard {
     }
 
     private File resourcesDirectory() throws IOException, URISyntaxException {
-        URL resourcesFolderUrl =
-                FileLocator.find(DotUiActivator.getDefault().getBundle(), new Path(RESOURCES),
-                        Collections.EMPTY_MAP);
+        Bundle bundle = DotUiActivator.getDefault().getBundle();
+        URL resourcesFolderUrl = FileLocator.find(bundle, new Path(RESOURCES), Collections.EMPTY_MAP);
+        if (resourcesFolderUrl == null) {
+            throw new IllegalStateException(String.format("Could not locate %s in bundle %s", RESOURCES, bundle));
+        }
         URL fileURL = FileLocator.toFileURL(resourcesFolderUrl);
+        if (fileURL.toString().equals(resourcesFolderUrl.toString())) {
+            throw new IllegalStateException("Unknown format: " + fileURL);
+        }
         File resourcesDirectory = new File(fileURL.toURI());
         return resourcesDirectory;
     }

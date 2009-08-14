@@ -44,8 +44,12 @@ public final class ZestGraphWizardPageCustomize extends WizardPage {
     @Override
     public void dispose() {
         super.dispose();
-        composite.dispose();
-        inputText.dispose();
+        if(composite!=null) {
+            composite.dispose();
+        }
+        if(inputText!=null) {
+            inputText.dispose();
+        }
     }
 
     /**

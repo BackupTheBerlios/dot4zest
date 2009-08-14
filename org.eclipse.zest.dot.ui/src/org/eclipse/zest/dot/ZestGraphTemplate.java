@@ -64,7 +64,7 @@ final class ZestGraphTemplate {
         URL root = FileLocator.findEntries(bundle, new Path("resources/tests"))[0];
         File rootFolder;
         try {
-            rootFolder = new File(FileLocator.resolve(root).toURI());
+            rootFolder = new File(FileLocator.toFileURL(root).toURI());
             for (String file : rootFolder.list()) {
                 /*
                  * Custom layout not supported in interpreter (which is in the compiler), where available

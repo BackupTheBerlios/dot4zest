@@ -11,7 +11,9 @@ package org.eclipse.zest.dot;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +22,7 @@ import java.util.Scanner;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.mwe.core.WorkflowRunner;
@@ -215,7 +218,13 @@ public final class DotImport {
 
     private static File loadWorkflow() {
         File oawFile = null;
-        oawFile = DotFileUtils.resolve(WORKFLOW);
+        try {
+            oawFile = new File(FileLocator.toFileURL(WORKFLOW).toURI());
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return oawFile;
     }
 
