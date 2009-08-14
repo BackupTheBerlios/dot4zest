@@ -1,0 +1,198 @@
+### Eclipse Workspace Patch 1.0
+#P org.eclipse.zest.dot.ui
+Index: build.properties
+===================================================================
+RCS file: /cvsroot/dot4zest/org.eclipse.zest.dot.ui/build.properties,v
+retrieving revision 1.2
+diff -u -r1.2 build.properties
+--- build.properties	14 Jun 2009 21:46:51 -0000	1.2
++++ build.properties	14 Aug 2009 15:49:43 -0000
+@@ -3,5 +3,7 @@
+ output.. = bin/
+ bin.includes = META-INF/,\
+                .,\
+-               plugin.xml
++               plugin.xml,\
++               resources/project/,\
++               resources/icons/
+ src.includes = plugin.xml
+Index: src/org/eclipse/zest/dot/ZestGraphWizardPageCustomize.java
+===================================================================
+RCS file: /cvsroot/dot4zest/org.eclipse.zest.dot.ui/src/org/eclipse/zest/dot/ZestGraphWizardPageCustomize.java,v
+retrieving revision 1.4
+diff -u -r1.4 ZestGraphWizardPageCustomize.java
+--- src/org/eclipse/zest/dot/ZestGraphWizardPageCustomize.java	22 Jun 2009 19:49:27 -0000	1.4
++++ src/org/eclipse/zest/dot/ZestGraphWizardPageCustomize.java	14 Aug 2009 15:49:43 -0000
+@@ -44,8 +44,12 @@
+     @Override
+     public void dispose() {
+         super.dispose();
+-        composite.dispose();
+-        inputText.dispose();
++        if(composite!=null) {
++            composite.dispose();
++        }
++        if(inputText!=null) {
++            inputText.dispose();
++        }
+     }
+ 
+     /**
+Index: src/org/eclipse/zest/dot/ZestProjectWizard.java
+===================================================================
+RCS file: /cvsroot/dot4zest/org.eclipse.zest.dot.ui/src/org/eclipse/zest/dot/ZestProjectWizard.java,v
+retrieving revision 1.11
+diff -u -r1.11 ZestProjectWizard.java
+--- src/org/eclipse/zest/dot/ZestProjectWizard.java	8 Aug 2009 01:44:58 -0000	1.11
++++ src/org/eclipse/zest/dot/ZestProjectWizard.java	14 Aug 2009 15:49:43 -0000
+@@ -40,6 +40,7 @@
+ import org.eclipse.ui.IWorkbench;
+ import org.eclipse.ui.PlatformUI;
+ import org.eclipse.ui.ide.IDE;
++import org.osgi.framework.Bundle;
+ 
+ /**
+  * Create a Java project, copy some resources and setup the classpath.
+@@ -148,10 +149,15 @@
+     }
+ 
+     private File resourcesDirectory() throws IOException, URISyntaxException {
+-        URL resourcesFolderUrl =
+-                FileLocator.find(DotUiActivator.getDefault().getBundle(), new Path(RESOURCES),
+-                        Collections.EMPTY_MAP);
++        Bundle bundle = DotUiActivator.getDefault().getBundle();
++        URL resourcesFolderUrl = FileLocator.find(bundle, new Path(RESOURCES), Collections.EMPTY_MAP);
++        if (resourcesFolderUrl == null) {
++            throw new IllegalStateException(String.format("Could not locate %s in bundle %s", RESOURCES, bundle));
++        }
+         URL fileURL = FileLocator.toFileURL(resourcesFolderUrl);
++        if (fileURL.toString().equals(resourcesFolderUrl.toString())) {
++            throw new IllegalStateException("Unknown format: " + fileURL);
++        }
+         File resourcesDirectory = new File(fileURL.toURI());
+         return resourcesDirectory;
+     }
+Index: src/org/eclipse/zest/dot/ZestGraphTemplate.java
+===================================================================
+RCS file: /cvsroot/dot4zest/org.eclipse.zest.dot.ui/src/org/eclipse/zest/dot/ZestGraphTemplate.java,v
+retrieving revision 1.3
+diff -u -r1.3 ZestGraphTemplate.java
+--- src/org/eclipse/zest/dot/ZestGraphTemplate.java	8 Aug 2009 01:44:58 -0000	1.3
++++ src/org/eclipse/zest/dot/ZestGraphTemplate.java	14 Aug 2009 15:49:43 -0000
+@@ -64,7 +64,7 @@
+         URL root = FileLocator.findEntries(bundle, new Path("resources/tests"))[0];
+         File rootFolder;
+         try {
+-            rootFolder = new File(FileLocator.resolve(root).toURI());
++            rootFolder = new File(FileLocator.toFileURL(root).toURI());
+             for (String file : rootFolder.list()) {
+                 /*
+                  * Custom layout not supported in interpreter (which is in the compiler), where available
+Index: META-INF/MANIFEST.MF
+===================================================================
+RCS file: /cvsroot/dot4zest/org.eclipse.zest.dot.ui/META-INF/MANIFEST.MF,v
+retrieving revision 1.15
+diff -u -r1.15 MANIFEST.MF
+--- META-INF/MANIFEST.MF	9 Aug 2009 20:10:16 -0000	1.15
++++ META-INF/MANIFEST.MF	14 Aug 2009 15:49:43 -0000
+@@ -2,7 +2,7 @@
+ Bundle-ManifestVersion: 2
+ Bundle-Name: org.eclipse.zest.dot.ui
+ Bundle-SymbolicName: org.eclipse.zest.dot.ui;singleton:=true
+-Bundle-Version: 0.8.0
++Bundle-Version: 0.8.0.v20090814-1720
+ Bundle-Activator: org.eclipse.zest.dot.DotUiActivator
+ Require-Bundle: org.eclipse.ui,
+  org.eclipse.core.runtime,
+#P org.eclipse.zest.dot.export
+Index: META-INF/MANIFEST.MF
+===================================================================
+RCS file: /cvsroot/dot4zest/org.eclipse.zest.dot.export/META-INF/MANIFEST.MF,v
+retrieving revision 1.9
+diff -u -r1.9 MANIFEST.MF
+--- META-INF/MANIFEST.MF	9 Aug 2009 20:10:14 -0000	1.9
++++ META-INF/MANIFEST.MF	14 Aug 2009 15:49:44 -0000
+@@ -1,8 +1,8 @@
+ Manifest-Version: 1.0
+ Bundle-ManifestVersion: 2
+-Bundle-Name: org.eclipse.zest.dot.import
++Bundle-Name: org.eclipse.zest.dot.export
+ Bundle-SymbolicName: org.eclipse.zest.dot.export
+-Bundle-Version: 0.8.0
++Bundle-Version: 0.8.0.v20090814-1720
+ Bundle-RequiredExecutionEnvironment: J2SE-1.5
+ Require-Bundle: org.eclipse.zest.core;bundle-version="1.0.0";visibility:=reexport,
+  org.eclipse.zest.layouts;bundle-version="1.0.0";visibility:=reexport,
+#P org.eclipse.zest.dot.import
+Index: META-INF/MANIFEST.MF
+===================================================================
+RCS file: /cvsroot/dot4zest/org.eclipse.zest.dot.import/META-INF/MANIFEST.MF,v
+retrieving revision 1.9
+diff -u -r1.9 MANIFEST.MF
+--- META-INF/MANIFEST.MF	9 Aug 2009 20:10:15 -0000	1.9
++++ META-INF/MANIFEST.MF	14 Aug 2009 15:49:44 -0000
+@@ -2,7 +2,7 @@
+ Bundle-ManifestVersion: 2
+ Bundle-Name: org.eclipse.zest.dot.import
+ Bundle-SymbolicName: org.eclipse.zest.dot.import;singleton:=true
+-Bundle-Version: 0.8.0
++Bundle-Version: 0.8.0.v20090814-1720
+ Require-Bundle: org.eclipse.zest.dot.export;bundle-version="0.2.0";visibility:=reexport,
+  org.openarchitectureware.vis.graphviz;bundle-version="1.0.0",
+  org.eclipse.core.resources;bundle-version="3.5.0",
+Index: src/org/eclipse/zest/dot/DotImport.java
+===================================================================
+RCS file: /cvsroot/dot4zest/org.eclipse.zest.dot.import/src/org/eclipse/zest/dot/DotImport.java,v
+retrieving revision 1.22
+diff -u -r1.22 DotImport.java
+--- src/org/eclipse/zest/dot/DotImport.java	8 Aug 2009 01:44:57 -0000	1.22
++++ src/org/eclipse/zest/dot/DotImport.java	14 Aug 2009 15:49:44 -0000
+@@ -11,7 +11,9 @@
+ 
+ import java.io.File;
+ import java.io.FileNotFoundException;
++import java.io.IOException;
+ import java.net.MalformedURLException;
++import java.net.URISyntaxException;
+ import java.net.URL;
+ import java.util.HashMap;
+ import java.util.List;
+@@ -20,6 +22,7 @@
+ 
+ import org.eclipse.core.resources.IContainer;
+ import org.eclipse.core.resources.IFile;
++import org.eclipse.core.runtime.FileLocator;
+ import org.eclipse.core.runtime.IPath;
+ import org.eclipse.core.runtime.Path;
+ import org.eclipse.emf.mwe.core.WorkflowRunner;
+@@ -215,7 +218,13 @@
+ 
+     private static File loadWorkflow() {
+         File oawFile = null;
+-        oawFile = DotFileUtils.resolve(WORKFLOW);
++        try {
++            oawFile = new File(FileLocator.toFileURL(WORKFLOW).toURI());
++        } catch (URISyntaxException e) {
++            e.printStackTrace();
++        } catch (IOException e) {
++            e.printStackTrace();
++        }
+         return oawFile;
+     }
+ 
+Index: src-test/org/eclipse/zest/dot/GraphCreatorViaJavaCompilerApi.java
+===================================================================
+RCS file: /cvsroot/dot4zest/org.eclipse.zest.dot.import/src-test/org/eclipse/zest/dot/GraphCreatorViaJavaCompilerApi.java,v
+retrieving revision 1.2
+diff -u -r1.2 GraphCreatorViaJavaCompilerApi.java
+--- src-test/org/eclipse/zest/dot/GraphCreatorViaJavaCompilerApi.java	31 Jul 2009 01:54:56 -0000	1.2
++++ src-test/org/eclipse/zest/dot/GraphCreatorViaJavaCompilerApi.java	14 Aug 2009 15:49:44 -0000
+@@ -46,7 +46,7 @@
+          * newer versions of the same class: we give each generated class a
+          * unique name (as this is unused, it has been removed from the API):
+          */
+-        DotImport dotImport = new DotImport(dot, System.currentTimeMillis() + "");
++        DotImport dotImport = new DotImport(dot/*, System.currentTimeMillis() + ""*/);
+         File zestFile = dotImport.newGraphSubclass();
+         URL outputDirUrl = compileWithJavaCompiler(zestFile, dotImport.getName());
+         Graph graph =
