@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.zest.dot"
       label="dot4zest"
-      version="0.8.0.v20090815-0130"
+      version="0.8.0.v20090815-2000"
       provider-name="http://www.quui.de/fsteeg">
 
    <description url="http://wiki.eclipse.org/Graphviz_DOT_as_a_DSL_for_Zest">
@@ -139,6 +139,10 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <import plugin="org.eclipse.emf.common"/>
       <import feature="org.eclipse.xpand" version="0.7.0.v200906160952"/>
       <import feature="org.eclipse.emf.mwe.core" version="0.7.0.v200906160748"/>
+      <import plugin="org.eclipse.help" version="3.4.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.help.ui" version="3.4.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.help.appserver" version="3.1.400" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.help.webapp" version="3.4.0" match="greaterOrEqual"/>
    </requires>
 
    <plugin

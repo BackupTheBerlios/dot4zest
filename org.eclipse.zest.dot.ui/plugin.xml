@@ -110,4 +110,11 @@
 	            id="org.eclipse.zest.dot.ZestView">
 		</view>
 	</extension>
+   <extension
+         point="org.eclipse.help.toc">
+      <toc
+            file="documentation/user-documentation-toc.xml"
+            primary="true">
+      </toc>
+   </extension>
 </plugin>

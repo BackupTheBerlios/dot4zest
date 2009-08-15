@@ -1,0 +1,492 @@
+== Developer Documentation ==
+
+This feature started as a [[Google Summer of Code 2009]] project:
+
+<table border="0" cellspacing="3" cellpadding="2" width="100%">
+	<tr align="center" bgcolor="#595791">
+                <td><font color="#FFFFFF"><b> Title </b></font></td>
+		<td><font color="#FFFFFF"><b> Student </b></font></td>
+		<td><font color="#FFFFFF"><b> Mentor </b></font></td>
+		<td><font color="#FFFFFF"><b> Eclipse Project</b></font></td>
+		<td><font color="#FFFFFF"><b> Google Page</b></font></td>
+	</tr>
+	<tr align="center" bgcolor="#faf7fb">
+                <td>Graphviz DOT as a DSL for Zest</td>
+		<td>[[User:Steeg.netcologne.de|Fabian Steeg]] (IRC: fsteeg)</td>
+		<td>Ian Bull</td>
+		<td>[[GEF]] (component: [[GEF Zest Visualization|Zest]])</td>
+                <td>[http://socghop.appspot.com/student_project/show/google/gsoc2009/eclipse/t124022230869 Student Project]</td>
+	</tr>
+</table>
+
+The goal of this project is to implement the [http://www.graphviz.org/ Graphviz] [http://www.graphviz.org/doc/info/lang.html DOT language] as a domain-specific language (DSL) for [http://www.eclipse.org/gef/zest/ Zest: The Eclipse Visualization Toolkit], both as an input and output format. In other words, the goal is to transform both DOT graphs to Zest visualizations (to be used in Java SWT applications), and Zest visualizations to DOT graphs (to be rendered as image files with Graphviz). 
+
+=== Resources  ===
+
+[[Image:DotZestBundles.png|thumb|right|350px|Bundles and dependencies]] 
+
+The main bug for this project is {{bug|277380}}. View a [https://bugs.eclipse.org/bugs/buglist.cgi?query_format=specific&order=relevance+desc&bug_status=__all__&product=GEF&content=%5Bdot4zest%5D complete list] of related bugs. If you have suggestions for this project you can [https://bugs.eclipse.org/bugs/enter_bug.cgi?bug_file_loc=http%3A%2F%2Fwiki.eclipse.org%2FGraphviz_DOT_as_a_DSL_for_Zest&bug_severity=enhancement&bug_status=NEW&comment=&component=Zest&contenttypeentry=&contenttypemethod=autodetect&contenttypeselection=text%2Fplain&data=&description=&flag_type-1=X&flag_type-2=X&flag_type-6=X&form_name=enter_bug&maketemplate=Remember%20values%20as%20bookmarkable%20template&op_sys=All&priority=P3&product=GEF&rep_platform=All&short_desc=%5Bdot4zest%5D%20New%20request%20summary&version=unspecified file a new bug]. The CVS repository for this project is located at ''cvs.dot4zest.berlios.de:/cvsroot/dot4zest''; [http://developer.berlios.de/cvs/?group_id=10849 access info]. You can also [http://download.berlios.de/cvstarballs/dot4zest-cvsroot.tar.gz download nightly CVS snapshots]. 
+
+To run the current work in progress code, check out the bundles from the CVS repository above in Eclipse 3.5 (Galileo) and install the Zest, JET, Xpand, Xtext and MWE 0.7.0 features (which are available from the Galileo update site; you have to uncheck 'group items by category' to see the Zest features). The code now uses the TMF components from Galileo, so if you have oAW 4.3 installed, it should probably be uninstalled first. 
+
+You should also install the optional Xtext Antlr feature 0.7.0 from the Itemis update site at ''http://download.itemis.com/updates/'' (see the [http://www.eclipse.org/Xtext/documentation/0_7_0/xtext.html#antlr_ip_issue Xtext documentation] for details on this). Finally, you need to check out the ''org.openarchitectureware.vis.graphviz'' bundle from the SVN at ''http://emfmodelvisualizer.googlecode.com/svn/galileo/''. After the checkout, run (Run As -&gt; MWE workflow) the ''GenerateDot.mwe'' in the src/ folder of that bundle. 
+
+Run the ''*Suite.java'' test suites of the individual bundles (in src-test/) as JUnit tests to get an impression of the current implementation state. To test the UI components, run an Eclipse application configured with org.eclipse.zest.dot.ui and required plugins. See details on usage in the milestone sections below.
+
+===Motivation===
+
+I believe both Graphviz input and output for Zest would make a lot of sense: Graphviz is a very popular tool and its DOT language is widely used. Support for it could make using Zest very easy for many people who are familiar with DOT. 
+
+It would also be useful for existing Eclipse tools that are based on Graphviz, like [http://abstratt.com/textuml/ TextUML] or [http://eclipsegraphviz.wiki.sourceforge.net/ EclipseGraphviz], and possibly others, for instance in the [http://tasktop.com/blog/eclipse/rich-editing-for-tasks-via-mylyn-wikitext Mylyn rich task editor] (for embedding DOT graphs in the wiki text markup, visualized with Zest).
+
+On the output side, Zest could benefit from Graphviz output as it provides a way to produce high-quality export into different file formats, e.g. for printing Zest visualizations, or using them in  digital publications.
+
+As Graphviz supports many different node shapes, edge styles, layouts etc. the goal of this project is not to provide support for all Graphviz features (or even as many as possible), but to set up initial basic support (directed and undirected graphs, edge and node labels, edge styles, basic layout support) and focus on the infrastructure to make these transformations usable instead (see user interface section below), which will hopefully create a solid foundation for future expansion (see section on future ideas below).
+
+=== Progress  ===
+
+==== Milestones  ====
+
+These milestones correspond to the Google Summer of Code 2009 milestones from the timeline below.
+
+'''Milestone 8'''
+
+[[Image:DotZestM8Screenshot.png|thumb|right|100px|Zest graph view]]
+[[Image:DotZestM2Rendered.png|thumb|right|100px|Exported PDF]]
+
+[https://bugs.eclipse.org/bugs/attachment.cgi?id=144365 Milestone 8] adds support for exporting Zest graphs to image files directly by calling the ''dot'' executable of a local Graphviz installation. To make this functionality usable from the UI, milestone 8 also adds a view that listens to changes made to *.dot files in the workspace. The view draws the DOT graphs using Zest (see [[Graphviz_DOT_as_a_DSL_for_Zest#Milestone_7|Milestone 7]]) and allows for image export of the current Zest graph. 
+
+When a *.dot file is added to the workspace or altered in an editor, the Zest graph view will be updated with the graph created from the *.dot file, e.g. see the screenshot on the right for a file with the .dot extension, containing the following DOT graph definition:
+
+<pre>
+digraph s{ 
+	n1[label="Node 1"]; n2[label="Node 2"]; 
+	n1 -> n2[style=dotted label="A dotted edge"] 
+}
+</pre>
+
+The view contains buttons to load a specific *.dot file, to export the current Zest graph as an image file by calling ''dot'', to layout the current graph, and to re-select the directory containing the ''dot'' executable  (from left to right). When the image export button is selected, a PDF for the current graph is saved in the directory containing the input *.dot file (see image on the right). 
+
+Full API sample usage can be found in the ''TestImageExport'' tests from the ''org.eclipse.zest.dot.export'' bundle.
+
+'''Milestone 7'''
+
+[[Image:DotZestSimple.png|right|140px]]
+
+Milestone 7 adds support for dynamic drawing of DOT graphs with Zest by interpreting the parsed EMF object tree and creating a Zest graph instance (see screenshot). This is now used in the graph wizard (see [[Graphviz_DOT_as_a_DSL_for_Zest#Milestone_3|Milestone 3]]) to allow dynamic preview of the Zest graph when the DOT template is changed inside the wizard. The DOT input can be given as a String, File or IFile. A Zest graph instance can then be created in a parent, with a style:
+
+<pre>
+DotImport dotImport = new DotImport("digraph Simple { 1;2; 1->2 }");
+Graph graph = dotImport.newGraphInstance(shell, SWT.NONE);
+</pre>
+
+Full sample usage can be found in the ''TestGraphInstanceDotImport'' tests from the ''org.eclipse.zest.dot.import'' bundle.
+
+'''Milestone 6'''
+
+Milestone 6 (altering the original timeline, see below) replaces the oAW dependency with the [[Galileo]] [[TMF]] components ([[Xtext]], [[Xpand]] and [[MWE]]). This also changes the dependency on the original ''org.openarchitectureware.graphviz'' bundle from oAW to the newer ''org.openarchitectureware.vis.graphviz'' bundle from the [http://emfmodelvisualizer.googlecode.com EMF model visualizer] project. See also {{bug|277397}}. Instructions on running the CVS code can be found in the ''Resources'' section above. As the DOT grammer has changed a little, I slightly altered the way the Zest layout is specified in the DOT input (''graph[layout=spring]'' replaces ''layout=spring''). The included samples and the files generated by the project wizard have been updated to reflect this. 
+
+'''Milestone 5'''
+
+[https://bugs.eclipse.org/bugs/attachment.cgi?id=141378 Milestone 5] adds a basic Graphviz-compatible animation DSL for Zest ({{bug|277402}}) by adding animation support to the DOT-to-Zest transformations, representing animation steps as subgraphs in the DOT input (which if rendered with Graphviz results in a static description of the animation). 
+
+[[Image:DotZestM5Screenshot1.png|right|150px]] [[Image:DotZestM5Screenshot2.png|right|150px]] 
+
+For instance, for the input below a Zest animation is created in which the single steps can be executed by clicking the button below the graph (see screenshots on the right for the first step and the final state of the graph): 
+<pre>digraph SampleAnimation {
+	/* We can specify a Zest layout for the animation here: */
+	layout=tree // = TreeLayoutAlgorithm
+	/* Global attributes can be defined for edges and nodes: */
+   	node[label="Node"]
+   	edge[label="Edge" style=dotted]
+	1;2;3;4;5
+	/* The single animation steps are marked by numbers: */
+	subgraph cluster_0{ 1 -&gt; 2 [label="Dashed" style=dashed]}
+	subgraph cluster_1{ 1 -&gt; 3 }
+	/* The final animation step needs to be marked with "end": */
+	subgraph cluster_2_end{ 3 -&gt; 4; 3 -&gt; 5}
+}
+</pre> 
+See the included [http://cvs.berlios.de/cgi-bin/viewvc.cgi/dot4zest/org.eclipse.zest.dot.import/resources/tests/ test files] and the graph wizard for further samples. The example above is automatically created when a Zest project is created with the wizard (see milesotne 4 below). 
+
+'''Milestone 4'''
+
+[https://bugs.eclipse.org/bugs/attachment.cgi?id=140320 Milestone 4] adds a Zest project type with Graphviz support ({{bug|277400}}) by implementing a Zest project nature, builder, and wizard. The project created by the wizard has a 'templates' folder containing a sample DOT file. The DOT files in the 'templates' folder are compiled to Zest graph subclasses by the builder. These can be launched as Java applications to view the Zest Graph: 
+
+[[Image:DotZestM4Screenshot.png]] 
+
+Effectively this implements a basic Zest authoring environment using DOT as a DSL, as upon saving the DOT file, the same Zest application can be relaunched, showing the updated Zest graph created from the changed DOT file. 
+
+'''Milestone 3'''
+
+[https://bugs.eclipse.org/bugs/attachment.cgi?id=139816 Milestone 3] adds a Zest wizard for Graphviz import ({{bug|277399}}) that generates a new Zest graph implementation class (which supports DOT export), based on customizable DOT templates or direct input in the wizard. 
+
+[[Image:DotZestM3Screenshot.png|300px]] 
+
+For detailed usage instructions see the included documentation (org.eclipse.zest.dot.ui/documentation.html). 
+
+'''Milestone 2'''
+
+[https://bugs.eclipse.org/bugs/attachment.cgi?id=138738 Milestone 2] adds basic Graphviz export for Zest ({{bug|277398}}) by generating a DOT file or string from a Zest graph instance: 
+
+[[Image:DotZestM2.png|200px]] 
+
+For instance, the input and the result can look as follows: 
+
+[[Image:DotZestM2Rendered.png|thumb|right|135px|Graphviz-rendered export]] 
+<pre>/* Set up a directed Zest graph with a single connection: */
+Graph graph = new Graph(shell, SWT.NONE);
+graph.setConnectionStyle(ZestStyles.CONNECTIONS_DIRECTED);
+GraphConnection edge = new GraphConnection(graph, SWT.NONE, 
+        new GraphNode(graph, SWT.NONE, "Node 1"), 
+        new GraphNode(graph, SWT.NONE, "Node 2"));
+edge.setText("A dotted edge");
+edge.setLineStyle(SWT.LINE_DOT);
+/* Export the Zest graph to a DOT string or a DOT file: */
+System.out.println(DotExport.exportZestGraph(graph));
+DotExport.exportZestGraph(graph, new File("src-gen/DirectSample.dot"));
+</pre> 
+See the included [http://cvs.berlios.de/cgi-bin/viewvc.cgi/dot4zest/org.eclipse.zest.dot.export/src-test/org/eclipse/zest/DotExportSample.java?view=markup sample] (from above), [http://cvs.berlios.de/cgi-bin/viewvc.cgi/dot4zest/org.eclipse.zest.dot.export/src-test/org/eclipse/zest/dot/test_data test files], and documentation for further information. 
+
+<br> 
+
+'''Milestone 1'''
+
+[https://bugs.eclipse.org/bugs/attachment.cgi?id=137800 Milestone 1] implements basic Graphviz import for Zest ({{bug|277397}}) by generating a Zest Graph subclass from a DOT description: 
+
+[[Image:DotZestM1.png|200px]] 
+
+For instance, the input and output can look as follows: 
+
+[[Image:DotZestM1Screenshot.png|right]] 
+<pre>digraph SampleGraph{
+	/* Specify the Zest layout algorithm to use: */
+	layout=grid
+	/* Global attributes can be defined for edges and nodes: */
+	edge[label="Edge" style=dashed]
+	node[label="Node"]
+	1; 2
+	/* Override node attributes from above: */
+	3[label="Leaf1"] 
+	4[label="Leaf2"]
+	1-&gt;2
+	2-&gt;3
+	/* Override edge attributes from above: */
+	2-&gt;4[label="Dotted" style=dotted]
+}
+</pre> 
+See the included [http://cvs.berlios.de/cgi-bin/viewvc.cgi/dot4zest/org.eclipse.zest.dot.import/resources/tests/ test files] and documentation for further samples. 
+
+==== Timeline  ====
+<div style="clear: right; border: solid #aaa 1px; margin: 0 0 1em 1em; font-size: 90%; background: #f9f9f9; width: 180px; padding: 4px; text-align: left; float: right;">[[Image:Glass.gif]] Pending [[Image:Progress.gif]] Active [[Image:Ok green.gif]] Done </div> 
+The intended timeline consists of 6 core and 2 optional milestones. This should ensure providing the core functionality described below even if things take longer than expected, and very flexible, integrated and complete (realizing and using all the connections in the figure below) support for existing Eclipse visualization technology if all works out as planned. 
+
+{| border="0" cellspacing="3" cellpadding="2" width="100%"
+|- align="center" bgcolor="#595791"
+| <font color="#FFFFFF">'''Milestone'''</font> 
+| <font color="#FFFFFF">'''Weeks'''</font> 
+| <font color="#FFFFFF">'''Date'''</font> 
+| <font color="#FFFFFF">'''What'''</font> 
+| <font color="#FFFFFF">'''How'''</font> 
+| <font color="#FFFFFF">'''Planned Bundle'''</font> 
+| <font color="#FFFFFF">'''Bugs'''</font> 
+| <font color="#FFFFFF">'''Status'''</font>
+|- align="center" bgcolor="#faf7fb"
+| M1 
+| 1 
+| 2009-05-31 
+| Core Graphviz import to create standalone Zest 
+| Generate basic Zest code from a DOT meta model instance (using Xpand) 
+| org.eclipse.zest.dot.import (dep.: org.openarchitectureware.vis.graphviz and Zest) 
+| {{bug|277397}} 
+| [[Image:Ok green.gif]]
+|- align="center" bgcolor="#e0d0e6"
+| M2 
+| 2 
+| 2009-06-14 
+| Core Graphviz export for standalone Zest 
+| Generate DOT output from a Zest graph instance (using JET) 
+| org.eclipse.zest.dot.export (dep.: Zest only) 
+| {{bug|277398}} 
+| [[Image:Ok green.gif]]
+|- align="center" bgcolor="#faf7fb"
+| M3 
+| 1 
+| 2009-06-21 
+| UI for initial Graphviz to Zest import 
+| Wizard for a new Zest Graph with DOT export based on a DOT file or direct input (based on M1 and M2) 
+| org.eclipse.zest.dot.ui (dep.: org.eclipse.zest.dot.import, org.eclipse.ui) 
+| {{bug|277399}} 
+| [[Image:Ok green.gif]]
+|- align="center" bgcolor="#e0d0e6"
+| M4 
+| 1 
+| 2009-06-28 
+| UI for maintaining Graphviz representations of Zest visualizations 
+| Project builder, wizard and nature for Zest projects that create Zest graphs from Graphviz DOT files placed in a dedicated folder (based on M1 and M2) 
+| org.eclipse.zest.dot.ui (see above) 
+| {{bug|277400}} 
+| [[Image:Ok green.gif]]
+|- align="center" bgcolor="#faf7fb"
+| M5 
+| 2 
+| 2009-07-12 
+| Basic form of a Graphviz-compatible animation DSL for Zest 
+| Animation support for the DOT to Zest transformations, representing animation steps as subgraphs (based on M1) 
+| org.eclipse.zest.dot.import (see above) 
+| {{bug|277402}} 
+| [[Image:Ok green.gif]]
+|- align="center" bgcolor="#e0d0e6"
+| (Mid-term) 
+| - 
+| 2009-07-13 
+| - 
+| - 
+| - 
+| - 
+| -
+|- align="center" bgcolor="#faf7fb"
+| M6 (new) 
+| 1 
+| 2009-07-19 
+| Replace oAW dependency with Galileo TMF components 
+| Switch to Galileo TMF components and updated EMF model visualizer Graphviz bundle 
+| org.eclipse.zest.dot.import (see above) 
+| related: {{bug|277397}} 
+| [[Image:Ok green.gif]]
+|- align="center" bgcolor="#e0d0e6"
+| M7 (new) 
+| 1.5 
+| 2009-07-30 
+| Support dynamic drawing of Zest graphs created from DOT 
+| Compile generated Zest graph class or interpret parsed EMF object tree to return Zest Graph instance via import API 
+| org.eclipse.zest.dot.import (see above) 
+| related: {{bug|277397}} 
+| [[Image:Ok_green.gif]]
+|- align="center" bgcolor="#faf7fb"
+| M8 (optional) 
+| 1.5 
+| 2009-08-09 
+| ''optional:'' Support for exporting Zest graphs to image files directly 
+| Call a local Graphviz installation (directly or using an existing Xpand template which creates a command-line script)
+| org.eclipse.zest.dot.export (see above) 
+| related: {{bug|277398}} 
+| [[Image:Ok_green.gif]]
+|- align="center" bgcolor="#e0d0e6"
+| RC 
+| 1 
+| 2009-08-16 
+| Wrap up 
+| Complete and polish documentation, samples, tests and packaging (update site) 
+| all 
+| {{bug|277380}} 
+| [[Image:Progress.gif]]
+|- align="center" bgcolor="#faf7fb"
+| (Pencils down) 
+| - 
+| 2009-08-17 
+| - 
+| - 
+| - 
+| - 
+| - 
+| 
+|- align="center" bgcolor="#faf7fb"
+| M6 (original) 
+| - 
+| postponed by new M6 
+| Support for the Zest-based EMF model visualizer view 
+| Transformation from DOT meta model instances to the EMF model visualizer language (using Xpand) 
+| - 
+| - 
+| -
+|- align="center" bgcolor="#e0d0e6"
+| M7 (original, optional) 
+| - 
+| postponed by new M7 
+| ''optional:'' Standalone Zest and DOT export for the EMF model visualizer language 
+| Transformation from EMF model visualizer language meta model instances to the DOT language (using Xpand) 
+| - 
+| - 
+| - 
+| } 
+|}
+
+===Implementation===
+
+I plan to implement the desired functionality based on [http://www.eclipse.org/modeling/ Eclipse Modeling] technologies, in particular [http://wiki.eclipse.org/Xtext Xtext] (part of [http://www.eclipse.org/modeling/tmf TMF]) and [http://wiki.eclipse.org/Xpand Xpand] (part of [http://www.eclipse.org/modeling/m2t M2T]) for the input part (parse DOT, generate Zest) and [http://wiki.eclipse.org/M2T-JET JET] for the output (see details below). The sketched approach (see figure on the right) depends on Eclipse components only (Xtext, Xpand, JET, and oAW).
+
+[[Image:DotZestOverview.png|thumb|275px|right|Implementing Graphviz DOT input and output for Zest using Eclipse modeling technology (solid arrows represent existing components)]]
+
+====DOT to Zest====
+
+An Xtext grammar, parser and Xpand generators for Graphviz DOT already exist in openArchitectureWare (oAW) 4.3 (the relevant bundles org.openarchitectureware.graphviz.*, are now part of the [http://code.google.com/p/emfmodelvisualizer/ EMF model visualizer project]). 
+
+Based on this, my plan is to implement an Xpand generator that transforms Graphviz DOT descriptions into Java code that creates an equivalent Zest visualization (see figure on the right and M1 in the timeline below). I also want to provide a way to define Zest animations using the DOT language (by representing animation steps as subgraphs in DOT, see M5 in the timeline).
+
+====Zest to DOT====
+
+To transform Zest graph instances to the Graphviz DOT language I intend to use [http://wiki.eclipse.org/M2T-JET JET] (see figure on the right and M2 in the timeline). 
+
+There are two reasons I plan to use JET instead of Xpand here. First, I'd like to be able to transform any Zest graph instance to DOT directly (not only those for which we have a DOT meta model instance that could act as the input to Xpand). Second, even if we had a DOT meta model instance (which we could create from the Zest graph), using Xpand would introduce a runtime dependency on the [http://wiki.eclipse.org/Modeling_Workflow_Engine_(MWE) Modeling Workflow Engine], whereas with JET we only introduce a dependency on a single class (the generator class JET created from the template).
+
+====User Interface====
+
+To make these transformations available to the user, my general plan is to make the DOT to Zest transformations (which depend on Eclipse modeling technology at runtime) available as part of the workbench, while the generated Zest graph classes and the DOT output  can be used directly and without (or with very little, see above) additional runtime dependencies, e.g. in pure Zest SWT applications.
+
+To generate Zest from DOT, I intend to implement a wizard that creates a Zest graph subclass and basic sample usage code (see examples below) from a Graphviz DOT file or from direct DOT input inside the wizard (see M3 in the timeline). I imagine offering different DOT templates to the user (e.g. ''simple directed graph'', ''simple animation''), which can be edited in the wizard, with a live preview of what the Zest graph is going to look like next to it.
+
+Extending this kind of functionality, I'd like to implement a Zest project type where the DOT files are placed in a special folder (and can be edited conveniently using the DOT editor from oAW). Using a project builder, the corresponding Zest Graph implementation classes will be generated, which can be used from other parts of the project's code, similar to JET templates and generators (see M4 in the timeline). 
+
+To provide visualization of DOT graphs using Zest in a workbench, I want to create Xpand generators which provide compatibility with the EMF model visualizer language and its Zest-based visualization view (see dotted arrows in the figure above and M6 in the timeline).
+
+===Examples===
+
+Below are two examples to concretize what the input could look like and what I in principle plan to generate from that input.
+
+====Minimal====
+
+[[Image:DotZestSimpleGraphviz.png|right|65px|"digraph simple { 1 -> 2 }"]]
+
+As a first example, consider the following minimal DOT graph and how it renders with Graphviz:
+
+<pre>
+digraph simple { 1 -> 2 }
+</pre>
+
+From this, roughly the code below should be generated (comments to be generated omitted here). It's a Zest Graph subclass which is populated with the specified objects on construction, and includes export to DOT via a generator class generated by JET (commented out here to make the example compile). It also contains some sample usage code in a main method to make it runnable as a plain Java SWT application, which renders as shown in the image on the right.
+ 
+[[Image:DotZestSimple.png|right|150px]]
+
+<pre>
+/** Zest Graph to be generated from "digraph simple { 1 -> 2 }" */
+public class SimpleDirectedGraph extends Graph {
+    public SimpleDirectedGraph(Composite parent, int style) {
+        super(parent, style);
+        setConnectionStyle(ZestStyles.CONNECTIONS_DIRECTED);
+        GraphNode n1 = new GraphNode(this, SWT.NONE, "1");
+        GraphNode n2 = new GraphNode(this, SWT.NONE, "2");
+        new GraphConnection(this, SWT.NONE, n1, n2);
+        setLayoutAlgorithm(new TreeLayoutAlgorithm(
+                LayoutStyles.NO_LAYOUT_NODE_RESIZING), true);
+    }
+    public String toString() { 
+        return super.toString(); // new GraphTemplate().generate(this);
+    }
+    public static void main(String[] args) {
+        Display d = new Display();
+        Shell shell = new Shell(d);
+        shell.setText(SimpleDirectedGraph.class.getSimpleName());
+        shell.setLayout(new FillLayout());
+        shell.setSize(100, 150);
+        new SimpleDirectedGraph(shell, SWT.NONE);
+        shell.open();
+        while (!shell.isDisposed()) {
+            while (!d.readAndDispatch()) { d.sleep(); }
+        }
+    }
+}
+</pre>
+
+====Animation====
+
+[[Image:DotZestAnimationGraphviz.png|right|150px]]
+
+In contrast to Graphviz, which only provides static graph visualization, Zest supports animations. By combining the Graphviz DOT language with Zest in a similar manner as described above, creating simple animations with Zest could become very easy. 
+
+For instance, defining an animation could be done by specifying the individual animation steps as subgraphs (with every subgraph defining how the current graph should be altered in the animation). Subgraphs render in individual boxes with Graphviz:
+
+<pre>
+digraph simple_animation { 
+    subgraph cluster_0{ 1 -> 2 } 
+    subgraph cluster_1{ 1 -> 3 } 
+}
+</pre>
+
+When converted to Zest, such an input could result in generated code as below (comments to be generated again omitted here). When executed, this application renders as on the first image on the right. After clicking the button it changes to the second image.
+
+[[Image:DotZestAnimation1.png|right|200px]]
+[[Image:DotZestAnimation2.png|right|200px]]
+
+<pre>
+public class SimpleAnimationGraph extends Graph {
+    public SimpleAnimationGraph(Composite parent, int style) {
+        super(parent, style);
+        setConnectionStyle(ZestStyles.CONNECTIONS_DIRECTED);
+        setLayoutAlgorithm(new TreeLayoutAlgorithm(LayoutStyles.NO_LAYOUT_NODE_RESIZING), true);
+        final GraphNode n1 = new GraphNode(this, SWT.NONE, "1");
+        final GraphNode n2 = new GraphNode(this, SWT.NONE, "2");
+        new GraphConnection(this, SWT.NONE, n1, n2);
+    }
+    public String toString() {
+        return super.toString(); // new GraphTemplate().generate(this);
+    }
+    static class AnimationRunner implements Runnable {
+        private Graph g;
+        public AnimationRunner(Graph g) { this.g = g; }
+        public void run() {
+            Animation.markBegin();
+            new GraphConnection(g, SWT.NONE, (GraphNode) g.getNodes().get(0),
+                    new GraphNode(g, SWT.NONE, "3"));
+            g.applyLayout();
+            Animation.run(1000);
+        }
+    }
+    public static void main(String[] args) {
+        Display d = new Display();
+        final Shell shell = new Shell(d);
+        shell.setText(SimpleAnimationGraph.class.getSimpleName());
+        shell.setLayout(new GridLayout(1,false));
+        shell.setSize(200, 200);
+        Button b1 = new Button(shell, SWT.PUSH);
+        b1.setText("Go");
+        final Graph g = new SimpleAnimationGraph(shell, SWT.NONE);
+        g.setLayoutData(new GridData(GridData.FILL_BOTH));
+        b1.addSelectionListener(new SelectionListener() {
+            public void widgetDefaultSelected(SelectionEvent e) {}
+            public void widgetSelected(SelectionEvent e) { new AnimationRunner(g).run(); }
+        });
+        shell.open();
+        while (!shell.isDisposed()) {
+            while (!d.readAndDispatch()) { d.sleep(); }
+        }
+    }
+}
+</pre>
+
+Required imports for these examples (omitted above for better readability):
+
+<pre>
+import org.eclipse.draw2d.Animation;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.zest.core.widgets.Graph;
+import org.eclipse.zest.core.widgets.GraphConnection;
+import org.eclipse.zest.core.widgets.GraphNode;
+import org.eclipse.zest.core.widgets.ZestStyles;
+import org.eclipse.zest.layouts.LayoutStyles;
+import org.eclipse.zest.layouts.algorithms.TreeLayoutAlgorithm;
+</pre>
+
+===Future Plans===
+
+Possible extensions of this project which are probably out of scope for the SOC period include:
+
+* Add support for different Graphviz shapes through [http://eclipsesource.com/blogs/2009/03/20/just-in-time-for-eclipsecon-custom-figures-in-zest/ Zest custom figures], e.g. for UML class diagrams
+* Add support to visualize Graphviz subgraphs as separate Zest graphs that can be accessed from the main graph
+* Look into possible ways of supporting Graphviz edge decorators (open or closed arrows, diamonds, etc.)
+* Evaluate possible integration as an actual part of the Zest API, e.g.: 
+<pre>
+graph.add("1->2"); // use DOT snippets to build the Zest graph
+graph.load("graph.dot"); // load an entire DOT graph into an existing Zest graph
+</pre>
+
+[[Category:SOC]]
+[[Category:GEF]]
