@@ -25,6 +25,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.mwe.core.WorkflowRunner;
 import org.eclipse.emf.mwe.core.monitor.NullProgressMonitor;
 import org.eclipse.emf.mwe.core.monitor.ProgressMonitor;
@@ -163,7 +164,7 @@ public final class DotImport {
         File file = DotFileUtils.write("graphs { graph " + content + "}");
         return file;
     }
-    
+
     /**
      * @return The DOT AST parsed from the DOT source
      */
@@ -219,7 +220,11 @@ public final class DotImport {
     private static File loadWorkflow() {
         File oawFile = null;
         try {
-            oawFile = new File(FileLocator.toFileURL(WORKFLOW).toURI());
+            if (Platform.isRunning()) {
+                oawFile = new File(FileLocator.toFileURL(WORKFLOW).toURI());
+            } else {
+                oawFile = new File(DotFileUtils.resolve(WORKFLOW).toURI());
+            }
         } catch (URISyntaxException e) {
             e.printStackTrace();
         } catch (IOException e) {

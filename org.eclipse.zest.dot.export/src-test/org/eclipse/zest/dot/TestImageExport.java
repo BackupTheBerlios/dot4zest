@@ -33,7 +33,7 @@ public class TestImageExport extends TestDotTemplate {
          * test in the test superclass:
          */
         super.testDotGeneration(graph);
-        File image = new DotExport(graph).toImage(new File(DOT_DIR), "pdf");
+        File image = new DotExport(graph).toImage(DOT_DIR, "pdf");
         Assert.assertNotNull("Image must not be null", image);
         System.out.println("Created image: " + image);
         Assert.assertTrue("Image must exist", image.exists());

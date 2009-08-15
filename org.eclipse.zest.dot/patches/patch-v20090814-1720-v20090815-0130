@@ -1,0 +1,257 @@
+### Eclipse Workspace Patch 1.0
+#P org.eclipse.zest.dot.ui
+Index: src/org/eclipse/zest/dot/ZestGraphView.java
+===================================================================
+RCS file: /cvsroot/dot4zest/org.eclipse.zest.dot.ui/src/org/eclipse/zest/dot/ZestGraphView.java,v
+retrieving revision 1.3
+diff -u -r1.3 ZestGraphView.java
+--- src/org/eclipse/zest/dot/ZestGraphView.java	8 Aug 2009 02:24:46 -0000	1.3
++++ src/org/eclipse/zest/dot/ZestGraphView.java	15 Aug 2009 02:26:56 -0000
+@@ -206,7 +206,7 @@
+     }
+ 
+     private void generateImageFromGraph(final boolean refresh, final String format) {
+-        File image = new DotExport(graph).toImage(new File(DotDirStore.getDotDirPath()), FORMAT_PDF);
++        File image = new DotExport(graph).toImage(DotDirStore.getDotDirPath(), FORMAT_PDF);
+         try {
+             URL url = file.getParent().getLocationURI().toURL();
+             DotFileUtils.copySingleFile(DotFileUtils.resolve(url), file.getName() + "." + format, image);
+Index: META-INF/MANIFEST.MF
+===================================================================
+RCS file: /cvsroot/dot4zest/org.eclipse.zest.dot.ui/META-INF/MANIFEST.MF,v
+retrieving revision 1.16
+diff -u -r1.16 MANIFEST.MF
+--- META-INF/MANIFEST.MF	14 Aug 2009 17:09:26 -0000	1.16
++++ META-INF/MANIFEST.MF	15 Aug 2009 02:26:56 -0000
+@@ -2,7 +2,7 @@
+ Bundle-ManifestVersion: 2
+ Bundle-Name: org.eclipse.zest.dot.ui
+ Bundle-SymbolicName: org.eclipse.zest.dot.ui;singleton:=true
+-Bundle-Version: 0.8.0.v20090814-1720
++Bundle-Version: 0.8.0.v20090815-0130
+ Bundle-Activator: org.eclipse.zest.dot.DotUiActivator
+ Require-Bundle: org.eclipse.ui,
+  org.eclipse.core.runtime,
+#P org.eclipse.zest.dot.export
+Index: build.properties
+===================================================================
+RCS file: /cvsroot/dot4zest/org.eclipse.zest.dot.export/build.properties,v
+retrieving revision 1.1
+diff -u -r1.1 build.properties
+--- build.properties	4 Jun 2009 03:36:19 -0000	1.1
++++ build.properties	15 Aug 2009 02:26:57 -0000
+@@ -3,4 +3,11 @@
+            src-test/
+ output.. = bin/
+ bin.includes = META-INF/,\
+-               .
++               .,\
++               epl-v10.html
++src.includes = src-test/,\
++               src-gen/,\
++               src/,\
++               templates/,\
++               epl-v10.html,\
++               META-INF/
+Index: src-test/org/eclipse/zest/dot/TestImageExport.java
+===================================================================
+RCS file: /cvsroot/dot4zest/org.eclipse.zest.dot.export/src-test/org/eclipse/zest/dot/TestImageExport.java,v
+retrieving revision 1.2
+diff -u -r1.2 TestImageExport.java
+--- src-test/org/eclipse/zest/dot/TestImageExport.java	8 Aug 2009 02:24:45 -0000	1.2
++++ src-test/org/eclipse/zest/dot/TestImageExport.java	15 Aug 2009 02:26:57 -0000
+@@ -33,7 +33,7 @@
+          * test in the test superclass:
+          */
+         super.testDotGeneration(graph);
+-        File image = new DotExport(graph).toImage(new File(DOT_DIR), "pdf");
++        File image = new DotExport(graph).toImage(DOT_DIR, "pdf");
+         Assert.assertNotNull("Image must not be null", image);
+         System.out.println("Created image: " + image);
+         Assert.assertTrue("Image must exist", image.exists());
+Index: src/org/eclipse/zest/dot/DotExport.java
+===================================================================
+RCS file: /cvsroot/dot4zest/org.eclipse.zest.dot.export/src/org/eclipse/zest/dot/DotExport.java,v
+retrieving revision 1.4
+diff -u -r1.4 DotExport.java
+--- src/org/eclipse/zest/dot/DotExport.java	8 Aug 2009 02:24:45 -0000	1.4
++++ src/org/eclipse/zest/dot/DotExport.java	15 Aug 2009 02:26:57 -0000
+@@ -52,9 +52,9 @@
+      * @param format The image format to export the graph to (e.g. 'pdf' or 'png')
+      * @return The image file exported via DOT for the given Zest graph, or null
+      */
+-    public File toImage(final File dotDir, final String format) {
++    public File toImage(final String dotDir, final String format) {
+         File dotFile = DotFileUtils.write(toDotString());
+-        File image = DotDrawer.renderImage(dotDir, dotFile, format);
++        File image = DotDrawer.renderImage(new File(dotDir), dotFile, format);
+         return image;
+     }
+ 
+Index: META-INF/MANIFEST.MF
+===================================================================
+RCS file: /cvsroot/dot4zest/org.eclipse.zest.dot.export/META-INF/MANIFEST.MF,v
+retrieving revision 1.10
+diff -u -r1.10 MANIFEST.MF
+--- META-INF/MANIFEST.MF	14 Aug 2009 17:09:27 -0000	1.10
++++ META-INF/MANIFEST.MF	15 Aug 2009 02:26:57 -0000
+@@ -2,7 +2,7 @@
+ Bundle-ManifestVersion: 2
+ Bundle-Name: org.eclipse.zest.dot.export
+ Bundle-SymbolicName: org.eclipse.zest.dot.export
+-Bundle-Version: 0.8.0.v20090814-1720
++Bundle-Version: 0.8.0.v20090815-0130
+ Bundle-RequiredExecutionEnvironment: J2SE-1.5
+ Require-Bundle: org.eclipse.zest.core;bundle-version="1.0.0";visibility:=reexport,
+  org.eclipse.zest.layouts;bundle-version="1.0.0";visibility:=reexport,
+#P org.eclipse.zest.dot.import
+Index: META-INF/MANIFEST.MF
+===================================================================
+RCS file: /cvsroot/dot4zest/org.eclipse.zest.dot.import/META-INF/MANIFEST.MF,v
+retrieving revision 1.10
+diff -u -r1.10 MANIFEST.MF
+--- META-INF/MANIFEST.MF	14 Aug 2009 17:09:28 -0000	1.10
++++ META-INF/MANIFEST.MF	15 Aug 2009 02:26:58 -0000
+@@ -2,7 +2,7 @@
+ Bundle-ManifestVersion: 2
+ Bundle-Name: org.eclipse.zest.dot.import
+ Bundle-SymbolicName: org.eclipse.zest.dot.import;singleton:=true
+-Bundle-Version: 0.8.0.v20090814-1720
++Bundle-Version: 0.8.0.v20090815-0130
+ Require-Bundle: org.eclipse.zest.dot.export;bundle-version="0.2.0";visibility:=reexport,
+  org.openarchitectureware.vis.graphviz;bundle-version="1.0.0",
+  org.eclipse.core.resources;bundle-version="3.5.0",
+Index: src-test/org/eclipse/zest/dot/TestGraphInstanceDotImport.java
+===================================================================
+RCS file: /cvsroot/dot4zest/org.eclipse.zest.dot.import/src-test/org/eclipse/zest/dot/TestGraphInstanceDotImport.java,v
+retrieving revision 1.6
+diff -u -r1.6 TestGraphInstanceDotImport.java
+--- src-test/org/eclipse/zest/dot/TestGraphInstanceDotImport.java	31 Jul 2009 01:54:56 -0000	1.6
++++ src-test/org/eclipse/zest/dot/TestGraphInstanceDotImport.java	15 Aug 2009 02:26:58 -0000
+@@ -255,9 +255,7 @@
+         // open(shell); // blocks UI when running tests
+     }
+ 
+-    @SuppressWarnings( "unused" )
+-    // optional when running the tests
+-    private static void open(final Shell shell) {
++    static void open(final Shell shell) {
+         shell.setText("Testing");
+         shell.setLayout(new FillLayout());
+         shell.setSize(200, 250);
+Index: build.properties
+===================================================================
+RCS file: /cvsroot/dot4zest/org.eclipse.zest.dot.import/build.properties,v
+retrieving revision 1.2
+diff -u -r1.2 build.properties
+--- build.properties	24 May 2009 17:44:54 -0000	1.2
++++ build.properties	15 Aug 2009 02:26:58 -0000
+@@ -3,5 +3,8 @@
+            src-test/
+ bin.includes = META-INF/,\
+                .,\
+-               bin/,\
+                resources/
++src.includes = src-test/,\
++               src-gen/,\
++               src/,\
++               META-INF/
+Index: src/org/eclipse/zest/dot/DotImport.java
+===================================================================
+RCS file: /cvsroot/dot4zest/org.eclipse.zest.dot.import/src/org/eclipse/zest/dot/DotImport.java,v
+retrieving revision 1.23
+diff -u -r1.23 DotImport.java
+--- src/org/eclipse/zest/dot/DotImport.java	14 Aug 2009 17:09:28 -0000	1.23
++++ src/org/eclipse/zest/dot/DotImport.java	15 Aug 2009 02:26:58 -0000
+@@ -25,6 +25,7 @@
+ import org.eclipse.core.runtime.FileLocator;
+ import org.eclipse.core.runtime.IPath;
+ import org.eclipse.core.runtime.Path;
++import org.eclipse.core.runtime.Platform;
+ import org.eclipse.emf.mwe.core.WorkflowRunner;
+ import org.eclipse.emf.mwe.core.monitor.NullProgressMonitor;
+ import org.eclipse.emf.mwe.core.monitor.ProgressMonitor;
+@@ -163,7 +164,7 @@
+         File file = DotFileUtils.write("graphs { graph " + content + "}");
+         return file;
+     }
+-    
++
+     /**
+      * @return The DOT AST parsed from the DOT source
+      */
+@@ -219,7 +220,11 @@
+     private static File loadWorkflow() {
+         File oawFile = null;
+         try {
+-            oawFile = new File(FileLocator.toFileURL(WORKFLOW).toURI());
++            if (Platform.isRunning()) {
++                oawFile = new File(FileLocator.toFileURL(WORKFLOW).toURI());
++            } else {
++                oawFile = new File(DotFileUtils.resolve(WORKFLOW).toURI());
++            }
+         } catch (URISyntaxException e) {
+             e.printStackTrace();
+         } catch (IOException e) {
+Index: src-test/org/eclipse/zest/dot/SampleUsage.java
+===================================================================
+RCS file: src-test/org/eclipse/zest/dot/SampleUsage.java
+diff -N src-test/org/eclipse/zest/dot/SampleUsage.java
+--- /dev/null	1 Jan 1970 00:00:00 -0000
++++ src-test/org/eclipse/zest/dot/SampleUsage.java	1 Jan 1970 00:00:00 -0000
+@@ -0,0 +1,55 @@
++/*******************************************************************************
++ * Copyright (c) 2009 Fabian Steeg. All rights reserved. This program and the
++ * accompanying materials are made available under the terms of the Eclipse
++ * Public License v1.0 which accompanies this distribution, and is available at
++ * http://www.eclipse.org/legal/epl-v10.html
++ * <p/>
++ * Contributors: Fabian Steeg - initial API and implementation; see bug 277380
++ *******************************************************************************/
++package org.eclipse.zest.dot;
++
++import java.io.File;
++
++import org.eclipse.swt.SWT;
++import org.eclipse.swt.widgets.Shell;
++import org.eclipse.zest.core.widgets.Graph;
++import org.junit.Test;
++import static org.eclipse.zest.dot.TestGraphInstanceDotImport.open;
++
++/**
++ * Overall API sample usage.
++ * @author Fabian Steeg (fsteeg)
++ */
++public class SampleUsage {
++    @Test
++    public void sampleUsage(){
++        
++        String dotHome = "C:\\Program Files (x86)\\Graphviz2.20\\bin";
++        
++        /******************************************************************
++         * Import ********************************************************/
++        Shell shell = new Shell();
++        /* The DOT input, can be given as a String, File or IFile: */
++        DotImport importer = new DotImport("digraph Simple { 1;2; 1->2 }");
++        /* Compile the DOT input to a Zest graph subclass: */
++        File file = importer.newGraphSubclass();
++        /* Or create a Zest graph instance in a parent, with a style: */
++        Graph graph = importer.newGraphInstance(shell, SWT.NONE);
++        
++        /******************************************************************
++         * Export ********************************************************/
++        /* For some Zest graph, we create the exporter: */
++        DotExport exporter = new DotExport(graph);
++        /* Export the Zest graph to DOT: */
++        String dot = exporter.toDotString();
++        /* Or to an image file, via a given Graph installation: */
++        File image = exporter.toImage(dotHome/*"/opt/local/bin"*/, "pdf");
++        /*****************************************************************/
++        
++        open(shell); // sets title, layout, and size, opens the shell
++        System.out.println(graph);
++        System.out.println(file);
++        System.out.println(dot);
++        System.out.println(image);
++    }
++}

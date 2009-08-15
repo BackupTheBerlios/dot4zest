@@ -255,9 +255,7 @@ public final class TestGraphInstanceDotImport {
         // open(shell); // blocks UI when running tests
     }
 
-    @SuppressWarnings( "unused" )
-    // optional when running the tests
-    private static void open(final Shell shell) {
+    static void open(final Shell shell) {
         shell.setText("Testing");
         shell.setLayout(new FillLayout());
         shell.setSize(200, 250);

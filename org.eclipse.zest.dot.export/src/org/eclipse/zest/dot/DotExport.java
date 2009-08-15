@@ -52,9 +52,9 @@ public final class DotExport {
      * @param format The image format to export the graph to (e.g. 'pdf' or 'png')
      * @return The image file exported via DOT for the given Zest graph, or null
      */
-    public File toImage(final File dotDir, final String format) {
+    public File toImage(final String dotDir, final String format) {
         File dotFile = DotFileUtils.write(toDotString());
-        File image = DotDrawer.renderImage(dotDir, dotFile, format);
+        File image = DotDrawer.renderImage(new File(dotDir), dotFile, format);
         return image;
     }
 
