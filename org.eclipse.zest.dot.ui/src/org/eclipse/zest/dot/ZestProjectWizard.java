@@ -91,8 +91,8 @@ public final class ZestProjectWizard extends JavaProjectWizard {
             DotFileUtils.copyAllFiles(resourcesDirectory(), outRoot);
             setupProjectClasspath(javaElement, root, newProject);
             newProject.refreshLocal(IResource.DEPTH_INFINITE, null);
-            openDotFiles(javaElement);
             runGeneratedZestGraphs(javaElement);
+            openDotFiles(javaElement);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (URISyntaxException e) {
@@ -144,7 +144,15 @@ public final class ZestProjectWizard extends JavaProjectWizard {
         IResource[] members = templatesFolder.members();
         for (IResource r : members) {
             IFile file = (IFile) r;
-            IDE.openEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(), file);
+            /*
+             * The external editor for *.dot files causes trouble in the majority of cases (Microsoft Office,
+             * Open Office, NeoOffice etc.), so we only open the new files if an editor is set up in Eclipse:
+             */
+            if (IDE.getDefaultEditor(file) != null) {
+                IDE.openEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(), file);
+            } else {
+                return;
+            }
         }
     }
 

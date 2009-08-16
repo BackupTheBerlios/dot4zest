@@ -14,7 +14,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.zest.core.widgets.Graph;
 import org.junit.Test;
-import static org.eclipse.zest.dot.TestGraphInstanceDotImport.open;
 
 /**
  * Overall API sample usage.
@@ -24,7 +23,7 @@ public class SampleUsage {
     @Test
     public void sampleUsage(){
         
-        String dotHome = "C:\\Program Files (x86)\\Graphviz2.20\\bin";
+        String dotHome = TestImageExport.DOT_DIR;
         
         /******************************************************************
          * Import ********************************************************/
@@ -46,7 +45,7 @@ public class SampleUsage {
         File image = exporter.toImage(dotHome/*"/opt/local/bin"*/, "pdf");
         /*****************************************************************/
         
-        open(shell); // sets title, layout, and size, opens the shell
+        //TestGraphInstanceDotImport.open(shell); // sets title, layout, and size, opens the shell
         System.out.println(graph);
         System.out.println(file);
         System.out.println(dot);
