@@ -43,6 +43,7 @@ import org.eclipse.zest.core.widgets.Graph;
  * @author Fabian Steeg (fsteeg)
  */
 public final class ZestGraphView extends ViewPart {
+    public static final String ID = "org.eclipse.zest.dot.ZestView";
     // TODO externalize
     private static final String LOAD = "Load...";
     private static final String RESET = "Ask for 'dot' app location...";
@@ -94,7 +95,9 @@ public final class ZestGraphView extends ViewPart {
                         }
                     };
                     IWorkspace workspace = ResourcesPlugin.getWorkspace();
-                    workspace.run(workspaceRunnable, null);
+                    if (!workspace.isTreeLocked()) {
+                        workspace.run(workspaceRunnable, null);
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

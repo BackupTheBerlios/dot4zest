@@ -79,6 +79,8 @@ public final class ZestProjectWizard extends JavaProjectWizard {
     public boolean performFinish() {
         boolean performFinish = super.performFinish();
         try {
+            /* We first show the graph view to see the Zest representation of the new DOT file: */
+            PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView(ZestGraphView.ID);
             IJavaElement javaElement = getCreatedElement();
             IPath path = javaElement.getPath();
             IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
