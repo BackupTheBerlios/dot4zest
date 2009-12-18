@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: org.eclipse.zest.dot.ui
 Bundle-SymbolicName: org.eclipse.zest.dot.ui;singleton:=true
-Bundle-Version: 0.8.0.v20090816-1800
+Bundle-Version: 0.8.0.v20091218-2230
 Bundle-Activator: org.eclipse.zest.dot.DotUiActivator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
@@ -19,7 +19,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.help;bundle-version="3.4.0",
  org.eclipse.help.ui;bundle-version="3.4.0",
  org.eclipse.help.appserver;bundle-version="3.1.400",
- org.eclipse.help.webapp;bundle-version="3.4.0"
+ org.eclipse.help.webapp;bundle-version="3.4.0",
+ org.eclipse.jdt.launching.macosx;bundle-version="3.2.0";resolution:=optional
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Import-Package: org.eclipse.core.resources,
