@@ -20,11 +20,7 @@ import org.eclipse.zest.core.widgets.Graph;
  */
 public class TestImageExport extends TestDotTemplate {
     /* Path to the local Graphviz folder containing the dot executable file: */
-    static final String DOT_DIR = "C:\\Program Files (x86)\\Graphviz2.20\\bin";
-
-    /* Typical locations on other OS: */
-    // static final String DOT_DIR = "/usr/local/bin";
-    // static final String DOT_DIR = "/opt/local/bin"; // MacPorts
+    public static final String DOT_DIR = null; //e.g. "/opt/local/bin/" or "C:\\Program Files (x86)\\Graphviz2.20\\bin"
 
     @Override
     protected void testDotGeneration(final Graph graph) {

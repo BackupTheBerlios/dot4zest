@@ -122,7 +122,6 @@ public final class ZestGraphWizard extends Wizard implements INewWizard {
      */
     public void setDotText(final String text) {
         this.dotText = text;
-
     }
 
     /**

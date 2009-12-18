@@ -132,7 +132,7 @@ public final class ZestGraphWizardPageTemplateSelection extends WizardPage {
      * Validates the page's container selection and the selected DOT template, displays errors happening
      * during parsing of the DOT representation.
      */
-    void validateContent() {
+    boolean validateContent() {
         IResource container =
                 ResourcesPlugin.getWorkspace().getRoot().findMember(new Path(getContainerName()));
         String fileName = getFileName();
@@ -150,16 +150,18 @@ public final class ZestGraphWizardPageTemplateSelection extends WizardPage {
             updateStatus(NAME_MUST_BE_VALID);
         } else if (fileName.contains(".")
                 && !fileName.substring(fileName.lastIndexOf('.') + 1).equalsIgnoreCase(JAVA)) {
-            updateStatus(EXTENSION_MUST_BE_JAVA);
+            updateStatus(EXTENSION_MUST_BE_JAVA); 
         } else {
             DotImport dotImport = new DotImport(getDotText());
             List<String> errors = dotImport.getErrors();
             if (errors.size() > 0) {
                 updateStatus(errors.get(0));
             } else {
-                updateStatus(null);
+                updateStatus(null); 
+                return true;
             }
         }
+        return false;
     }
 
     /**

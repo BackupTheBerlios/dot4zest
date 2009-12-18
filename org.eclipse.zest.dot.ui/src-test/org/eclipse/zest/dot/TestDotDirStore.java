@@ -26,16 +26,18 @@ public final class TestDotDirStore {
         if (!Platform.isRunning()) {
             Assert.fail("Please run as JUnit Plug-in test");
         }
+        Assert.assertNotNull(
+                "TestImageExport.DOT_DIR should point to the directory containing the local Graphviz DOT executable;",
+                TestImageExport.DOT_DIR);
     }
 
     @Test
     public void askForDotDir() {
         /*
-         * Setting the value to the empty string here blocks UI every time, but tests asking even if clearing
-         * workspace is disabled:
+         * Setting the value to the empty string here blocks UI every time, but tests asking even if clearing workspace
+         * is disabled:
          */
-        DotUiActivator.getDefault().getPreferenceStore().setValue(DotDirStore.DOTPATH_KEY,
-                TestImageExport.DOT_DIR);
+        DotUiActivator.getDefault().getPreferenceStore().setValue(DotDirStore.DOTPATH_KEY, TestImageExport.DOT_DIR);
         /* If not set, the DOT dir is requested: */
         check(DotDirStore.getDotDirPath());
     }
