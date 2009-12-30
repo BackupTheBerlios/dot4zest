@@ -106,8 +106,8 @@ public final class DotImport {
     }
 
     /**
-     * @return The Java file containing the definition of a Zest graph subclass generated from the given DOT
-     *         graph, placed in the default output folder
+     * @return The Java file containing the definition of a Zest graph subclass generated from the given DOT graph,
+     *         placed in the default output folder
      */
     public File newGraphSubclass() {
         return importDotFile(dotFile, DEFAULT_OUTPUT_FOLDER);
@@ -115,8 +115,7 @@ public final class DotImport {
 
     /**
      * @param outputDirectory The directory to place the generated file in
-     * @return The Java file containing the definition of a Zest graph subclass generated from the given DOT
-     *         graph
+     * @return The Java file containing the definition of a Zest graph subclass generated from the given DOT graph
      */
     public File newGraphSubclass(final File outputDirectory) {
         return importDotFile(dotFile, outputDirectory);
@@ -124,8 +123,7 @@ public final class DotImport {
 
     /**
      * @param outputDirectory The directory to place the generated file in
-     * @return The Java file containing the definition of a Zest graph subclass generated from the given DOT
-     *         graph
+     * @return The Java file containing the definition of a Zest graph subclass generated from the given DOT graph
      */
     public File newGraphSubclass(final IContainer outputDirectory) {
         try {
@@ -139,8 +137,7 @@ public final class DotImport {
     /**
      * @param dotFile The DOT file to transform to a Zest representation
      * @param targetDirectory The directory to create the generated file in
-     * @return The Java file containing the definition of a Zest graph subclass generated from the given DOT
-     *         file
+     * @return The Java file containing the definition of a Zest graph subclass generated from the given DOT file
      */
     private File importDotFile(final File dotFile, final File targetDirectory) {
         File fixedDotFile = fix(dotFile);
@@ -231,6 +228,14 @@ public final class DotImport {
             e.printStackTrace();
         }
         return oawFile;
+    }
+
+    /**
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return String.format("%s of %s at %s", getClass().getSimpleName(), dotAst, dotFile);
     }
 
 }

@@ -27,8 +27,7 @@ import org.eclipse.emf.mwe.utils.StandaloneSetup;
 import org.openarchitectureware.vis.graphviz.DotStandaloneSetup;
 
 /**
- * Walks the AST of a DOT graph, e.g. to extract the name (used to name and later identify the generated
- * file).
+ * Walks the AST of a DOT graph, e.g. to extract the name (used to name and later identify the generated file).
  * @author Fabian Steeg (fsteeg)
  */
 final class DotAst {
@@ -142,4 +141,14 @@ final class DotAst {
         }
         return null;
     }
+
+    /**
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return String.format("%s named '%s' with %s errors, resource: %s", getClass().getSimpleName(), graphName(),
+                errors().size(), resource);
+    }
+
 }
