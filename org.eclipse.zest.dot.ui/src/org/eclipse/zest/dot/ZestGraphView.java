@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005 The Eclipse Foundation. All rights reserved. This program
+ * Copyright (c) 2009 The Eclipse Foundation. All rights reserved. This program
  * and the accompanying materials are made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
@@ -27,7 +27,10 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -38,12 +41,16 @@ import org.eclipse.ui.part.ViewPart;
 import org.eclipse.zest.core.widgets.Graph;
 
 /**
- * View showing the Zest import for a DOT input. Listens to *.dot files in the workspace and allows for image
- * file export via calling a local 'dot' (location is selected in a dialog and stored in the preferences).
+ * View showing the Zest import for a DOT input. Listens to *.dot files and other files with DOT content in the
+ * workspace and allows for image file export via calling a local 'dot' (location is selected in a dialog and stored in
+ * the preferences).
  * @author Fabian Steeg (fsteeg)
  */
 public final class ZestGraphView extends ViewPart {
     public static final String ID = "org.eclipse.zest.dot.ZestView";
+    private static final RGB BACKGROUND = JFaceResources.getColorRegistry().getRGB(
+            "org.eclipse.jdt.ui.JavadocView.backgroundColor");
+
     // TODO externalize
     private static final String LOAD = "Load...";
     private static final String RESET = "Ask for 'dot' app location...";
@@ -62,6 +69,8 @@ public final class ZestGraphView extends ViewPart {
     private Graph graph;
     private IFile file;
 
+    private boolean listenToDotContent = true; // TODO add toggle button
+
     /** Listener that passes a visitor if a resource is changed. */
     private IResourceChangeListener resourceChangeListener = new IResourceChangeListener() {
         public void resourceChanged(final IResourceChangeEvent event) {
@@ -78,20 +87,19 @@ public final class ZestGraphView extends ViewPart {
         }
     };
 
-    /** If a *.dot file is visited, we update the graph from it. */
+    /** If a *.dot file or a file with DOT content is visited, we update the graph from it. */
     private IResourceDeltaVisitor resourceVisitor = new IResourceDeltaVisitor() {
         public boolean visit(final IResourceDelta delta) {
             IResource resource = delta.getResource();
-            if (resource.getType() == IResource.FILE
-                    && EXTENSION.equalsIgnoreCase(resource.getFileExtension())) {
+            if (resource.getType() == IResource.FILE) {
                 try {
                     final IFile f = (IFile) resource;
-                    final String l = f.getLocation().toString();
+                    if (!listenToDotContent && !f.getLocation().toString().endsWith(EXTENSION)) {
+                        return true;
+                    }
                     IWorkspaceRunnable workspaceRunnable = new IWorkspaceRunnable() {
                         public void run(final IProgressMonitor monitor) throws CoreException {
-                            if (l.endsWith("." + EXTENSION)) {
-                                setGraph(f);
-                            }
+                            setGraph(f);
                         }
                     };
                     IWorkspace workspace = ResourcesPlugin.getWorkspace();
@@ -105,6 +113,7 @@ public final class ZestGraphView extends ViewPart {
             return true;
         }
     };
+    protected String dotString = "";
 
     /**
      * {@inheritDoc}
@@ -114,8 +123,13 @@ public final class ZestGraphView extends ViewPart {
         composite = new Composite(parent, SWT.NULL);
         GridLayout layout = new GridLayout();
         composite.setLayout(layout);
+        composite.setBackground(new Color(composite.getDisplay(), BACKGROUND));
         if (file != null) {
-            graph = new DotImport(file).newGraphInstance(composite, SWT.NONE);
+            try {
+                updateGraph();
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
         }
         addLoadButton();
         addExportButton();
@@ -162,8 +176,7 @@ public final class ZestGraphView extends ViewPart {
             public void run() {
                 Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
                 IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-                ResourceListSelectionDialog dialog =
-                        new ResourceListSelectionDialog(shell, root, IResource.FILE);
+                ResourceListSelectionDialog dialog = new ResourceListSelectionDialog(shell, root, IResource.FILE);
                 if (dialog.open() == ResourceListSelectionDialog.OK) {
                     Object[] selected = dialog.getResult();
                     if (selected != null) {
@@ -179,19 +192,26 @@ public final class ZestGraphView extends ViewPart {
 
     private void setGraph(final IFile file) {
         this.file = file;
-        if (file.getFileExtension().equals(EXTENSION)) {
+        try {
             updateGraph();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
         }
     }
 
-    private void updateGraph() {
+    private void updateGraph() throws MalformedURLException {
+        final String currentDot = new DotExtractor(file).getDotString();
+        if (currentDot.equals(dotString) || currentDot.equals(DotExtractor.NO_DOT)) {
+            return;
+        }
         getViewSite().getShell().getDisplay().asyncExec(new Runnable() {
             public void run() {
                 if (graph != null) {
                     graph.dispose();
                 }
                 if (composite != null) {
-                    graph = new DotImport(file).newGraphInstance(composite, SWT.NONE);
+                    dotString = currentDot;
+                    graph = new DotImport(dotString).newGraphInstance(composite, SWT.NONE);
                     setupLayout();
                     composite.layout();
                     graph.applyLayout();
@@ -205,6 +225,9 @@ public final class ZestGraphView extends ViewPart {
             GridData gd = new GridData(GridData.FILL_BOTH);
             graph.setLayout(new GridLayout());
             graph.setLayoutData(gd);
+            Color color = new Color(graph.getDisplay(), BACKGROUND);
+            graph.setBackground(color);
+            graph.getParent().setBackground(color);
         }
     }
 
