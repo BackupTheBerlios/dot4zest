@@ -6,8 +6,8 @@
  * <p/>
  * Contributors: Fabian Steeg - initial API and implementation; see bug 277380
  *******************************************************************************/
-
-/* A simple, exemplary parser for a specified context-free grammar, implemented
+ 
+/* A simple, exemplaric parser for a specified context-free grammar, implemented
 in Prolog using the built-in syntax for specifying definite clause grammars
 (DCG). Further reference on DCGs can be found in Clocksin & Mellish (2003:213).*/
 
@@ -24,22 +24,22 @@ vp  --> v.
 det --> [the].
 det --> [a].
 n   --> [agent].
-n   --> [martini].
+n   --> [martinis].
 v   --> [likes].
 v   --> [drinks].
 
-/* This grammar describes sentences like "the agent likes martini":
+/* This grammar describes sentences like "the agent likes martinis":
 
-digraph the_agent_likes_martini {
-	
+digraph the_agent_likes_martinis {
+
 	S; NP; V; VP; DET; N1[label="N"]; N2[label="N"]
-	the; agent;	likes; martini
+	the; agent;	likes; martinis
 	
 	S -> NP; NP -> DET; NP -> N1 
 	DET -> the[style=dashed]; N1 -> agent[style=dashed]
 	
 	S -> VP; VP -> V; VP -> N2
-	V -> likes[style=dashed]; N2 -> martini[style=dashed]
+	V -> likes[style=dashed]; N2 -> martinis[style=dashed]
 }
 
 When queried like ''recognize([the, agent, likes, dry, martinis]).'' the 
