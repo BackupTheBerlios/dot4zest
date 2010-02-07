@@ -47,7 +47,6 @@ import org.osgi.framework.Bundle;
  * @author Fabian Steeg (fsteeg)
  */
 /* TODO use non-internal wizard and pages */
-@SuppressWarnings( "restriction" )
 public final class ZestProjectWizard extends JavaProjectWizard {
     /*
      * The name of the generated files depends on the DOT graph names of the sample graphs that are copied
@@ -111,6 +110,16 @@ public final class ZestProjectWizard extends JavaProjectWizard {
      */
     static List<IPath> pathsToGeneratedGraphs() {
         return Arrays.asList(pathTo(SAMPLE_GRAPH_JAVA), pathTo(SAMPLE_ANIMATION_JAVA));
+    }
+    
+    IProject getNewProject() {
+        IJavaElement createdElement = getCreatedElement();
+        try {
+            return createdElement.getCorrespondingResource().getProject();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private static IPath pathTo(final String name) {

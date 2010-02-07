@@ -15,8 +15,6 @@ import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.ui.wizards.NewJavaProjectWizardPageOne;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.ui.IWorkbench;
@@ -92,19 +90,7 @@ public final class TestZestProjectWizard {
         dialog.setBlockOnOpen(false);
         dialog.open();
         wizard.performFinish();
-        project = getNewProject(wizard);
-    }
-
-    // TODO switch to non-internal API in the ZestProjectWizard
-    @SuppressWarnings( "restriction" )
-    private IProject getNewProject(final ZestProjectWizard wizard) {
-        IJavaElement createdElement = wizard.getCreatedElement();
-        try {
-            return createdElement.getCorrespondingResource().getProject();
-        } catch (JavaModelException e) {
-            e.printStackTrace();
-        }
-        return null;
+        project = wizard.getNewProject();
     }
 
     private WizardDialog createDialog(final ZestProjectWizard wizard) {
