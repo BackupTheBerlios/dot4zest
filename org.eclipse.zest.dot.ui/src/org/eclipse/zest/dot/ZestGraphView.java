@@ -214,6 +214,9 @@ public final class ZestGraphView extends ViewPart {
     }
 
     private void updateGraph() throws MalformedURLException {
+        if (file == null || file.getLocationURI() == null || !file.exists()) {
+            return;
+        }
         final String currentDot = new DotExtractor(file).getDotString();
         if (currentDot.equals(dotString) || currentDot.equals(DotExtractor.NO_DOT)) {
             return;

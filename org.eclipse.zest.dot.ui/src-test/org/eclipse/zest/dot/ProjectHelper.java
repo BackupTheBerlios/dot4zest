@@ -23,7 +23,7 @@ import org.junit.Assert;
  */
 public final class ProjectHelper {
 
-    static final String PROJECT_NAME = "ZestTest";
+    static final String PROJECT_NAME = "Zest Project";
     static final Path PROJECT_PATH = new Path(Platform.getLocation().toString()
             + "/" + PROJECT_NAME);
 
