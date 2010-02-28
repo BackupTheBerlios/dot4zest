@@ -6,7 +6,7 @@
  * Contributors: Fabian Steeg - initial API and implementation; see bug 277380
  *******************************************************************************/
 
-package org.eclipse.zest.dot;
+package org.eclipse.zest.dot.internal;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,6 +49,8 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 import org.eclipse.ui.ide.IDE;
+import org.eclipse.zest.dot.DotFileUtils;
+import org.eclipse.zest.dot.internal.ProjectHelper;
 import org.osgi.framework.Bundle;
 
 /**
@@ -97,7 +99,7 @@ public final class ZestProjectWizard extends Wizard implements IExecutableExtens
         mainPage = new WizardNewProjectCreationPage("ZestProjectWizard");
         mainPage.setTitle("New Zest project");
         mainPage.setDescription("Create a new Zest project with DOT templates");
-        mainPage.setInitialProjectName(ProjectHelper.PROJECT_NAME);
+        mainPage.setInitialProjectName("Zest Project");
         addPage(mainPage);
         javaPage = new JavaCapabilityConfigurationPage() {
             public void setVisible(final boolean visible) {

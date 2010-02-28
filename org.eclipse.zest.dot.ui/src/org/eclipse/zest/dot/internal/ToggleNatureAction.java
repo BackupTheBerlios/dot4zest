@@ -6,7 +6,7 @@
  * <p/>
  * Contributors: Fabian Steeg - initial API and implementation; see bug 277380
  *******************************************************************************/
-package org.eclipse.zest.dot;
+package org.eclipse.zest.dot.internal;
 
 import java.util.Iterator;
 
@@ -20,6 +20,10 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 
+/**
+ * Action to toggle the Zest project nature for a workspace project.
+ * @author Fabian Steeg (fsteeg)
+ */
 public final class ToggleNatureAction implements IObjectActionDelegate {
 
     private ISelection selection;
@@ -66,7 +70,7 @@ public final class ToggleNatureAction implements IObjectActionDelegate {
             final IWorkbenchPart targetPart) {}
 
     /**
-     * Toggles the Zest nature on a project
+     * Toggles the Zest nature on a project.
      * @param project to have sample nature added or removed
      */
     static void toggleNature(final IProject project) {

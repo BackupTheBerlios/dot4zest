@@ -4,7 +4,7 @@
  * this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html Contributors:
  * The Eclipse Foundation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.zest.dot;
+package org.eclipse.zest.dot.internal;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -41,6 +41,10 @@ import org.eclipse.ui.dialogs.ResourceListSelectionDialog;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.zest.core.widgets.Graph;
+import org.eclipse.zest.dot.DotExport;
+import org.eclipse.zest.dot.DotExtractor;
+import org.eclipse.zest.dot.DotFileUtils;
+import org.eclipse.zest.dot.DotImport;
 
 /**
  * View showing the Zest import for a DOT input. Listens to *.dot files and other files with DOT

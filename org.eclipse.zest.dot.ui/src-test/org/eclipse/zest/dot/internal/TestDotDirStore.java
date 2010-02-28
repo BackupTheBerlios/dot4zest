@@ -6,13 +6,16 @@
  * <p/>
  * Contributors: Fabian Steeg - initial API and implementation; see bug 277380
  *******************************************************************************/
-package org.eclipse.zest.dot;
+package org.eclipse.zest.dot.internal;
 
 import java.io.File;
 
 import junit.framework.Assert;
 
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.zest.dot.TestImageExport;
+import org.eclipse.zest.dot.internal.DotDirStore;
+import org.eclipse.zest.dot.internal.DotUiActivator;
 import org.junit.Before;
 import org.junit.Test;
 
