@@ -42,8 +42,6 @@ import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.zest.core.widgets.Graph;
 import org.eclipse.zest.dot.DotExport;
-import org.eclipse.zest.dot.DotExtractor;
-import org.eclipse.zest.dot.DotFileUtils;
 import org.eclipse.zest.dot.DotImport;
 
 /**

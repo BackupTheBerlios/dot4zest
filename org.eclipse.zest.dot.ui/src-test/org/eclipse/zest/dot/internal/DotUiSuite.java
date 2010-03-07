@@ -26,7 +26,7 @@ import org.junit.runners.Suite;
 @RunWith( Suite.class )
 @Suite.SuiteClasses( { /* TestExperimentalDotImport.class, //not passing and experimental */
 TestZestGraphTemplate.class, TestZestGraphWizard.class, TestZestProjectWizard.class,
-        TestDotDirStore.class } )
+        TestDotDirStore.class, TestDotExtractor.class } )
 public final class DotUiSuite {
     @Before
     public void setup() {

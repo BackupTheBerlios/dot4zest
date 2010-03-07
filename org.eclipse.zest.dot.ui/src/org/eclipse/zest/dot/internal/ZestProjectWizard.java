@@ -49,7 +49,6 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 import org.eclipse.ui.ide.IDE;
-import org.eclipse.zest.dot.DotFileUtils;
 import org.eclipse.zest.dot.internal.ProjectHelper;
 import org.osgi.framework.Bundle;
 

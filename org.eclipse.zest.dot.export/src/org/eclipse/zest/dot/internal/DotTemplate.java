@@ -1,7 +1,8 @@
-package org.eclipse.zest.dot;
+package org.eclipse.zest.dot.internal;
 
 import org.eclipse.zest.core.widgets.*;
 import org.eclipse.swt.SWT;
+import org.eclipse.zest.dot.*;
 
 public class DotTemplate
 {
@@ -44,10 +45,15 @@ public class DotTemplate
  *******************************************************************************/
      Graph graph = (Graph) argument; 
      boolean digraph = graph.getConnectionStyle()==ZestStyles.CONNECTIONS_DIRECTED;
+    
+String simpleClassName = graph.getClass().getSimpleName();
+/* The exact name 'Graph' is not valid for rendering with Graphviz: */
+simpleClassName = simpleClassName.equals("Graph") ? "Zest" + simpleClassName : simpleClassName;
+
     stringBuffer.append(TEXT_1);
     stringBuffer.append( digraph ? "digraph" : "graph" );
     stringBuffer.append(TEXT_2);
-    stringBuffer.append(new DotExport(graph).name());
+    stringBuffer.append(simpleClassName);
     stringBuffer.append(TEXT_3);
      for(Object nodeObject : graph.getNodes()){ GraphNode node = (GraphNode) nodeObject; 
     stringBuffer.append(TEXT_4);
