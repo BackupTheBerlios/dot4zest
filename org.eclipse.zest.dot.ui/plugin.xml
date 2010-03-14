@@ -113,7 +113,7 @@
    <extension
          point="org.eclipse.help.toc">
       <toc
-            file="documentation/user-documentation-toc.xml"
+            file="Graphviz-DOT-as-a-DSL-for-Zest-toc.xml"
             primary="true">
       </toc>
    </extension>
